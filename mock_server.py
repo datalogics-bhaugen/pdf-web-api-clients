@@ -43,7 +43,7 @@ def pdf2img():
         input_file = flask.request.form.get('inputFile', None)
         output_form = flask.request.form.get('outputForm', None)
         options = get_options(flask.request.form)
-        subprocess.call(["pdf2img", options, input_file, output_form])
+        subprocess.call(["pdf2img", input_file, output_form])
         if input_file.endswith(".pdf"):
             input_file = input_file[:-len(".pdf")]
         output_file = (input_file + "_1." + output_form)
