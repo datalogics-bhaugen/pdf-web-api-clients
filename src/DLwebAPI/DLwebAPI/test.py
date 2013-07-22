@@ -7,10 +7,7 @@ import exceptions
 import os
 import requests
 
-FELIX = '10.2.3.86'
-JOHN = '10.2.3.11'
-
-ADDRESS = FELIX
+ADDRESS = '127.0.0.1'
 PORT = 5000
 
 API_KEY = 'f54ab5d8-5775-42c7-b888-f074ba892b57'
@@ -97,9 +94,7 @@ def image_name(arguments):
     result = arguments['output']
     if not result:
         result = os.path.splitext(arguments['inputFile'])[0]
-        extension = arguments['outputForm'].lower()
-        if extension == 'jpeg': extension = 'jpg'
-        result += '.' + extension
+        result += '.' + arguments['outputForm'].lower()
     return result
 
 def write_image(arguments, image):
@@ -113,16 +108,12 @@ def show_image(image):
         import Image
         Image.open(image).show()
     except ImportError:
-        pass
-
-def validate_content_type(arguments, response):
-    if arguments['outputForm'] in ('jpeg', 'jpg'):
-        assert response.headers['content-type'] == 'image/jpeg'
+        print("Image ImportError: 'open %s' instead" % image)
 
 if __name__ == '__main__':
     arguments = Arguments()
     response = post_request(arguments)
-    validate_content_type(arguments, response)
+    # assert response.headers['content-type'] == 'application/octet-stream'
     output = write_image(arguments, response.content)
     show_image(output)
 
