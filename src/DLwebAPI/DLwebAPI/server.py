@@ -7,6 +7,7 @@ import logging
 import subprocess
 import tempfile
 from logging.handlers import TimedRotatingFileHandler
+from logging import Formatter
 
 def authorize(request_form):
     # TODO: use 3scale
@@ -42,9 +43,12 @@ def make_file_handler(name):
     return TimedRotatingFileHandler('%s.log' % name, rotate_daily)
 
 app = flask.Flask(__name__)
-app.logger.addHandler(make_file_handler(app.name))
-app.logger.setLevel(logging.INFO)
+file_handler = make_file_handler(app.name)
+file_handler.setFormatter(Formatter('%(asctime)s %(levelname)s: %(message)s ''[in %(pathname)s:%(lineno)d]'))
+app.logger.addHandler(file_handler)
+app.logger.setLevel(logging.DEBUG)
 app.logger.info('%s started' % app.name)
+# TODO: Add email notification for error handling
 
 @app.route('/0/actions/image', methods=['POST'])
 def image():
