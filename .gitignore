@@ -1,4 +1,7 @@
+*.log
 *.pyc
+*.swp
+
 .installed.cfg
 
 bin

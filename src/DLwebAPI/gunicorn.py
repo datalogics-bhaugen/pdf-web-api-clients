@@ -1,5 +1,6 @@
 # Gunicorn configuration file.
-#   (adapted from github.com/benoitc/gunicorn/examples/example_config.py)
+#   - adapted from github.com/benoitc/gunicorn/examples/example_config.py
+#   - Benoit Chesneau is the author of Gunicorn's Configuration Overview
 
 #
 # Server socket
@@ -9,11 +10,11 @@
 #       A string of the form: 'HOST', 'HOST:PORT', 'unix:PATH'.
 #       An IP is a valid HOST.
 #
-#   backlog - The number of pending connections. This refers
-#       to the number of clients that can be waiting to be
-#       served. Exceeding this number results in the client
-#       getting an error when attempting to connect. It should
-#       only affect servers under significant load.
+#   backlog - The number of pending connections. This refers to
+#       the number of clients that can be waiting to be served.
+#       Exceeding this number results in the client getting an
+#       error when attempting to connect. It should only affect
+#       servers under significant load.
 #
 #       Must be a positive integer. Generally set in the 64-2048
 #       range.
@@ -32,16 +33,15 @@ backlog = 2048
 #       range. You'll want to vary this a bit to find the best
 #       for your particular application's work load.
 #
-#   worker_class - The type of workers to use. The default
-#       async class should handle most 'normal' types of work
-#       loads. You'll want to read http://gunicorn/deployment.hml
-#       for information on when you might want to choose one
-#       of the other worker classes.
+#   worker_class - The type of workers to use. The default async
+#       class should handle most 'normal' types of work loads.
+#       You'll want to read http://gunicorn/deployment.hml for
+#       information on when you might want to choose one of the
+#       other worker classes.
 #
-#       An string referring to a 'gunicorn.workers' entry point
-#       or a python path to a subclass of
-#       gunicorn.workers.base.Worker. The default provided values
-#       are:
+#       An string referring to a 'gunicorn.workers' entry point or
+#       a python path to a subclass of gunicorn.workers.base.Worker.
+#       The default provided values are:
 #
 #           egg:gunicorn#sync
 #           egg:gunicorn#eventlet   - Requires eventlet >= 0.9.7
@@ -119,8 +119,8 @@ spew = False
 #       can be retrieved with a call to pwd.getgrnam(value) or None
 #       to not change the worker process group.
 #
-#   umask - A mask for file permissions written by Gunicorn. Note that
-#       this affects unix socket permissions.
+#   umask - A mask for file permissions written by Gunicorn.
+#       Note that this affects unix socket permissions.
 #
 #       A valid value for the os.umask(mode) call or a string
 #       compatible with int(value, 0) (0 means Python guesses

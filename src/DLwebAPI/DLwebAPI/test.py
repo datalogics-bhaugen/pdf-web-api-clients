@@ -88,7 +88,7 @@ def make_url():
 def post_request(arguments):
     data = make_request_data(arguments)
     with open(arguments['inputFile'], 'rb') as input:
-        return requests.post(make_url(), data=data, files={'file': input})
+        return requests.post(make_url(), data=data, files={'input': input})
 
 def image_name(arguments):
     result = arguments['output']
