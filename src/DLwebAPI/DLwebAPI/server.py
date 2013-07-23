@@ -28,7 +28,7 @@ def get_options(request_form):
     options = []
     for key, value in request_form.iteritems():
         if key not in ('apiKey', 'inputFile', 'outputForm'):
-            options.append(key if value == 'True' else '%s:%s' % (key, value))
+            options.append(key if value == 'True' else '%s=%s' % (key, value))
     return options
 
 def log_request(request_form, options, output_form):
