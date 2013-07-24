@@ -50,6 +50,10 @@ def get_image(options, input_file_storage, output_form, page):
             if exit_code: app.logger.warning('exit_code: %d' % exit_code)
             return flask.send_file(output_file.name)
 
+def get_log_path():
+    try: return os.environ['LOGPATH']
+    except KeyError: return '.'
+
 def get_options(request_form):
     options = []
     for key, value in request_form.iteritems():
@@ -64,7 +68,8 @@ def log_request(request_form, options, output_form):
     app.logger.info('pdf2img%s %s %s' % (options, input_file, output_form))
 
 def make_file_handler(app_name):
-    result = TimedRotatingFileHandler('%s.log' % app_name, 'D')
+    log_path = os.path.join(get_log_path(), '%s.log' % app_name)
+    result = TimedRotatingFileHandler(log_path, 'D')
     result.setFormatter(make_formatter())
     return result
 
@@ -92,7 +97,4 @@ def image():
     # TODO: pages option is required, no default
     page = request_form.get('-pages', '1')
     return get_image(options, input, output_form, page)
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0')
 
