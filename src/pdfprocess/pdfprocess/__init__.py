@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 
-'web api server'
+'API server'
 
 import flask
 import logging
 import os
 import subprocess
 import tempfile
-import time
-from logging import Formatter
-from logging.handlers import TimedRotatingFileHandler
+from .logger import FileHandler
 
 class OutputFile(object):
     '''
@@ -50,10 +48,6 @@ def get_image(options, input_file_storage, output_form, page):
             if exit_code: app.logger.warning('exit_code: %d' % exit_code)
             return flask.send_file(output_file.name)
 
-def get_log_path():
-    try: return os.environ['LOGPATH']
-    except KeyError: return '.'
-
 def get_options(request_form):
     options = []
     for key, value in request_form.iteritems():
@@ -67,19 +61,9 @@ def log_request(request_form, options, output_form):
     input_file = request_form.get('inputFile', '<anon>')
     app.logger.info('pdf2img%s %s %s' % (options, input_file, output_form))
 
-def make_file_handler(app_name):
-    log_path = os.path.join(get_log_path(), '%s.log' % app_name)
-    result = TimedRotatingFileHandler(log_path, 'D')
-    result.setFormatter(make_formatter())
-    return result
-
-def make_formatter():
-    result = Formatter('%(asctime)s %(levelname)s: %(message)s')
-    result.converter = time.gmtime
-    return result
-
 app = flask.Flask(__name__)
-app.logger.addHandler(make_file_handler(app.name))
+app.logger.addHandler(FileHandler(app.name))
+app.logger.addHandler(FileHandler(app.name, logging.WARNING))
 app.logger.setLevel(logging.DEBUG)
 app.logger.info('%s started' % app.name)
 
