@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 'logging file handler for API server'
 
 import logging
