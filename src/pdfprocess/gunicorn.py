@@ -1,6 +1,13 @@
+#!/usr/bin/env python
+
 # Gunicorn configuration file.
 #   - adapted from github.com/benoitc/gunicorn/examples/example_config.py
 #   - Benoit Chesneau is the author of Gunicorn's Configuration Overview
+
+if __name__ == '__main__':
+    import subprocess, sys
+    command = 'gunicorn -b 127.0.0.1:5000 -w 1 pdfprocess:app'
+    sys.exit(subprocess.call(command.split()))
 
 #
 # Server socket
@@ -201,4 +208,6 @@ def pre_exec(server):
 
 def when_ready(server):
     server.log.info("Server is ready. Spawning workers")
+    import sys # TODO
+    server.log.info('PYTHONPATH: %s' % sys.path)
 

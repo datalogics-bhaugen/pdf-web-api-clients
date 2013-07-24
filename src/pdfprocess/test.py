@@ -58,7 +58,7 @@ OPTIONS = [
 
 class Arguments():
     def __init__(self):
-        parser = argparse.ArgumentParser(__doc__)
+        parser = argparse.ArgumentParser(__file__)
         parser.add_argument('inputFile', help='PDF or XPS file')
         parser.add_argument('outputForm',
             help='EPS, TIF, JPG, BMP, PNG, GIF, RAW, or PDF')
