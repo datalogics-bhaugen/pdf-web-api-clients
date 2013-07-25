@@ -1,11 +1,11 @@
 'API server'
 
+import api_flask
+
 import flask
-import logging
 import os
 import subprocess
 import tempfile
-from .logger import FileHandler
 
 class OutputFile(object):
     '''
@@ -59,11 +59,11 @@ def log_request(request_form, options, output_form):
     input_file = request_form.get('inputFile', '<anon>')
     app.logger.info('pdf2img%s %s %s' % (options, input_file, output_form))
 
-app = flask.Flask(__name__)
-app.logger.addHandler(FileHandler(app.name))
-app.logger.addHandler(FileHandler(app.name, logging.WARNING))
-app.logger.setLevel(logging.DEBUG)
-app.logger.info('%s started' % app.name)
+app = api_flask.Application(__name__)
+
+@app.before_first_request
+def initialize():
+    app.logger.info('%s started' % app.name)
 
 @app.route('/0/actions/image', methods=['POST'])
 def image():
