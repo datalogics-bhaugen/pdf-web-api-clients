@@ -3,6 +3,9 @@
 *.swp
 
 .installed.cfg
+BUILD
+
+*.egg-info
 
 bin
 develop-eggs
