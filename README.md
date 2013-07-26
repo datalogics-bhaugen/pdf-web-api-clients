@@ -31,11 +31,12 @@ We use Buildout, which is a two-step process. These steps are executed by the Ma
 
 We use Supervisor to control the Gunicorn process that runs our Flask application.
 
-* `bin/supervisord` starts the Supervisor daemon.
+* `bin/supervisord` starts the Supervisor daemon, which runs our Flask application in a Gunicorn process.
 * `bin/supervisorctl` controls the Supervisor daemon.
 
 ## Test
 
-To facilitate testing, there are scripts in `src/pdfprocess` that may be used to start the server without Supervisor. In this mode, the server creates its log in the current working directory instead of `var/log`.
+To facilitate testing, we generate these scripts:
 
-PYTHONPATH might not work, but `bin/python` should.
+* `bin/test-gunicorn` runs our Flask application in a Gunicorn process.
+* `bin/test-pdfprocess` runs our Flask application with its development server (Werkzeug).

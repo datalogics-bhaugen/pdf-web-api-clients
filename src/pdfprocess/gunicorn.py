@@ -1,13 +1,6 @@
-#!/usr/bin/env python
-
 # Gunicorn configuration file.
 #   - adapted from github.com/benoitc/gunicorn/examples/example_config.py
 #   - Benoit Chesneau is the author of Gunicorn's Configuration Overview
-
-if __name__ == '__main__':
-    import subprocess, sys
-    command = '../../bin/gunicorn -b 127.0.0.1:5000 -w 1 pdfprocess:app'
-    sys.exit(subprocess.call(command.split()))
 
 #
 # Server socket
