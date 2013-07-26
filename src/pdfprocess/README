@@ -2,4 +2,5 @@ pdfprocess      API server module
 
 gunicorn.py     gunicorn configuration file (execute to test gunicorn/server)
 server.py       execute to test server
+setup.py        buildout pdfprocess.egg-info
 test.py         pdfprocess test client

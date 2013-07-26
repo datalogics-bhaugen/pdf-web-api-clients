@@ -6,7 +6,7 @@
 
 if __name__ == '__main__':
     import subprocess, sys
-    command = 'gunicorn -b 127.0.0.1:5000 -w 1 pdfprocess:app'
+    command = '../../bin/gunicorn -b 127.0.0.1:5000 -w 1 pdfprocess:app'
     sys.exit(subprocess.call(command.split()))
 
 #
@@ -177,7 +177,7 @@ accesslog = '-'
 #       A string or None to choose a default of something like 'gunicorn'.
 #
 
-proc_name = None
+proc_name = 'pdfprocess'
 
 #
 # Server hooks
