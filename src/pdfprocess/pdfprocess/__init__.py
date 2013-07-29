@@ -40,10 +40,13 @@ def get_image(options, input_file_storage, output_form, page):
         input_file_storage.save(input_file)
         input_file.flush()
         with OutputFile(input_file.name, output_form, page) as output_file:
-            options += output_file.options
-            args = ['pdf2img'] + options + [input_file.name, output_form]
-            exit_code = subprocess.call(args)
-            if exit_code: app.logger.warning('exit_code: %d' % exit_code)
+            with tempfile.NamedTemporaryFile() as p2i_stdout:
+                options += output_file.options
+                args = ['pdf2img'] + options + [input_file.name, output_form]
+                exit_code = subprocess.call(args, stdout=p2i_stdout)
+                if exit_code: 
+                    app.logger.warning('exit_code: %d' % exit_code)
+                    util.abort(500, pdfout=p2i_stdout)
             return flask.send_file(output_file.name)
 
 def get_options(request_form):
@@ -64,6 +67,10 @@ app = api_flask.Application(__name__)
 @app.before_first_request
 def initialize():
     app.logger.info('%s started' % app.name)
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    return error.pdfout, 500
 
 @app.route('/0/actions/image', methods=['POST'])
 def image():
