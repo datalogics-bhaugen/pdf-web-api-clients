@@ -1,4 +1,4 @@
-'API image arguments'
+'API image action arguments'
 
 import argparse
 
@@ -46,22 +46,18 @@ OPTIONS = [
     Option('smoothing', '[none|text|all] (default=none)'),
     Option('width', 'Picture width (pixels), no default')]
 
-class Arguments():
-    def __init__(self, args=None):
-        'args defaults to sys.argv'
-        self._args = args
-        self._parser = argparse.ArgumentParser(__file__)
+class ArgumentParser():
+    def __init__(self):
+        self._parser = argparse.ArgumentParser('image')
         self._parser.add_argument('inputFile', help='PDF or XPS file')
         self._parser.add_argument('outputForm',
             help='EPS, TIF, JPG, BMP, PNG, GIF, RAW, or PDF')
         for option in OPTIONS:
-            option_name = '-' + option.name
-            self._parser.add_argument(option_name,
+            self._parser.add_argument('-%s' % option.name,
                 help=option.help, action=option.action)
-    def __call__(self):
-        self._namespace = self._parser.parse_args(self._args)
-    def __getitem__(self, key):
-        return self._namespace.__dict__[key]
+    def __call__(self, args=None):
+        'returns {arg: value} dict, args defaults to sys.argv'
+        return self._parser.parse_args(args).__dict__
     @classmethod
     def options(cls): return OPTIONS
 
