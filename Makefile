@@ -3,6 +3,6 @@ build:
 	bin/buildout | tee BUILD
 
 clean:
-	rm -rf bin develop-eggs eggs parts var/log
+	rm -rf .installed.cfg bin develop-eggs parts var/log
 
 .PHONY: build
