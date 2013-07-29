@@ -36,7 +36,13 @@ We use Supervisor to control the Gunicorn process that runs our Flask applicatio
 
 ## Test
 
-To facilitate testing, we generate these scripts:
+These scripts facilitate testing each piece of the call stack:
 
-* `bin/test-gunicorn` runs our Flask application in a Gunicorn process.
-* `bin/test-pdfprocess` runs our Flask application with its development server (Werkzeug).
+* `bin/pdfprocess` runs our Flask application with its development server (Werkzeug).
+* `scripts/gunicorn` runs our Flask application in a Gunicorn process.
+
+## Paths
+
+Our Flask application creates a log file in the directory specified by the LOG_PATH environment variable. If this is not defined, the application creates its log file in the current working directory.
+
+`bin/pdfprocess` puts our eggs into the import path and sets LOG_PATH to `var/log`.
