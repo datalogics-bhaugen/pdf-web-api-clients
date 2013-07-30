@@ -18,9 +18,21 @@ def authorize_error(request_form):
 def get_image(options, input_file_storage, page, output_form):
     with tempfile.NamedTemporaryFile() as input_file:
         input_file_storage.save(input_file)
+        if check_encryption(input_file):
+            flask.abort(423)  
         input_file.flush()
         with OutputFile(input_file.name, page, output_form) as output_file:
             return pdf2img(options, input_file, output_file, output_form)
+
+def check_encryption(input_file):
+    open_file = open(input_file, "r"):
+        for line in open_file:
+            if "/Encrypt" in line:
+                open_file.close()
+                return True
+            else:
+                open_file.close()
+                return False
 
 def get_options(request_form):
     options = []
@@ -59,6 +71,11 @@ def initialize():
 @app.errorhandler(500)
 def internal_server_error(error):
     return flask.g.stdout, 500
+
+@app.errorhandler(423)
+def resource_locked(error):
+    return "Document Password Protected"
+    #TODO: request pw for auth
 
 @app.route('/0/actions/image', methods=['POST'])
 def image():
