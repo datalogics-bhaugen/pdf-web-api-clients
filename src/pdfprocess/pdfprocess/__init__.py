@@ -13,9 +13,9 @@ class OutputFile(object):
     use tempfile to construct the output file. instead, we assume that
     pdf2img successfully created the output file from the temporary
     file we provided as input. this class encapsulates all this logic,
-    and deletes the temporary files created by pdf2img.
+    and deletes the image files created by pdf2img.
     '''
-    def __init__(self, name, extension, page):
+    def __init__(self, name, page, extension):
         self._name = '%s%s.%s' % (name, page, extension) # no underscore!
     def __enter__(self):
         return self
@@ -27,6 +27,20 @@ class OutputFile(object):
     @property
     def options(self): return ['-digits=1']
 
+class StdFile(object):
+    'for capturing stdout/stderr'
+    def __init__(self):
+        self._file = tempfile.TemporaryFile()
+    def __enter__(self):
+        return self
+    def __exit__(self, type, value, traceback):
+        self._file.close()
+    def __str__(self):
+        self._file.seek(0)
+        return ''.join((line for line in self._file))
+    def __getattr__(self, name):
+        return getattr(self._file, name)
+
 def authorize(request_form):
     # TODO: use 3scale
     api_key = request_form.get('apiKey', None)
@@ -35,19 +49,12 @@ def authorize(request_form):
 def authorize_error(request_form):
     pass # TODO: set code, etc.
 
-def get_image(options, input_file_storage, output_form, page):
+def get_image(options, input_file_storage, page, output_form):
     with tempfile.NamedTemporaryFile() as input_file:
         input_file_storage.save(input_file)
         input_file.flush()
-        with OutputFile(input_file.name, output_form, page) as output_file:
-            with tempfile.NamedTemporaryFile() as p2i_stdout:
-                options += output_file.options
-                args = ['pdf2img'] + options + [input_file.name, output_form]
-                exit_code = subprocess.call(args, stdout=p2i_stdout)
-                if exit_code: 
-                    app.logger.warning('exit_code: %d' % exit_code)
-                    util.abort(500, pdfout=p2i_stdout)
-            return flask.send_file(output_file.name)
+        with OutputFile(input_file.name, page, output_form) as output_file:
+            return pdf2img(options, input_file, output_file, output_form)
 
 def get_options(request_form):
     options = []
@@ -62,6 +69,25 @@ def log_request(request_form, options, output_form):
     input_file = request_form.get('inputFile', '<anon>')
     app.logger.info('pdf2img%s %s %s' % (options, input_file, output_form))
 
+def pdf2img(options, input_file, output_file, output_form):
+    options += output_file.options
+    args = ['pdf2img'] + options + [input_file.name, output_form]
+    with StdFile() as stdout, StdFile() as stderr:
+        exit_code = subprocess.call(args, stdout=stdout, stderr=stderr)
+        if exit_code: pdf2img_error(exit_code, str(stdout), str(stderr))
+    return flask.send_file(output_file.name)
+
+def pdf2img_error(exit_code, stdout, stderr):
+    app.logger.warning('exit_code: %d' % exit_code)
+    if stdout: app.logger.debug('stdout: %s' % stdout)
+    if stderr: app.logger.debug('stderr: %s' % stderr)
+    flask.g.stdout = stdout # TODO: stderr
+    flask.abort(500) # TODO: return different codes, etc.
+
+def rewind_and_dump(file):
+    file.seek(0)
+    return ''.join((line for line in file))
+
 app = api_flask.Application(__name__)
 
 @app.before_first_request
@@ -70,7 +96,7 @@ def initialize():
 
 @app.errorhandler(500)
 def internal_server_error(error):
-    return error.pdfout, 500
+    return flask.g.stdout, 500
 
 @app.route('/0/actions/image', methods=['POST'])
 def image():
@@ -83,7 +109,6 @@ def image():
         return authorize_error(request_form)
 
     input = flask.request.files['input']
-    # TODO: pages option is required, no default
-    page = request_form.get('-pages', '1')
-    return get_image(options, input, output_form, page)
+    page = request_form.get('-pages', '1') # TODO: this seems bogus
+    return get_image(options, input, page, output_form)
 
