@@ -23,8 +23,8 @@ class OutputFile(object):
     @property
     def options(self): return ['-digits=1']
 
-class StdFile(object):
-    'for capturing stdout/stderr'
+class Stdout(object):
+    'for capturing stdout'
     def __init__(self):
         self._file = tempfile.TemporaryFile()
     def __enter__(self):
