@@ -1,45 +1,11 @@
 'API server'
 
-import api_flask
-
 import flask
-import os
 import subprocess
 import tempfile
 
-class OutputFile(object):
-    '''
-    pdf2img appends a page count to the output filename, so we cannot
-    use tempfile to construct the output file. instead, we assume that
-    pdf2img successfully created the output file from the temporary
-    file we provided as input. this class encapsulates all this logic,
-    and deletes the image files created by pdf2img.
-    '''
-    def __init__(self, name, page, extension):
-        self._name = '%s%s.%s' % (name, page, extension) # no underscore!
-    def __enter__(self):
-        return self
-    def __exit__(self, type, value, traceback):
-        try: os.remove(self.name)
-        except OSError as error: pass
-    @property
-    def name(self): return self._name
-    @property
-    def options(self): return ['-digits=1']
-
-class StdFile(object):
-    'for capturing stdout/stderr'
-    def __init__(self):
-        self._file = tempfile.TemporaryFile()
-    def __enter__(self):
-        return self
-    def __exit__(self, type, value, traceback):
-        self._file.close()
-    def __str__(self):
-        self._file.seek(0)
-        return ''.join((line for line in self._file))
-    def __getattr__(self, name):
-        return getattr(self._file, name)
+import api_flask
+from api_tempfile import OutputFile, StdFile
 
 def authorize(request_form):
     # TODO: use 3scale
@@ -83,10 +49,6 @@ def pdf2img_error(exit_code, stdout, stderr):
     if stderr: app.logger.debug('stderr: %s' % stderr)
     flask.g.stdout = stdout # TODO: stderr
     flask.abort(500) # TODO: return different codes, etc.
-
-def rewind_and_dump(file):
-    file.seek(0)
-    return ''.join((line for line in file))
 
 app = api_flask.Application(__name__)
 
