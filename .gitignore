@@ -9,5 +9,7 @@ BUILD
 
 bin
 develop-eggs
+doxygen
+html
 parts
 var
