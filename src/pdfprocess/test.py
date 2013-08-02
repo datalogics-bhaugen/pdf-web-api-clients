@@ -6,6 +6,8 @@ import argparse
 import exceptions
 import os
 import requests
+import base64
+from flask import json
 
 ADDRESS = '127.0.0.1'
 PORT = 5000
@@ -97,12 +99,6 @@ def image_name(arguments):
         result += '.' + arguments['outputForm'].lower()
     return result
 
-def write_image(arguments, image):
-    result = image_name(arguments)
-    with open(result, 'wb') as output:
-        output.write(image)
-    return result
-
 def show_image(image):
     try:
         import Image
@@ -110,10 +106,25 @@ def show_image(image):
     except ImportError:
         print("Image ImportError: 'open %s' instead" % image)
 
+def verify_response(response, arguments):
+    result = image_name(arguments)
+    if response.status_code == 200:
+        save_image(response, result)
+    else:
+        error = json.dumps(response.json()['error'])
+        text = json.dumps(response.json()['text'])
+        print 'Error Code: ' + error
+        print 'Message: ' + text
+
+def save_image(response, image_name):
+    data = response.json()
+    image_string = json.dumps(data['image'])
+    file_write = open(image_name, 'wb')
+    file_write.write(image_string.decode('base64'))
+    file_write.close()
+    show_image(image_name)
+
 if __name__ == '__main__':
     arguments = Arguments()
     response = post_request(arguments)
-    # assert response.headers['content-type'] == 'application/octet-stream'
-    output = write_image(arguments, response.content)
-    show_image(output)
-
+    verify_response(response, arguments)

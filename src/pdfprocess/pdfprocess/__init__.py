@@ -3,7 +3,8 @@
 import flask
 import subprocess
 import tempfile
-
+import json
+import base64
 import api_flask
 from api_tempfile import OutputFile, Stdout
 
@@ -51,13 +52,18 @@ def pdf2img(options, input_file, output_file, output_form):
     with Stdout() as stdout:
         exit_code = subprocess.call(args, stdout=stdout)
         if exit_code: pdf2img_error(exit_code, str(stdout))
-    return flask.send_file(output_file.name)
+    return flask.jsonify(image=image_encode(output_file.name))
 
 def pdf2img_error(exit_code, stdout):
     app.logger.warning('exit_code: %d' % exit_code)
     if stdout: app.logger.debug('stdout: %s' % stdout)
     flask.g.stdout = stdout
     flask.abort(500) # TODO: return different codes, etc.
+
+def image_encode(image):
+    with open(image, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read())
+    return encoded_string
 
 app = api_flask.Application(__name__)
 
@@ -67,12 +73,13 @@ def initialize():
 
 @app.errorhandler(500)
 def internal_server_error(error):
-    return flask.g.stdout, 500
+    return flask.jsonify(error=500, text=flask.g.stdout), 500
 
 @app.errorhandler(423)
 def resource_locked(error):
     # TODO: missing password vs. bad password
-    return 'Document Password Protected', 423
+    return flask.jsonify(error=423, 
+        text='PDF Document Password incorrect or not given'), 423
 
 @app.route('/0/actions/image', methods=['POST'])
 def image():
