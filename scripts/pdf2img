@@ -1,0 +1,80 @@
+#!/usr/bin/python
+
+'pdf2img emulator'
+
+import base64
+import exceptions
+import glob
+import json
+import os
+import sys
+
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+requests_dir = glob.glob(os.path.join(root_dir, 'eggs', 'requests-*.egg'))[0]
+sys.path[0:0] = [requests_dir, os.path.join(root_dir, 'samples', 'python')]
+
+import pdfclient
+
+
+API_KEY = 'f54ab5d8-5775-42c7-b888-f074ba892b57'
+BASE_URL = 'http://127.0.0.1:5000'
+VERSION = 0
+
+
+class Response(object):
+    def __init__(self, request_response):
+        self._json = request_response.json()
+        self._status_code = request_response.status_code
+    def __getitem__(self, key):
+        return json.dumps(self.json[key])
+    @property
+    def json(self): return self._json
+    @property
+    def status_code(self): return self._status_code
+
+
+def parse_argv(argv):
+    try:
+        return parse_options(argv[1:-2]), argv[-2], argv[-1]
+    except Exception:
+        print(sys.exc_info())
+        sys.exit('syntax: %s [options] inputFile outputForm' % argv[0])
+
+def parse_options(argv):
+    result = {}
+    for arg in argv:
+        if arg.startswith('-'):
+            arg = arg[1:]
+            option, value = arg.split('=') if '=' in arg else (arg, True)
+            result[option] = value
+    return result
+
+def show_image(image):
+    try:
+        import Image
+        Image.open(image).show()
+    except ImportError:
+        print("Image ImportError: 'open %s' instead" % image)
+
+def write_image(input_file, output_form, image):
+    result = '.'.join((os.path.splitext(input_file)[0], output_form.lower()))
+    with open(result, 'wb') as output:
+        output.write(image.decode('base64'))
+    return result
+
+
+if __name__ == '__main__':
+    pdf_client = pdfclient.Client(API_KEY, VERSION, BASE_URL)
+    image_request = pdf_client.make_request(request_type='image')
+    options, input_file, output_form = parse_argv(sys.argv)
+
+    with open(input_file, 'rb') as input:
+        request_response = image_request.post(input, output_form, **options)
+
+    response = Response(request_response)
+    if response.status_code == 200:
+        output = write_image(input_file, output_form, response['image'])
+        show_image(output)
+    else:
+        sys.exit('%s: %s' % (response['error'], response['text']))
+
