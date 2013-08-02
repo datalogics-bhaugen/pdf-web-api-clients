@@ -1,4 +1,4 @@
-build:
+build: doxygen
 	python bootstrap.py
 	bin/buildout | tee BUILD
 
@@ -7,7 +7,10 @@ clean:
 
 doxygen:
 	git clone https://github.com/doxygen/doxygen.git
-	cd doxygen; ./configure; make
-	cd ..; doxygen/bin/doxygen doc/Doxyfile
+	cd doxygen; ./configure; make; cd ..
+	doxygen/bin/doxygen doc/Doxyfile # Doxyfile uses relative paths
 
-.PHONY: build
+# TODO: install: nginx configuration files
+# TODO: uninstall:
+
+.PHONY: build clean

@@ -1,12 +1,15 @@
 'API server'
 
-import flask
+import base64
+import json
 import subprocess
 import tempfile
-import json
-import base64
+
+import flask
+
 import api_flask
 from api_tempfile import OutputFile, Stdout
+
 
 def authorize(request_form):
     # TODO: use 3scale
@@ -16,27 +19,20 @@ def authorize(request_form):
 def authorize_error(request_form):
     pass # TODO: set code, etc.
 
-def get_image(options, input_file_storage, page, output_form):
+def get_image(options, input_file_storage, pages, output_form):
+    if not pages and output_form.lower() == 'tif':
+        options['multipage'] = True
     with tempfile.NamedTemporaryFile() as input_file:
         input_file_storage.save(input_file)
         input_file.flush()
-        if check_encryption(input_file):
-            flask.abort(423)  
-        with OutputFile(input_file.name, page, output_form) as output_file:
+        with OutputFile(input_file.name, pages, output_form) as output_file:
             return pdf2img(options, input_file, output_file, output_form)
-
-def check_encryption(input_file): # TODO: remove
-    'input_file is a file, not a filename'
-    # NB: the previous implementation only checked the first line
-    for line in input_file:
-        if '/Encrypt' in line: return True
-    input_file.seek(0)
-    return False
 
 def get_options(request_form):
     options = []
     for key, value in request_form.iteritems():
         if key not in ('apiKey', 'inputFile', 'outputForm'):
+            key = '-' + key
             options.append(key if value == 'True' else '%s=%s' % (key, value))
     return options
 
@@ -52,18 +48,16 @@ def pdf2img(options, input_file, output_file, output_form):
     with Stdout() as stdout:
         exit_code = subprocess.call(args, stdout=stdout)
         if exit_code: pdf2img_error(exit_code, str(stdout))
-    return flask.jsonify(image=image_encode(output_file.name))
+    with open(output_file.name, 'rb') as image_file:
+        return flask.jsonify(image=base64.b64encode(image_file.read()))
 
 def pdf2img_error(exit_code, stdout):
-    app.logger.warning('exit_code: %d' % exit_code)
-    if stdout: app.logger.debug('stdout: %s' % stdout)
-    flask.g.stdout = stdout
+    flask.g.error = exit_code
+    error_prefix = 'ERROR: '
+    lines = stdout.split('\n')
+    errors = [line for line in lines if line.startswith(error_prefix)]
+    flask.g.text = '\n'.join([error[len(error_prefix):] for error in errors])
     flask.abort(500) # TODO: return different codes, etc.
-
-def image_encode(image):
-    with open(image, "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read())
-    return encoded_string
 
 app = api_flask.Application(__name__)
 
@@ -71,15 +65,16 @@ app = api_flask.Application(__name__)
 def initialize():
     app.logger.info('%s started' % app.name)
 
-@app.errorhandler(500)
-def internal_server_error(error):
-    return flask.jsonify(error=500, text=flask.g.stdout), 500
-
 @app.errorhandler(423)
 def resource_locked(error):
-    # TODO: missing password vs. bad password
-    return flask.jsonify(error=423, 
+    # TODO: if 'password' in request_form: ...
+    return flask.jsonify(error=flask.g.error, 
         text='PDF Document Password incorrect or not given'), 423
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    app.logger.error('%s: %s' % (flask.g.error, flask.g.text))
+    return flask.jsonify(error=flask.g.error, text=flask.g.text), 500
 
 @app.route('/0/actions/image', methods=['POST'])
 def image():
@@ -92,6 +87,6 @@ def image():
         return authorize_error(request_form)
 
     input = flask.request.files['input']
-    page = request_form.get('-pages', '1') # TODO: this seems bogus
-    return get_image(options, input, page, output_form)
+    pages = request_form.get('pages', '')
+    return get_image(options, input, pages, output_form)
 

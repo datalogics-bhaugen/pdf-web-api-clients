@@ -5,7 +5,7 @@ import tempfile
 
 class OutputFile(object):
     '''
-    pdf2img appends a page count to the output filename, so we cannot
+    pdf2img appends a page number to the output filename, so we cannot
     use tempfile to construct the output file. instead, we assume that
     pdf2img successfully created the output file from the temporary
     file we provided as input. this class encapsulates all this logic,

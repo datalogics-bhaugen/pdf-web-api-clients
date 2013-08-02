@@ -1,4 +1,4 @@
-'web api regression tests'
+'pdfprocess regression tests'
 
 import flask
 import pdfprocess
