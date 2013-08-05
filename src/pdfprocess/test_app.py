@@ -1,4 +1,4 @@
-'pdfprocess regression tests'
+"pdfprocess regression tests"
 
 import flask
 import pdfprocess

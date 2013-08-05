@@ -1,3 +1,4 @@
+*.gz
 *.log
 *.pyc
 *.swp
@@ -11,5 +12,6 @@ bin
 develop-eggs
 doxygen
 html
+libxml2
 parts
 var

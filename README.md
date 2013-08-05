@@ -15,6 +15,7 @@ MacOS (different versions) is the primary development platform, and Ubuntu is th
 * Flask
 * Gunicorn
 * Supervisor
+* ThreeScalePY
 
 These packages depend on other packages (of course).
 
@@ -26,6 +27,8 @@ We use Buildout, which is a two-step process. These steps are executed by the Ma
 * Buildout uses its configuration to download packages, etc.
 
 `BUILD` identifies the versions of the packages installed by Buildout. (Package dependencies are *not* version-specific.)
+
+We do not use Buildout to install doxygen or libxml2 (needed by ThreeScalePY). These are built/installed by their respective Makefile targets.
 
 ## Run
 
@@ -46,3 +49,4 @@ These scripts facilitate testing each piece of the call stack:
 Our Flask application creates a log file in the directory specified by the LOG_PATH environment variable. If this is not defined, the application creates its log file in the current working directory.
 
 `bin/pdfprocess` puts our eggs into the import path and sets LOG_PATH to `var/log`.
+

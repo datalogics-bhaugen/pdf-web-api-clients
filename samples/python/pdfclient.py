@@ -2,7 +2,7 @@
 
 # TODO: sample disclaimer
 
-'Sample pdfprocess client module'
+"Sample pdfprocess client module"
 
 
 import requests
@@ -62,21 +62,21 @@ class ImageRequest(Request):
     ## Post request
     #  @return a requests.Response object
     #  @param input request document file object
-    #  @param output_form output graphic format, e.g. 'TIF'
+    #  @param output_form output graphic format, e.g. 'JPG'
     #  @param options e.g. {'pages': '1', 'noAnnot': True}
     #
     #  The following options are interpreted as bool (default=False):
     #  * OPP
     #  * asPrinted
     #  * blackIsOne
-    #  * multiPage
     #  * noAnnot
     #  * noCMM
     #  * noEnhanceThinLines
     #  * reverse
     #
     #  %ImageRequest's 'height' and 'width' options specify the image's
-    #  dimensions, replacing [PDF2IMG](../PDF2IMG.pdf)'s pixelcount.
+    #  dimensions, replacing [PDF2IMG](../PDF2IMG.pdf)'s pixelcount option.
+    #
     #  See PDF2IMG for more information about the remaining options:
     #  * BPC
     #  * colorModel

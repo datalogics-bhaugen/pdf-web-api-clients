@@ -1,4 +1,4 @@
-'pdfclient regression tests'
+"server regression tests"
 
 import exceptions
 import os
