@@ -68,8 +68,8 @@ if __name__ == '__main__':
     response = Response(request_response)
     processCode = int(response['processCode'])
     if processCode:
-        sys.exit('%s: %s' % (processCode, response['text']))
+        sys.exit('%s: %s' % (processCode, response['output']))
     else:
-        output = write_image(input_file, output_form, response['image'])
+        output = write_image(input_file, output_form, response['output'])
         show_image(output)
 

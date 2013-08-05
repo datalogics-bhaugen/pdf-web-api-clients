@@ -11,7 +11,7 @@ class Option(object):
         self._normalized_name = name.lower()
     def __str__(self):
         return '-' + self._normalized_name if self._is_alias else self.name
-    def __eq__(self, other): return self._normalized_name == other
+    def __eq__(self, other): return self._normalized_name == other.lower()
     def __ne__(self, other): return not self == other
     @property
     def name(self): return self._name

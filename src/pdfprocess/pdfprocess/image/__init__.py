@@ -39,7 +39,7 @@ class Action(pdfprocess.Action):
                 return self.abort(process_code, self._get_errors(stdout))
         with open(output_file.name, 'rb') as image_file:
             image = base64.b64encode(image_file.read())
-            return flask.jsonify(processCode=0, image=image)
+            return self.response(200, process_code=0, output=image)
     def _get_options(self):
         result = []
         options = ArgumentParser.options()
@@ -47,9 +47,9 @@ class Action(pdfprocess.Action):
             if key in options:
                 option = options[options.index(key)]
                 if not isinstance(option, Flag):
-                    result.append('%s=%s' % (option.name, value))
+                    result.append('%s=%s' % (option, value))
                 elif value:
-                    result.append(option.name)
+                    result.append(str(option))
         return result
     def _log_request(self):
         options = ' '.join(self._options)
