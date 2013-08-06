@@ -9,7 +9,7 @@ To facilitate using this service, we supply a sample Python
 
 ### Dependencies
 
-* Python (2.7 or 3.3)
+* Python 2.7 or 3.3 (other versions might work, but are unsupported)
 * [Requests](http://docs.python-requests.org/en/latest/): HTTP for Humans (1.2.3)
 * [3scale](http://3scale.net): API Management
 

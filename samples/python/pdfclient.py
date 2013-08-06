@@ -45,7 +45,7 @@ class Request(object):
     ## Post request
     #  @return a requests.Response object
     #  @param input request document file object
-    #  @param options e.g. {'pages': '1', 'noAnnot': True}
+    #  @param options e.g. {'pages': '1', 'asPrinted': 'True'}
     def post(self, input, **options):
         self._data.update(options)
         self._data['inputFile'] = input.name
@@ -67,9 +67,9 @@ class ImageRequest(Request):
     #  @return an ImageResponse object
     #  @param input request document file object
     #  @param output_form output graphic format, e.g. 'jpg'
-    #  @param options e.g. {'pages': '1', 'noAnnot': True}
+    #  @param options e.g. {'pages': '1', 'asPrinted': 'True'}
     #
-    #  The following options are interpreted as bool (default=False):
+    #  Set any of the following bool options (default=False) as needed:
     #  * OPP
     #  * asPrinted
     #  * blackIsOne
@@ -79,7 +79,7 @@ class ImageRequest(Request):
     #  * reverse
     #
     #  The 'height' and 'width' options specify the image's dimensions,
-    #  replacing PDF2IMG's pixelcount option.
+    #  replacing pdf2img's pixelcount option.
     #
     #  See [PDF2IMG](http://www.datalogics.com/pdf/doc/pdf2img.pdf)
     #  for more information about the remaining options:
@@ -89,7 +89,6 @@ class ImageRequest(Request):
     #  * fontList
     #  * jpegQuality
     #  * maxBandMem
-    #  * output
     #  * pages
     #  * password
     #  * pdfRegion
@@ -119,14 +118,19 @@ class Response(object):
     ## API status code
     #
     #  TODO: describe codes
-    def process_code(self): return int(self['processCode'])
+    def process_code(self):
+        if 'processCode' in self._json: return int(self['processCode'])
 
     @property
-    ## None if successful, otherwise information about the request failure
-    def exc_info(self): return not self and self['output']
-    @property
     ## Base64-encoded data if request was successful, otherwise None
-    def output(self): return self and self['output']
+    def output(self):
+        if self: return self['output']
+
+    @property
+    ## None if successful, otherwise information about #process_code
+    def exc_info(self):
+        if not self: return self['output']
+
     @property
     ## HTTP status code
     def status_code(self): return self._status_code
@@ -143,5 +147,6 @@ class ImageResponse(Response):
             return base64.b64decode(self['output'])
     @property
     ## Image data (decoded) if request was successful, otherwise None
-    def output(self): return self and self._image()
+    def output(self):
+        if self: return self._image()
 
