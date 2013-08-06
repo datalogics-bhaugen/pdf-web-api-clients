@@ -10,12 +10,13 @@ Internet-accessible PDF API, a.k.a. "PDF Web API" and "pdfprocess".
 
 MacOS (different versions) is the primary development platform, and Ubuntu is the target deployment platform.
 
-## Major Package Dependencies
+## Major Dependencies
 
 * Flask
 * Gunicorn
 * Supervisor
 * ThreeScalePY
+* doxygen
 
 These packages depend on other packages (of course).
 
@@ -39,10 +40,12 @@ We use Supervisor to control the Gunicorn process that runs our Flask applicatio
 
 ## Test
 
-These scripts facilitate testing each piece of the call stack:
+These scripts facilitate testing:
 
 * `bin/pdfprocess` runs our Flask application with its development server (Werkzeug).
+* `samples/pdf2img.py` is a driver for our sample Python API client.
 * `scripts/gunicorn` runs our Flask application in a Gunicorn process.
+* `scripts/pdf2img.py` runs `samples/pdf2img.py` with test settings.
 
 ## Paths
 
