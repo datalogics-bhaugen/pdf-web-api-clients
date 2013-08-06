@@ -5,6 +5,10 @@
 "Sample pdfprocess client module"
 
 
+import base64
+import json
+import sys
+
 import requests
 
 
@@ -13,7 +17,7 @@ class Client(object):
     VERSION = 0
 
     ## Set #api_key and #base_url
-    #  @param api_key from <a href="http://3scale.net/">TODO: fix link</a>
+    #  @param api_key from [3scale](http://datalogics-cloud.3scale.net/)
     def __init__(self, api_key, version=VERSION, base_url=BASE_URL):
         self._api_key = api_key
         self._base_url = '%s/%s' % (base_url, version)
@@ -60,9 +64,9 @@ class ImageRequest(Request):
         Request.__init__(self, client, 'image')
 
     ## Post request
-    #  @return a requests.Response object
+    #  @return an ImageResponse object
     #  @param input request document file object
-    #  @param output_form output graphic format, e.g. 'JPG'
+    #  @param output_form output graphic format, e.g. 'jpg'
     #  @param options e.g. {'pages': '1', 'noAnnot': True}
     #
     #  The following options are interpreted as bool (default=False):
@@ -74,10 +78,11 @@ class ImageRequest(Request):
     #  * noEnhanceThinLines
     #  * reverse
     #
-    #  %ImageRequest's 'height' and 'width' options specify the image's
-    #  dimensions, replacing [PDF2IMG](../PDF2IMG.pdf)'s pixelcount option.
+    #  The 'height' and 'width' options specify the image's dimensions,
+    #  replacing PDF2IMG's pixelcount option.
     #
-    #  See PDF2IMG for more information about the remaining options:
+    #  See [PDF2IMG](http://www.datalogics.com/pdf/doc/pdf2img.pdf)
+    #  for more information about the remaining options:
     #  * BPC
     #  * colorModel
     #  * compression
@@ -90,7 +95,53 @@ class ImageRequest(Request):
     #  * pdfRegion
     #  * resolution
     #  * smoothing
+    #
+    #  Multiple pages may be specified only if output_form is 'TIF'.
+    #
+    #  Option names are case-insensitive.
     def post(self, input, output_form, **options):
         self._data['outputForm'] = output_form
-        return Request.post(self, input, **options)
+        return ImageResponse(Request.post(self, input, **options))
+
+
+## Returned by Request.post
+class Response(object):
+    def __init__(self, request_response):
+        self._json = request_response.json()
+        self._status_code = request_response.status_code
+    def __str__(self):
+        return '%s: %s' % (response.process_code, response.output)
+    def __bool__(self):
+        return not self.process_code
+    def __getitem__(self, key):
+        return json.dumps(self._json[key])
+    @property
+    ## API status code
+    #
+    #  TODO: describe codes
+    def process_code(self): return int(self['processCode'])
+
+    @property
+    ## None if successful, otherwise information about the request failure
+    def exc_info(self): return not self and self['output']
+    @property
+    ## Base64-encoded data if request was successful, otherwise None
+    def output(self): return self and self['output']
+    @property
+    ## HTTP status code
+    def status_code(self): return self._status_code
+
+
+## Returned by ImageRequest.post
+class ImageResponse(Response):
+    def __init__(self, request_response):
+        Response.__init__(self, request_response)
+    def _image(self):
+        if sys.version_info.major < 3:
+            return self['output'].decode('base64')
+        else:
+            return base64.b64decode(self['output'])
+    @property
+    ## Image data (decoded) if request was successful, otherwise None
+    def output(self): return self and self._image()
 
