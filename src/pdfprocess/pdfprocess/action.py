@@ -11,13 +11,17 @@ class Action(object):
         self._request_form = request.form
     def abort(self, process_code, text, status_code=500):
         self.logger.error('%s: %s' % (process_code, text))
-        return flask.jsonify(processCode=process_code, text=text), status_code
+        return self.response(status_code, process_code, text)
     def authorize(self): # TODO: use 3scale
         api_key = self.request_form.get('apiKey', None)
         return api_key == 'f54ab5d8-5775-42c7-b888-f074ba892b57'
     def authorize_error(self):
         # TODO: also used for bad/missing document password error?
         return self.abort(1013, 'TODO: bad apiKey or rate limit', 423)
+    @classmethod
+    def response(cls, status_code, process_code, output):
+        json = flask.jsonify(processCode=process_code, output=output)
+        return json, status_code
     @property
     def input(self): return self._input
     @property
