@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-'pdf2img driver'
+"pdf2img test client"
 
 import glob
 import os
@@ -17,9 +17,11 @@ API_KEY = 'f54ab5d8-5775-42c7-b888-f074ba892b57'
 BASE_URL = 'http://127.0.0.1:5000'
 VERSION = 0
 
+def pdf2img(api_key=API_KEY, version=VERSION, base_url=BASE_URL):
+    return PDF2IMG(api_key, version, base_url)
+
 def run(argv):
-    pdf2img = PDF2IMG(API_KEY, VERSION, BASE_URL)
-    return pdf2img(sys.argv)
+    return pdf2img()(argv)
 
 if __name__ == '__main__':
     response = run(sys.argv)

@@ -45,7 +45,9 @@ These scripts facilitate testing:
 * `bin/pdfprocess` runs our Flask application with its development server (Werkzeug).
 * `samples/pdf2img.py` is a driver for our sample Python API client.
 * `scripts/gunicorn` runs our Flask application in a Gunicorn process.
-* `scripts/pdf2img.py` runs `samples/pdf2img.py` with test settings.
+* `scripts/test_app.py` tests our Flask application directly.
+* `scripts/test_client.py` runs `samples/pdf2img.py` with test settings.
+* `scripts/test_server.py` uses test_client to test our server.
 
 ## Paths
 

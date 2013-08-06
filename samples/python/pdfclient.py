@@ -106,12 +106,13 @@ class ImageRequest(Request):
 ## Returned by Request.post
 class Response(object):
     def __init__(self, request_response):
-        self._json = request_response.json()
         self._status_code = request_response.status_code
+        try: self._json = request_response.json()
+        except ValueError: self._json = {}
     def __str__(self):
         return '%s: %s' % (response.process_code, response.output)
     def __bool__(self):
-        return not self.process_code
+        return self.process_code == 0
     def __getitem__(self, key):
         return json.dumps(self._json[key])
     @property
@@ -124,12 +125,12 @@ class Response(object):
     @property
     ## Base64-encoded data if request was successful, otherwise None
     def output(self):
-        if self: return self['output']
+        if 'output' in self._json and self: return self['output']
 
     @property
     ## None if successful, otherwise information about #process_code
     def exc_info(self):
-        if not self: return self['output']
+        if 'output' in self._json and not self: return self['output']
 
     @property
     ## HTTP status code
@@ -148,5 +149,5 @@ class ImageResponse(Response):
     @property
     ## Image data (decoded) if request was successful, otherwise None
     def output(self):
-        if self: return self._image()
+        if self.process_code == 0: return self._image()
 
