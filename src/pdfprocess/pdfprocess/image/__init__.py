@@ -17,20 +17,19 @@ class Action(pdfprocess.Action):
         self._input_file = self.request_form.get('inputFile', '<anon>')
         self._output_form = self.request_form.get('outputForm', 'tif').lower()
         self._pages = self.request_form.get('pages', '')
-        self._options = self._get_options()
+        self._parser = ArgumentParser()
     def __call__(self):
-        self._log_request()
         try:
-            argument_parser = ArgumentParser()
-            argument_parser(self._options + ['input', self.output_form])
+            self._parser(self.request_form)
         except Exception as exc:
             return self.abort(-1, exc.message) # TODO: process_code
         if self.multipage_request and not self.tif_request:
-            return self.abort(666, 'TODO: bad multipage request')
+            TODO = 666
+            exc_info = 'outputForm must be TIF for multi-page request'
+            return self.abort(TODO, exc_info)
         return self._pdf2img() if self.authorize() else self.authorize_error()
     def _get_image(self, input, output_file):
-        # TODO: translate height/width to pixelcount
-        options = self._options + output_file.options
+        options = self._parser.options + output_file.options
         args = ['pdf2img'] + options + [input, self.output_form]
         with pdfprocess.Stdout() as stdout:
             process_code = subprocess.call(args, stdout=stdout)
@@ -40,25 +39,15 @@ class Action(pdfprocess.Action):
         with open(output_file.name, 'rb') as image_file:
             image = base64.b64encode(image_file.read())
             return self.response(200, process_code=0, output=image)
-    def _get_options(self):
-        result = []
-        options = ArgumentParser.options()
-        for key, value in self.request_form.iteritems():
-            if key in options:
-                option = options[options.index(key)]
-                if not isinstance(option, Flag):
-                    result.append('%s=%s' % (option, value))
-                elif value:
-                    result.append(str(option))
-        return result
     def _log_request(self):
-        options = ' '.join(self._options)
+        options = ' '.join(self._parser.options)
         if options: options = ' ' + options
         input_file = self.input_file
         if ' ' in input_file: input_file = '"%s"' % input_file
         self.logger.info('pdf2img%s %s %s' %
             (options, input_file, self.output_form))
     def _pdf2img(self):
+        self._log_request()
         with tempfile.NamedTemporaryFile() as input_file:
             self.input.save(input_file)
             input_file.flush()
