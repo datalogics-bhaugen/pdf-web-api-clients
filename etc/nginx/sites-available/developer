@@ -1,0 +1,7 @@
+server {
+	server_name developer.pdfprocess-test.datalogics-cloud.com;
+	location / {
+		alias /home/pdfprocess/pdfprocess/doc/html;
+		index index.html index.htm;
+	}
+}

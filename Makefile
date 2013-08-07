@@ -1,5 +1,7 @@
 DOXYGEN = doc/html/index.html
 LIBXML2 = libxml2-python-2.6.21
+SITES_DIR = etc/nginx/sites-available
+SITES = $(shell ls $(SITES_DIR))
 
 build: $(DOXYGEN) libxml2
 	python bootstrap.py
@@ -7,6 +9,16 @@ build: $(DOXYGEN) libxml2
 
 clean:
 	rm -rf .installed.cfg bin develop-eggs doc/html parts var/log
+
+install:
+	for site in $(SITES); do cp $(SITES_DIR)/$$site /$(SITES_DIR); done
+
+uninstall:
+	for site in $(SITES); do rm /$(SITES_DIR)/$$site; done
+
+html: $(DOXYGEN)
+
+.PHONY: build clean install uninstall html
 
 doxygen:
 	git clone https://github.com/doxygen/doxygen.git
@@ -21,7 +33,3 @@ libxml2:
 	cd $(LIBXML2); python setup.py build; cd ..
 	mv $(LIBXML2) $@
 
-# TODO: install: nginx configuration files
-# TODO: uninstall:
-
-.PHONY: build clean
