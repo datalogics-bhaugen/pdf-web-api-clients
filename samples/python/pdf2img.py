@@ -19,9 +19,8 @@ class Response(object):
         self._image_file = '.'.join((base_file_name, pdf2img.output_form))
         self._image_response = image_response
     def __bool__(self):
-        return self._image_response
-    def __nonzero__(self):
-        return self.__bool__()
+        return bool(self._image_response)
+    __nonzero__ = __bool__
     def __getattr__(self, key):
         return getattr(self._image_response, key)
     ## Create #image_file
