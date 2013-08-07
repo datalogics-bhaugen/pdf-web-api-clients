@@ -113,6 +113,8 @@ class Response(object):
         return '%s: %s' % (response.process_code, response.output)
     def __bool__(self):
         return self.process_code == 0
+    def __nonzero__(self):
+        return self.__bool__()
     def __getitem__(self, key):
         return json.dumps(self._json[key])
     @property
@@ -149,5 +151,5 @@ class ImageResponse(Response):
     @property
     ## Image data (decoded) if request was successful, otherwise None
     def output(self):
-        if self.process_code == 0: return self._image()
+        if self: return self._image()
 

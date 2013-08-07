@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# Copyright (c) 2013, Datalogics, Inc. All rights reserved.
+
+# TODO: sample disclaimer
+
+"Sample pdfclient driver"
+
 import os
 import sys
 
@@ -14,11 +20,15 @@ class Response(object):
         self._image_response = image_response
     def __bool__(self):
         return self._image_response
+    def __nonzero__(self):
+        return self.__bool__()
     def __getattr__(self, key):
         return getattr(self._image_response, key)
+    ## Create #image_file
     def save_image(self):
         with open(self.image_file, 'wb') as image:
             image.write(self.output)
+
     @property
     ## Image filename
     def image_file(self):
