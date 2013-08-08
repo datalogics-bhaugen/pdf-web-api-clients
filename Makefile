@@ -2,6 +2,7 @@ DOXYGEN = doc/html/index.html
 LIBXML2 = libxml2-python-2.6.21
 SITES_DIR = etc/nginx/sites-available
 SITES = $(shell ls $(SITES_DIR))
+SED = sed s/-test//g
 
 build: $(DOXYGEN) libxml2
 	python bootstrap.py
@@ -11,10 +12,11 @@ clean:
 	rm -rf .installed.cfg bin develop-eggs doc/html parts var/log
 
 install:
-	for site in $(SITES); do cp $(SITES_DIR)/$$site /$(SITES_DIR); done
+	for s in $(SITES); do $(SED) $(SITES_DIR)/$$s > /$(SITES_DIR)/$$s; done
+	cat etc/nginx/README.md
 
 uninstall:
-	for site in $(SITES); do rm /$(SITES_DIR)/$$site; done
+	for s in $(SITES); do rm /$(SITES_DIR)/$$s; done
 
 html: $(DOXYGEN)
 
