@@ -95,7 +95,8 @@ class ImageRequest(Request):
     #  * resolution
     #  * smoothing
     #
-    #  Multiple pages may be specified only if output_form is 'TIF'.
+    #  Each request is for one image, so multi-page requests are limited
+    #  to TIFF images.
     #
     #  Option names are case-insensitive.
     def post(self, input, output_form, **options):
@@ -113,6 +114,7 @@ class Response(object):
         return '%s: %s' % (response.process_code, response.output)
     def __bool__(self):
         return self.process_code == 0
+    __nonzero__ = __bool__
     def __getitem__(self, key):
         return json.dumps(self._json[key])
     @property
@@ -149,5 +151,5 @@ class ImageResponse(Response):
     @property
     ## Image data (decoded) if request was successful, otherwise None
     def output(self):
-        if self.process_code == 0: return self._image()
+        if self: return self._image()
 
