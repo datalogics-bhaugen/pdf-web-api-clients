@@ -19,6 +19,10 @@ app.logger.addHandler(FileHandler(app.name))
 def initialize():
     app.logger.info('%s started' % app.name)
 
+@app.route('/')
+def hello():
+    return 'Adobe eBook and PDF technologies for developers!'
+
 @app.route('/0/actions/image', methods=['POST'])
 def image_action():
     return image.Action(app.logger, flask.request)()
