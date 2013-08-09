@@ -8,9 +8,12 @@ import test_client
 from nose.tools import assert_equal, assert_is_none, assert_is_not_none
 
 
-API_KEY = 'f54ab5d8-5775-42c7-b888-f074ba892b57'
-BASE_URL = 'http://127.0.0.1:5000'
-VERSION = 0
+API_KEY = test_client.API_KEY
+BASE_URL = test_client.BASE_URL
+VERSION = test_client.VERSION
+
+BAD_API_KEY = '5184f74f1e1917913e6adcc31b0c3b9c'
+
 
 class Result(object):
     def __init__(self, status_code, process_code):
