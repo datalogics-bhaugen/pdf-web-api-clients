@@ -14,9 +14,9 @@ image service requests to this URL:
 ### Sample Client
 
 To facilitate using this service, we supply a sample Python
-[script](pdf2img_8py_source.html) and
-[client](classpdfclient_1_1_client.html) module.
-Download these files, and copy your API key into the script. Then you can 
+[script](pdf2img_8py_source.html) and [client](classpdfclient_1_1_client.html)
+module. After downloading these files and copying your API key into the script,
+you can use the script's command-line interface to request images.
 
 This sample has the following dependencies:
 
@@ -25,11 +25,27 @@ This sample has the following dependencies:
 
 ### Service Interface
 
-Request example:
+#### Request
+
+A request is a HTTP POST method. The message body is the request document,
+and the request parameters are encoded as form data.
+
+* Any request options are encoded as JSON in the optional _options_ parameter.
+* To facilitate logging, please provide the optional _inputName_ parameter.
+* For image requests, use the optional _outputForm_ parameter to specify the image format (default=TIFF).
+
+Example:
 
     TODO: under construction
 
-Response example:
+#### Response
+
+The message body of the HTTP response is a JSON object:
+
+* _processCode_ (int) is 0 if the request was successful, or a nonzero code identifying the error.
+* _output_ (string) contains base64-encoded data if the request was successful, or information about the error.
+
+Example:
 
     TODO: under construction
 
