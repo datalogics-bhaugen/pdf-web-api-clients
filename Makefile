@@ -1,12 +1,13 @@
 DOXYGEN = doc/html/index.html
 LIBXML2 = libxml2-python-2.6.21
+PDF2IMG = $(HOME)/bin/pdf2img
 SITES_DIR = etc/nginx/sites-available
 SITES = $(shell ls $(SITES_DIR))
 SED = sed s/-test//g
 
-build: $(DOXYGEN) libxml2
+build: html libxml2 $(PDF2IMG)
 	python bootstrap.py
-	bin/buildout | tee BUILD
+	bin/buildout > BUILD
 
 clean:
 	rm -rf .installed.cfg bin develop-eggs doc/html parts var/log
@@ -34,4 +35,7 @@ libxml2:
 	tar xzf $(LIBXML2).tar.gz
 	cd $(LIBXML2); python setup.py build; cd ..
 	mv $(LIBXML2) $@
+
+$(PDF2IMG):
+	@echo Install pdf2img!
 

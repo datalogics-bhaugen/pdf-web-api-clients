@@ -12,13 +12,20 @@ MacOS (different versions) is the primary development platform, and Ubuntu is th
 
 ## Major Dependencies
 
+* Doxygen
 * Flask
 * Gunicorn
 * Supervisor
 * ThreeScalePY
-* doxygen
 
 These packages depend on other packages (of course).
+
+## PDF2IMG
+
+This application and its associated resources must be installed manually from archives stored at `//zeus/raid1/prducts/pdf2img/`.
+
+* Install the application in your bin directory, e.g. /home/thulasi/bin/.
+* See [PDF2IMG](http://www.datalogics.com/pdf/doc/pdf2img.pdf) for platform-specific instructions.
 
 ## Build
 
@@ -29,7 +36,7 @@ We use Buildout, which is a two-step process. These steps are executed by the Ma
 
 `BUILD` identifies the versions of the packages installed by Buildout. (Package dependencies are *not* version-specific.)
 
-We do not use Buildout to install doxygen or libxml2 (needed by ThreeScalePY). These are built/installed by their respective Makefile targets.
+We do not use Buildout to install libxml2 (needed by ThreeScalePY) or doxygen. These are built/installed by their respective Makefile targets.
 
 ## Run
 
