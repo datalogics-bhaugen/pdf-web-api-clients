@@ -816,7 +816,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub 
 # and want reuse the introduction page also for the doxygen output.
 
-USE_MDFILE_AS_MAINPAGE = pdfclient.md
+USE_MDFILE_AS_MAINPAGE = pdfprocess.md
 
 #---------------------------------------------------------------------------
 # configuration options related to source browsing
