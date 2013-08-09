@@ -50,15 +50,13 @@ class PixelCount(object):
         self._dimensions = {}
     def __setitem__(self, key, value):
         self._dimensions[key.lower()] = value
-    def options(self):
+    def option(self):
         if len(self._dimensions) == 2:
-            return ['-pixelcount=%sx%s' % (self.width, self.height)]
+            return '-pixelcount=%sx%s' % (self.width, self.height)
         elif 'width' in self._dimensions:
-            return ['-pixelcount=w:%s' % self.width]
+            return '-pixelcount=w:%s' % self.width
         elif self._dimensions:
-            return ['-pixelcount=h:%s' % self.height]
-        else:
-            return []
+            return '-pixelcount=h:%s' % self.height
     @property
     def width(self): return self._dimensions['width']
     @property
@@ -72,40 +70,34 @@ class ArgumentParser(argparse.ArgumentParser):
         for option in OPTIONS + PixelCount.OPTIONS:
             self.add_argument('-%s' % option.name,
                 help=option.help, action=option.action)
-    def __call__(self, input_file, output_form, request_form):
-        self._set_options(request_form)
-        self._log_request(input_file, output_form)
+    def __call__(self, input_name, output_form, options):
+        self._set_options(options)
+        self._log_request(input_name, output_form)
         self.parse_args(self.options)
     def error(self, message):
         "overrides argparse.ArgumentParser.error"
         raise Exception(message)
-    def _log_request(self, input_file, output_form):
+    def _log_request(self, input_name, output_form):
         options = ' '.join(self.options)
         if options: options = ' ' + options
-        if ' ' in input_file: input_file = '"%s"' % input_file
+        if ' ' in input_name: input_name = '"%s"' % input_name
         self._logger.info('pdf2img%s %s %s' %
-            (options, input_file, output_form))
-    def _set_options(self, request_form):
-        self._set_pixelcount_option(request_form)
-        # TODO: transform options as specified in Matt's Basecamp comment
-        for key, value in request_form.iteritems():
-            if key in ('apiKey', 'inputFile', 'outputForm'): continue
-            if key in OPTIONS:
-                option = OPTIONS[OPTIONS.index(key)]
-            else:
-                option = '-%s' % key
-            if not isinstance(option, Flag):
-                # option is an Option or it's not recognized
-                self._options.append('%s=%s' % (option, value))
-            elif value and value != '0' and value.lower() != 'false':
-                # option is a Flag and we interpret the value as True
-                self._options.append(str(option))
-    def _set_pixelcount_option(self, request_form):
+            (options, input_name, output_form))
+    def _pixel_count_option(self, options):
         pixel_count = PixelCount()
-        for key, value in request_form.iteritems():
-            if key in PixelCount.OPTIONS:
-                pixel_count[key] = value
-        self._options = pixel_count.options()
+        for key, value in options.iteritems():
+            if key in PixelCount.OPTIONS: pixel_count[key] = value
+        return pixel_count.option()
+    def _set_options(self, options):
+        pixel_count_option = self._pixel_count_option(options)
+        self._options = [pixel_count_option] if pixel_count_option else []
+        # TODO: transform options as specified in Matt's Basecamp comment
+        for key, value in options.iteritems():
+            option = OPTIONS[OPTIONS.index(key)] if key in OPTIONS else key
+            if not isinstance(option, Flag):
+                self.options.append('-%s=%s' % (option, value))
+            elif value:
+                self.options.append('-%s' % option)
     @property
     def options(self): return self._options
 
