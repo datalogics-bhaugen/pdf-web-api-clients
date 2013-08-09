@@ -34,24 +34,16 @@ class Response(object):
         if self: return self._image_file
 
 
-## Sample pdfclient driver implements
-#  [pdf2img](http://www.datalogics.com/pdf/doc/pdf2img.pdf)
-#  command-line syntax to facilitate testing
-class PDF2IMG(object):
-    BASE_URL = pdfclient.Client.BASE_URL
-    VERSION = pdfclient.Client.VERSION
-    ## @param api_key from [3scale](http://datalogics-cloud.3scale.net/)
-    def __init__(self, api_key, version=VERSION, base_url=BASE_URL):
-        client = pdfclient.Client(api_key, version, base_url)
-        self._request = client.make_request(request_type='image')
-
+## Sample pdfclient driver
+class PDF2IMG(pdfclient.Client):
     ## @param argv e.g.
-    #      ['%pdf2img.py', '-pages=1', '-asPrinted', 'PDF2IMG.pdf', 'jpg']
+    #      ['%pdf2img.py', '-pages=1', '-printPreview', 'PDF2IMG.pdf', 'jpg']
     def __call__(self, argv):
         self._initialize(argv)
+        request = pdfclient.ImageRequest(self)
         with open(self._input_file, 'rb') as input:
             return Response(self,
-                self._request.post(input, self.output_form, **self.options))
+                request.post(input, self.output_form, **self.options))
 
     def _initialize(self, argv):
         try:

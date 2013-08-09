@@ -69,31 +69,24 @@ class ImageRequest(Request):
     #  @param output_form output graphic format, e.g. 'jpg'
     #  @param options e.g. {'pages': '1', 'asPrinted': 'True'}
     #
-    #  Set any of the following bool options (default=False) as needed:
+    #  TODO: add flag descriptions
+    #  Set any of the following bool options as needed:
     #  * OPP
-    #  * asPrinted
-    #  * blackIsOne
-    #  * noAnnot
-    #  * noCMM
-    #  * noEnhanceThinLines
-    #  * reverse
+    #  * drawAnnotations
+    #  * enhanceThinLines
+    #  * printPreview
+    #  * useCMMWorkflow
     #
-    #  The 'height' and 'width' options specify the image's dimensions,
-    #  replacing pdf2img's pixelcount option.
-    #
-    #  See [PDF2IMG](http://www.datalogics.com/pdf/doc/pdf2img.pdf)
-    #  for more information about the remaining options:
-    #  * BPC
+    #  TODO: add option descriptions
     #  * colorModel
     #  * compression
-    #  * fontList
-    #  * jpegQuality
-    #  * maxBandMem
+    #  * height
     #  * pages
     #  * password
     #  * pdfRegion
     #  * resolution
     #  * smoothing
+    #  * width
     #
     #  Each request is for one image, so multi-page requests are limited
     #  to TIFF images.
@@ -141,8 +134,6 @@ class Response(object):
 
 ## Returned by ImageRequest.post
 class ImageResponse(Response):
-    def __init__(self, request_response):
-        Response.__init__(self, request_response)
     def _image(self):
         if sys.version_info.major < 3:
             return self['output'].decode('base64')

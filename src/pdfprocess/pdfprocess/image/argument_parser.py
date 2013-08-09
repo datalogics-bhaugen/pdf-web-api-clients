@@ -22,8 +22,6 @@ class Option(object):
 
 
 class Flag(Option):
-    def __init__(self, name, help, is_alias=True):
-        Option.__init__(self, name, help)
     @property
     def action(self): return 'store_true'
 
@@ -35,13 +33,8 @@ OPTIONS = [
     Flag('noAnnot', 'Suppresses displayable annotations.'),
     Flag('noCMM', 'Suppresses color managed workflow'),
     Flag('noEnhanceThinLines', 'Suppresses "enhance thin lines" option'),
-    Flag('reverse', 'Reverse black for white (grayscale images only)'),
-    Option('BPC', '[1 or 8] bits per color channel (default=8)'),
     Option('colorModel', '[gray|cmyk|rgb|rgba] (default=rgb)'),
     Option('compression', '[no|lzw|g3|g4|jpg] (TIFF only, default=lzw)'),
-    Option('fontList', '"dir1;dir2;dirN" (see documentation for defaults)'),
-    Option('jpegQuality', '[1 - 100] higher values give larger file sizes'),
-    Option('maxBandMem', '[1000000 - 2100000000] (default=300000000)'),
     Option('pages', 'comma-separated or range'),
     Option('password', '127 characters or less, no spaces'),
     Option('pdfRegion', '[crop|media|art|trim|bleed|bounding]'),
@@ -73,26 +66,40 @@ class PixelCount(object):
 
 
 class ArgumentParser(argparse.ArgumentParser):
-    def __init__(self):
+    def __init__(self, logger):
         argparse.ArgumentParser.__init__(self, 'actions/image')
+        self._logger = logger
         for option in OPTIONS + PixelCount.OPTIONS:
             self.add_argument('-%s' % option.name,
                 help=option.help, action=option.action)
-    def __call__(self, request_form):
+    def __call__(self, input_file, output_form, request_form):
         self._set_options(request_form)
+        self._log_request(input_file, output_form)
         self.parse_args(self.options)
     def error(self, message):
         "overrides argparse.ArgumentParser.error"
         raise Exception(message)
+    def _log_request(self, input_file, output_form):
+        options = ' '.join(self.options)
+        if options: options = ' ' + options
+        if ' ' in input_file: input_file = '"%s"' % input_file
+        self._logger.info('pdf2img%s %s %s' %
+            (options, input_file, output_form))
     def _set_options(self, request_form):
         self._set_pixelcount_option(request_form)
+        # TODO: transform options as specified in Matt's Basecamp comment
         for key, value in request_form.iteritems():
+            if key in ('apiKey', 'inputFile', 'outputForm'): continue
             if key in OPTIONS:
                 option = OPTIONS[OPTIONS.index(key)]
-                if not isinstance(option, Flag):
-                    self._options.append('%s=%s' % (option, value))
-                elif value and value != '0' and value.lower() != 'false':
-                    self._options.append(str(option))
+            else:
+                option = '-%s' % key
+            if not isinstance(option, Flag):
+                # option is an Option or it's not recognized
+                self._options.append('%s=%s' % (option, value))
+            elif value and value != '0' and value.lower() != 'false':
+                # option is a Flag and we interpret the value as True
+                self._options.append(str(option))
     def _set_pixelcount_option(self, request_form):
         pixel_count = PixelCount()
         for key, value in request_form.iteritems():

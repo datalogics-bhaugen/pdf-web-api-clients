@@ -7,6 +7,7 @@ import tempfile
 import flask
 
 import pdfprocess
+from pdfprocess import Auth
 from .argument_parser import ArgumentParser, Flag
 from .output_file import OutputFile
 
@@ -17,17 +18,19 @@ class Action(pdfprocess.Action):
         self._input_file = self.request_form.get('inputFile', '<anon>')
         self._output_form = self.request_form.get('outputForm', 'tif').lower()
         self._pages = self.request_form.get('pages', '')
-        self._parser = ArgumentParser()
+        self._parser = ArgumentParser(logger)
     def __call__(self):
         try:
-            self._parser(self.request_form)
+            self._parser(self.input_file, self.output_form, self.request_form)
         except Exception as exc:
             return self.abort(-1, exc.message) # TODO: process_code
         if self.multipage_request and not self.tif_request:
             TODO = 666
             exc_info = 'outputForm must be TIF for multi-page request'
             return self.abort(TODO, exc_info)
-        return self._pdf2img() if self.authorize() else self.authorize_error()
+        auth = self.authorize()
+        if auth in (Auth.Ok, Auth.Unknown): return self._pdf2img()
+        return self.authorize_error(auth)
     def _get_image(self, input, output_file):
         options = self._parser.options + output_file.options
         args = ['pdf2img'] + options + [input, self.output_form]
@@ -39,15 +42,7 @@ class Action(pdfprocess.Action):
         with open(output_file.name, 'rb') as image_file:
             image = base64.b64encode(image_file.read())
             return self.response(200, process_code=0, output=image)
-    def _log_request(self):
-        options = ' '.join(self._parser.options)
-        if options: options = ' ' + options
-        input_file = self.input_file
-        if ' ' in input_file: input_file = '"%s"' % input_file
-        self.logger.info('pdf2img%s %s %s' %
-            (options, input_file, self.output_form))
     def _pdf2img(self):
-        self._log_request()
         with tempfile.NamedTemporaryFile() as input_file:
             self.input.save(input_file)
             input_file.flush()

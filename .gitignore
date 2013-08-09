@@ -1,10 +1,17 @@
+.installed.cfg
+BUILD
+
 *.gz
 *.log
 *.pyc
 *.swp
 
-.installed.cfg
-BUILD
+*.bmp
+*.gif
+*.jpg
+*.png
+*.raw
+*.tif
 
 *.egg-info
 
