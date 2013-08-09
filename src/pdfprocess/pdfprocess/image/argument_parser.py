@@ -10,7 +10,7 @@ class Option(object):
         self._is_alias = is_alias
         self._normalized_name = name.lower()
     def __str__(self):
-        return '-' + self._normalized_name if self._is_alias else self.name
+        return self._normalized_name if self._is_alias else self.name
     def __eq__(self, other): return self._normalized_name == other.lower()
     def __ne__(self, other): return not self == other
     @property
@@ -74,6 +74,7 @@ class ArgumentParser(argparse.ArgumentParser):
         self._set_options(options)
         self._log_request(input_name, output_form)
         self.parse_args(self.options)
+        self._set_pages(output_form)
     def error(self, message):
         "overrides argparse.ArgumentParser.error"
         raise Exception(message)
@@ -89,15 +90,32 @@ class ArgumentParser(argparse.ArgumentParser):
             if key in PixelCount.OPTIONS: pixel_count[key] = value
         return pixel_count.option()
     def _set_options(self, options):
+        flag_syntax, name_value_syntax = ('-%s', '-%s=%s')
         pixel_count_option = self._pixel_count_option(options)
         self._options = [pixel_count_option] if pixel_count_option else []
         # TODO: transform options as specified in Matt's Basecamp comment
         for key, value in options.iteritems():
-            option = OPTIONS[OPTIONS.index(key)] if key in OPTIONS else key
-            if not isinstance(option, Flag):
-                self.options.append('-%s=%s' % (option, value))
-            elif value:
-                self.options.append('-%s' % option)
+            if key in PixelCount.OPTIONS: continue
+            option = OPTIONS[OPTIONS.index(key)] if key in OPTIONS else None
+            if isinstance(option, Flag):
+                self.options.append(flag_syntax % option)
+            elif isinstance(option, Option):
+                self.options.append(name_value_syntax % (option, value))
+            elif value is True:
+                self.options.append(flag_syntax % key)
+            else:
+                self.options.append(name_value_syntax % (key, value))
+    def _set_pages(self, output_form):
+        pages_prefix = '-pages='
+        for option in self.options:
+            if option.startswith(pages_prefix):
+                self._pages = option[len(pages_prefix):]
+                return
+        if output_form != 'tif':
+            self._pages = '1'
+            self._options.append(pages_prefix + self.pages)
     @property
     def options(self): return self._options
+    @property
+    def pages(self): return self._pages
 

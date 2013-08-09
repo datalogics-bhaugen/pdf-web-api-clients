@@ -20,15 +20,13 @@ class Action(pdfprocess.Action):
         self._output_form = self._get_output_form()
         options = self.request_form.get('options', '')
         self._options = json.loads(options) if options else {}
-        default_pages = '' if self.tif_request else '1'
-        self._pages = self.request_form.get('pages', default_pages)
         self._parser = ArgumentParser(logger)
     def __call__(self):
         try:
             self._parser(self.input_name, self.output_form, self._options)
         except Exception as exc:
             return self.abort(-1, exc.message) # TODO: process_code
-        if self.multipage_request and not self.tif_request:
+        if self.multipage_request and self.output_form != 'tif':
             TODO = 666
             exc_info = 'Use TIFF format for multi-page image requests'
             return self.abort(TODO, exc_info)
@@ -72,7 +70,5 @@ class Action(pdfprocess.Action):
     @property
     def output_form(self): return self._output_form
     @property
-    def pages(self): return self._pages
-    @property
-    def tif_request(self): return self.output_form == 'tif'
+    def pages(self): return self._parser.pages
 
