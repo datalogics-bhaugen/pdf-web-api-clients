@@ -30,32 +30,37 @@ class Client(object):
             return ImageRequest(self)
 
     @property
-    ## API key property
+    ## API key property (string)
     def api_key(self): return self._api_key
     @property
-    ## %Client URL property
+    ## %Client URL property (string)
     def base_url(self): return self._base_url
 
 
 class Request(object):
     def __init__(self, client, request_type):
-        self._data = {'apiKey': client.api_key}
         self._url = '%s/actions/%s' % (client.base_url, request_type)
+        self._client_data = {'apiKey': client.api_key}
+        self.reset()
 
     ## Post request
     #  @return a requests.Response object
     #  @param input request document file object
-    #  @param options e.g. {'pages': '1', 'asPrinted': 'True'}
+    #  @param options e.g. {'pages': '1', 'printPreview': True}
     def post(self, input, **options):
-        self._data.update(options)
-        self._data['inputFile'] = input.name
+        if input.name: self.data['inputName'] = input.name
+        if options: self.data['options'] = json.dumps(options)
         return requests.post(self.url, data=self.data, files={'input': input})
 
+    ## Reset #data
+    def reset(self):
+        self._data = self._client_data.copy()
+
     @property
-    ## %Request data property, set by #post
+    ## %Request data property (dict), set by #post
     def data(self): return self._data
     @property
-    ## %Request URL property
+    ## %Request URL property (string)
     def url(self): return self._url
 
 
@@ -67,7 +72,7 @@ class ImageRequest(Request):
     #  @return an ImageResponse object
     #  @param input request document file object
     #  @param output_form output graphic format, e.g. 'jpg'
-    #  @param options e.g. {'pages': '1', 'asPrinted': 'True'}
+    #  @param options e.g. {'pages': '1', 'printPreview': True}
     #
     #  TODO: add flag descriptions
     #  Set any of the following bool options as needed:
@@ -93,7 +98,8 @@ class ImageRequest(Request):
     #
     #  Option names are case-insensitive.
     def post(self, input, output_form, **options):
-        self._data['outputForm'] = output_form
+        self.reset()
+        self.data['outputForm'] = output_form
         return ImageResponse(Request.post(self, input, **options))
 
 
@@ -111,24 +117,24 @@ class Response(object):
     def __getitem__(self, key):
         return json.dumps(self._json[key])
     @property
-    ## API status code
+    ## API status code (int)
     #
     #  TODO: describe codes
     def process_code(self):
         if 'processCode' in self._json: return int(self['processCode'])
 
     @property
-    ## Base64-encoded data if request was successful, otherwise None
+    ## Base64-encoded data (string) if request was successful, otherwise None
     def output(self):
         if 'output' in self._json and self: return self['output']
 
     @property
-    ## None if successful, otherwise information about #process_code
+    ## None if successful, otherwise information (string) about #process_code
     def exc_info(self):
         if 'output' in self._json and not self: return self['output']
 
     @property
-    ## HTTP status code
+    ## HTTP status code (int)
     def status_code(self): return self._status_code
 
 
@@ -140,7 +146,7 @@ class ImageResponse(Response):
         else:
             return base64.b64decode(self['output'])
     @property
-    ## Image data (decoded) if request was successful, otherwise None
+    ## Image data (bytes) if request was successful, otherwise None
     def output(self):
         if self: return self._image()
 

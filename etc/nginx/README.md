@@ -1,6 +1,6 @@
 ### SSL configuration instructions
 
-* For pdfprocess-test
+* For _pdfprocess-test_
     * cd /etc/nginx/ssl/; mv server-test.crt server.crt
 * Edit /etc/nginx/sites-enabled/default
     * Uncomment the last server section
