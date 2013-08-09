@@ -15,7 +15,7 @@ import pdfclient
 ## Returned by PDF2IMG.__call__
 class Response(object):
     def __init__(self, pdf2img, image_response):
-        base_filename = os.path.splitext(pdf2img.input_file)[0]
+        base_filename = os.path.splitext(pdf2img.input_filename)[0]
         self._image_filename = '.'.join((base_filename, pdf2img.output_form))
         self._image_response = image_response
     def __bool__(self):
@@ -41,7 +41,7 @@ class PDF2IMG(pdfclient.Client):
     def __call__(self, argv):
         self._initialize(argv)
         request = pdfclient.ImageRequest(self)
-        with open(self._input_file, 'rb') as input_file:
+        with open(self._input_filename, 'rb') as input_file:
             return Response(self,
                 request.post(input_file, self.output_form, **self.options))
 
@@ -53,7 +53,7 @@ class PDF2IMG(pdfclient.Client):
         self._image_filename = None
     def _parse_args(self, argv):
         self._set_options(argv[1:-2])
-        self._input_file = argv[-2]
+        self._input_filename = argv[-2]
         self._output_form = argv[-1]
     def _set_options(self, argv):
         self._options = {}
@@ -64,7 +64,7 @@ class PDF2IMG(pdfclient.Client):
                 self._options[option] = value
     @property
     ## Input filename passed to __call__
-    def input_file(self): return self._input_file
+    def input_filename(self): return self._input_filename
     @property
     ## Output form passed to __call__, e.g. 'jpg'
     def output_form(self): return self._output_form
