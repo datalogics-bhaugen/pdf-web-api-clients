@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+
+"filter buildout output to produce versions.cfg"
+
+import fileinput
+
+buildout_stdout = [line for line in fileinput.input()]
+
+for line in buildout_stdout[lines.index('[versions]\n'):]:
+    print(line.rstrip())
+

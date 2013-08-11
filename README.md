@@ -18,8 +18,6 @@ MacOS (different versions) is the primary development platform, and Ubuntu is th
 * Supervisor
 * ThreeScalePY
 
-These packages depend on other packages (of course).
-
 ## PDF2IMG
 
 This application and its associated resources must be installed manually from archives stored at `//zeus/raid1/prducts/pdf2img/`.
@@ -29,14 +27,23 @@ This application and its associated resources must be installed manually from ar
 
 ## Build
 
-We use Buildout, which is a two-step process. These steps are executed by the Makefile's `build` (default) target:
+We use Buildout, which is a three-step process. These steps are executed by the Makefile's `build` (default) target:
 
-* The repository is initialized by a bootstrap script that must be compatible with the version of Buildout we use (currently 2.2).
-* Buildout uses its configuration to download packages, etc.
+1. Documentation -- the build begins by cloning the doxygen repository, building a local copy of doxygen, and generating HTML pages for the API.
 
-`BUILD` identifies the versions of the packages installed by Buildout. (Package dependencies are *not* version-specific.)
+2. Bootstrap -- the repository is initialized by a script that must be compatible with the version of Buildout we use (currently 2.2).
 
-We do not use Buildout to install libxml2 (needed by ThreeScalePY) or doxygen. These are built/installed by their respective Makefile targets.
+3. Buildout -- the buildout script uses its configuration to download packages, etc. `BUILD` identifies the versions of the packages installed by Buildout.
+
+To support this build, these packages must be installed on your system:
+
+* make
+* flex
+* bison
+* g++
+* python-dev
+* Python bindings for libxml2 (for ThreeScalePY)
+* TODO: do we need libxml2-dev?
 
 ## Run
 
@@ -54,7 +61,8 @@ These scripts facilitate testing:
 * `scripts/gunicorn` runs our Flask application in a Gunicorn process.
 * `scripts/test_app.py` tests our Flask application directly.
 * `scripts/test_client.py` runs `samples/pdf2img.py` with test settings.
-* `scripts/test_server.py` uses test_client to test our server.
+* `scripts/test_server.py` uses test_client.py to test our server.
+* `bin/nose` runs regression tests in scripts/test_app.py and test_server.py.
 
 ## Paths
 

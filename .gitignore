@@ -6,6 +6,11 @@ BUILD
 *.pyc
 *.swp
 
+*.css
+*.html
+*.js
+*.png
+
 *.bmp
 *.gif
 *.jpg
@@ -18,7 +23,5 @@ BUILD
 bin
 develop-eggs
 doxygen
-html
-libxml2
 parts
 var
