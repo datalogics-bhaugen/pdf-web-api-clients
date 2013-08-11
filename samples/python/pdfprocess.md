@@ -1,6 +1,8 @@
-The Datalogics PDF API is a RESTful interface that provides secure,
-cloud-based PDF processing capability using the Adobe PDF Library.
-The first release of this service implements the features of our
+The Datalogics PDF Web API provides secure, cloud-based PDF processing using
+Adobe and Datalogics PDF technologies. This is a RESTful service for the
+internet developer community that currently provides:
+
+* Rendering of PDF files using the Adobe PDF Library and Datalogics
 [PDF2IMG](http://www.datalogics.com/products/pdf2img/index.asp) product.
 
 ### API Key
@@ -34,9 +36,7 @@ and the request parameters are encoded as form data.
 * To facilitate logging, please provide the optional _inputName_ parameter.
 * For image requests, use the optional _outputForm_ parameter to specify the image format (default=TIFF).
 
-Example:
-
-    TODO: under construction
+Here is an [example of a request](examples/request.txt).
 
 #### Response
 
@@ -45,9 +45,7 @@ The message body of the HTTP response is a JSON object:
 * _processCode_ (int) is 0 if the request was successful, or a nonzero code identifying the error.
 * _output_ (string) contains base64-encoded data if the request was successful, or information about the error.
 
-Example:
-
-    TODO: under construction
+Here is an [example of a response](examples/response.txt).
 
 ### Resources
 
