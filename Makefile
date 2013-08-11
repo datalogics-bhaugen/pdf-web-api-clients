@@ -4,23 +4,19 @@ PDF2IMG = $(HOME)/bin/pdf2img
 SITES_DIR = etc/nginx/sites-available
 SITES = $(shell ls $(SITES_DIR))
 
-CP = cp
-ifne (,$(findstring -test, $(shell hostname)))
-    CP = sed s/-test//g
-endif
-
 build: html $(PDF2IMG)
-ifeq (,$(findstring datalogics-cloud, $(shell hostname)))
+ifneq ($(shell hostname), localhost)
 	echo "" > versions.cfg
 endif
 	python bootstrap.py
 	bin/buildout | scripts/versions > versions.cfg
 
 clean:
-	rm -rf .installed.cfg bin develop-eggs doc/html parts var/log
+	rm -rf .installed.cfg bin develop-eggs parts var/log
+	cd doc/html; rm -rf *.css *.html *.js *.png search
 
 install:
-	for s in $(SITES); do $(CP) $(SITES_DIR)/$$s > /$(SITES_DIR)/$$s; done
+	for s in $(SITES); do cp $(SITES_DIR)/$$s /$(SITES_DIR)/$$s; done
 	for s in $(SITES); do ln -s /$(SITES_DIR)/$$s /$(SITES_DIR)/../sites-enabled; done
 	cat etc/nginx/README.md
 
