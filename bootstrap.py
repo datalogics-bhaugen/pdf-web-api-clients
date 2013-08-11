@@ -75,7 +75,9 @@ except ImportError:
         from urllib2 import urlopen
 
     ez = {}
-    url = 'https://bitbucket.org/pypa/setuptools/downloads/ez_setup.py'
+    # 'https://bitbucket.org/pypa/setuptools/downloads/ez_setup.py' might
+    # work, but today it selects 0.9.6 on Linux and then the buildout fails!
+    url = 'https://bitbucket.org/pypa/setuptools/raw/0.9.8/ez_setup.py'
     exec(urlopen(url).read(), ez)
     setup_args = dict(to_dir=tmpeggs, download_delay=0)
     ez['use_setuptools'](**setup_args)
