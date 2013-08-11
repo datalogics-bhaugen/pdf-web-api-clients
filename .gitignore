@@ -1,5 +1,4 @@
 .installed.cfg
-BUILD
 
 *.gz
 *.log
