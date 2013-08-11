@@ -7,10 +7,11 @@ As root:
     * Change the root
         * root /usr/share/nginx/www;
     * Set SSL options
-        * ssl_certificate /etc/nginx/ssl/server.crt;
-            * server-test.crt for _pdfprocess-test_
+        * ssl_certificate /etc/nginx/ssl/server-test.crt;
         * ssl_certificate_key /etc/nginx/ssl/server.key;
         * ssl_verify_depth 3;
+* For _pdfprocess_, edit /etc/nginx/sites-enabled/*
+    * Remove -test from ssl_certificate and server_name entries
 * /etc/init.d/nginx start
     * /etc/init.d/nginx testconfig
 
