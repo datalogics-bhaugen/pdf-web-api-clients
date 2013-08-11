@@ -1,17 +1,23 @@
-ifeq (,$(findstring -test, $(shell hostname)))
-    CP = sed s/-test//g
-endif
-CP ?= cp
-
 DOXYGEN = doc/html/index.html
 PDF2IMG = $(HOME)/bin/pdf2img
 
 SITES_DIR = etc/nginx/sites-available
 SITES = $(shell ls $(SITES_DIR))
 
+CP = cp
+ifeq (,$(findstring -test, $(shell hostname)))
+    CP = sed s/-test//g
+endif
+
+VERSIONS = versions.cfg
+ifeq (,$(findstring datalogics-cloud, $(shell hostname)))
+    VERSIONS = /dev/null
+endif
+
 build: html $(PDF2IMG)
+	echo "" > $(VERSIONS)
 	python bootstrap.py
-	bin/buildout > BUILD
+	bin/buildout | scripts/versions > $(VERSIONS)
 
 clean:
 	rm -rf .installed.cfg bin develop-eggs doc/html parts var/log
