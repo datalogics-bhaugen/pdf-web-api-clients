@@ -5,19 +5,16 @@ SITES_DIR = etc/nginx/sites-available
 SITES = $(shell ls $(SITES_DIR))
 
 CP = cp
-ifeq (,$(findstring -test, $(shell hostname)))
+ifne (,$(findstring -test, $(shell hostname)))
     CP = sed s/-test//g
 endif
 
-VERSIONS = versions.cfg
-ifeq (,$(findstring datalogics-cloud, $(shell hostname)))
-    VERSIONS = /dev/null
-endif
-
 build: html $(PDF2IMG)
-	echo "" > $(VERSIONS)
+ifeq (,$(findstring datalogics-cloud, $(shell hostname)))
+	echo "" > versions.cfg
+endif
 	python bootstrap.py
-	bin/buildout | scripts/versions > $(VERSIONS)
+	bin/buildout | scripts/versions > versions.cfg
 
 clean:
 	rm -rf .installed.cfg bin develop-eggs doc/html parts var/log

@@ -6,6 +6,6 @@ import fileinput
 
 buildout_stdout = [line for line in fileinput.input()]
 
-for line in buildout_stdout[lines.index('[versions]\n'):]:
+for line in buildout_stdout[buildout_stdout.index('[versions]\n'):]:
     print(line.rstrip())
 
