@@ -21,6 +21,8 @@ class Option(object):
 class Flag(Option):
     @property
     def action(self): return 'store_true'
+    @property
+    def default_value(self): return True
 
 class FlagAlias(Flag):
     def __init__(self, name, pdf2img_name):
@@ -29,7 +31,9 @@ class FlagAlias(Flag):
     def __str__(self):
         return self._pdf2img_name
 
-class FlagInverse(FlagAlias): pass
+class FlagInverse(FlagAlias):
+    @property
+    def default_value(self): return False
 
 
 OPTIONS = [
@@ -115,10 +119,9 @@ class ArgumentParser(argparse.ArgumentParser):
         for key, value in options.iteritems():
             if key in ImageSize.OPTIONS: continue
             option = OPTIONS[OPTIONS.index(key)] if key in OPTIONS else None
-            if isinstance(option, FlagInverse):
-                if not value: self.options.append(flag_syntax % option)
-            elif isinstance(option, Flag):
-                if value: self.options.append(flag_syntax % option)
+            if isinstance(option, Flag):
+                if value is not option.default_value:
+                    self.options.append(flag_syntax % option)
             elif isinstance(option, Option):
                 self.options.append(name_value_syntax % (option, value))
             elif value is True:
