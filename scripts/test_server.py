@@ -50,6 +50,27 @@ def test_bad_version():
     result = Result(404, None)
     Test(args, result, Test.pdf2img('api-key', -1, BASE_URL)).validate()
 
+def test_pdf_input():
+    args = ['testFiles/NotAPDF.PDF', 'tif']
+    result = Result(422, 233)
+    Test(args, result, Test.pdf2img('api-key', -1, BASE_URL)).validate()
+
+def test_drm_protection():
+    args = ['testFiles/ADEPT-DRM.pdf', 'tif']
+    result = Result(403, 233)
+    Test(args, result, Test.pdf2img('api-key', -1, BASE_URL)).validate()
+
+def test_pdf_file_integrity():
+    args = ['testFiles/PDFPart.pdf', 'tif']
+    result = Result(422, 233)
+    Test(args, result, Test.pdf2img('api-key', -1, BASE_URL)).validate()
+
+def test_no_arguments():
+    args = []
+    result = Result(417, 1)
+    Test(args, result, Test.pdf2img('api-key', -1, BASE_URL)).validate()
+    
+
 # TODO: more tests
 
 # Tests to be made
@@ -63,8 +84,6 @@ def test_bad_version():
 # def test_page_range():         #verifies page range error
 # def test_password_not_given(): #verifies password missing error
 # def test_password_incorrect(): #verifes password incorrect error
-# def test_drm_protection():     #verifes DRM protected file error
-# def test_pdf_input():          #verifies input file not a pdf error
 # def test_pdf2img():            #verifies handling of pdf2img crash
 # def test_pdf_file_integrity(): #verifies truncated file error
 # def test_png():                #verify output vs baseline png
