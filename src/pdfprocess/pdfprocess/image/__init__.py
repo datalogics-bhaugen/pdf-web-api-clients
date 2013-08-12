@@ -39,6 +39,27 @@ class Action(pdfprocess.Action):
         with pdfprocess.Stdout() as stdout:
             process_code = subprocess.call(args, stdout=stdout)
             if process_code:
+                if "not begin with '%PDF-'" in stdout:
+                    return self.abort(process_code, 
+                        'File not a PDF', 422)
+                if 'security plug-in required' in stdout:
+                    return self.abort(process_code, 
+                        'Security plugin required for this file', 403)
+                if 'The file is damaged' in stdout:
+                    return self.sbort(process_code, 
+                        'The file in damaged and unreadable', 422)
+                if 'Usage:' in stdout:
+                    return self.abort(process_code,
+                        'Input should be: [options] inputFile outputFile', 417)
+                if 'BMP only supports RGB and Gray images' in stdout:
+                    return self.abort(process_code,
+                        'BMP uses RGB and Gray Color Model only', 412)
+                if 'Not enough memory to hold page' or 'insufficient' in stdout:
+                    return self.abort(process_code,
+                        'Not enough memory', 413)
+                if 'is greater than End page' in stdout:
+                    return self.abort(process_code,
+                        'Page requested is not part of this file', 416)
                 # TODO: override default status_code
                 return self.abort(process_code, self._get_errors(stdout))
         with open(output_file.name, 'rb') as image_file:
