@@ -21,8 +21,6 @@ class Option(object):
 class Flag(Option):
     @property
     def action(self): return 'store_true'
-    @property
-    def default_value(self): return True
 
 class FlagAlias(Flag):
     def __init__(self, name, pdf2img_name):
@@ -31,17 +29,13 @@ class FlagAlias(Flag):
     def __str__(self):
         return self._pdf2img_name
 
-class FlagInverse(FlagAlias):
-    @property
-    def default_value(self): return False
-
 
 OPTIONS = [
     Flag('OPP', normalize=False),
+    FlagAlias('disableColorManagement', 'noCMM'),
+    FlagAlias('disableThinLineEnhancement', 'noEnhanceThinLines'),
     FlagAlias('printPreview', 'asPrinted'),
-    FlagInverse('drawAnnotations', 'noAnnot'),
-    FlagInverse('enhanceThinLines', 'noEnhanceThinLines'),
-    FlagInverse('useCMMWorkflow', 'noCMM'),
+    FlagAlias('suppressAnnotations', 'noAnnot'),
     Option('colorModel'),
     Option('compression'),
     Option('pages'),
@@ -120,8 +114,7 @@ class ArgumentParser(argparse.ArgumentParser):
             if key in ImageSize.OPTIONS: continue
             option = OPTIONS[OPTIONS.index(key)] if key in OPTIONS else None
             if isinstance(option, Flag):
-                if value is not option.default_value:
-                    self.options.append(flag_syntax % option)
+                if value: self.options.append(flag_syntax % option)
             elif isinstance(option, Option):
                 self.options.append(name_value_syntax % (option, value))
             elif value is True:
