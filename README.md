@@ -43,7 +43,6 @@ To support this build, these packages must be installed on your system:
 * g++
 * python-dev
 * Python bindings for libxml2 (for ThreeScalePY)
-* TODO: do we need libxml2-dev?
 
 ## Run
 

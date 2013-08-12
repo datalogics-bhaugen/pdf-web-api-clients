@@ -5,7 +5,7 @@ SITES_DIR = etc/nginx/sites-available
 SITES = $(shell ls $(SITES_DIR))
 
 build: html $(PDF2IMG)
-ifneq ($(shell hostname), localhost)
+ifeq ($(shell uname -s), Darwin)
 	echo "" > versions.cfg
 endif
 	python bootstrap.py
