@@ -116,6 +116,7 @@ class ImageRequest(Request):
     #  @param output_form output graphic format, e.g. 'jpg'
     #  @param options e.g. {'pages': '1', 'printPreview': True}
     #
+    #  Valid output_form values: 'eps', 'gif', 'jpg', 'png', 'raw', and 'tif'.
     #  Here is a [description of the options](image/parameters.pdf).
     def post(self, input, output_form, **options):
         self.reset()
@@ -138,8 +139,6 @@ class Response(object):
         return json.dumps(self._json[key])
     @property
     ## API status code (int)
-    #
-    #  TODO: describe codes
     def process_code(self):
         if 'processCode' in self._json: return int(self['processCode'])
 
@@ -149,7 +148,7 @@ class Response(object):
         if 'output' in self._json and self: return self['output']
 
     @property
-    ## None if successful, otherwise information (string) about #process_code
+    ## None if successful, otherwise information (string) about process_code
     def exc_info(self):
         if 'output' in self._json and not self: return self['output']
 
@@ -169,4 +168,26 @@ class ImageResponse(Response):
     ## Image data (bytes) if request was successful, otherwise None
     def output(self):
         if self: return self._image()
+
+
+## Returned by Response.process_code
+class ProcessCode:
+    OK = 0
+    InvalidKey = 1
+    InvalidSyntax = 2
+    InvalidInput = 3
+    InvalidPassword = 4
+    MissingPassword = 5
+    AdeptDRM = 6
+    InvalidOutputType = 7
+    InvalidPage = 8
+    RequestTooLarge = 9
+    TooManyRequests = 10
+    UnknownError = 20
+
+## Returned by ImageResponse.process_code
+class ImageProcessCode(ProcessCode):
+    InvalidColorSpace = 21
+    InvalidCompression = 22
+    InvalidRegion = 23
 
