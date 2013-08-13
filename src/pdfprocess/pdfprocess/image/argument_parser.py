@@ -21,8 +21,6 @@ class Option(object):
 class Flag(Option):
     @property
     def action(self): return 'store_true'
-    @property
-    def default_value(self): return True
 
 class FlagAlias(Flag):
     def __init__(self, name, pdf2img_name):
@@ -31,17 +29,13 @@ class FlagAlias(Flag):
     def __str__(self):
         return self._pdf2img_name
 
-class FlagInverse(FlagAlias):
-    @property
-    def default_value(self): return False
-
 
 OPTIONS = [
     Flag('OPP', normalize=False),
+    FlagAlias('disableColorManagement', 'noCMM'),
+    FlagAlias('disableThinLineEnhancement', 'noEnhanceThinLines'),
     FlagAlias('printPreview', 'asPrinted'),
-    FlagInverse('drawAnnotations', 'noAnnot'),
-    FlagInverse('enhanceThinLines', 'noEnhanceThinLines'),
-    FlagInverse('useCMMWorkflow', 'noCMM'),
+    FlagAlias('suppressAnnotations', 'noAnnot'),
     Option('colorModel'),
     Option('compression'),
     Option('pages'),
@@ -78,9 +72,9 @@ class ArgumentParser(argparse.ArgumentParser):
         self._logger = logger
         for option in OPTIONS + ImageSize.OPTIONS:
             self.add_argument('-%s' % option.name, action=option.action)
-    def __call__(self, input_name, output_form, options):
+    def __call__(self, options, output_form):
         self._set_options(options)
-        self._log_request(input_name, output_form)
+        self._logger(self.options)
         self.parse_args(self.options)
         self._pages = self._get_pages(output_form)
         self._add_smoothing_option()
@@ -103,12 +97,6 @@ class ArgumentParser(argparse.ArgumentParser):
         for key, value in options.iteritems():
             if key in ImageSize.OPTIONS: image_size[key] = value
         return image_size.options()
-    def _log_request(self, input_name, output_form):
-        options = ' '.join(self.options)
-        if options: options = ' ' + options
-        if ' ' in input_name: input_name = '"%s"' % input_name
-        self._logger.info('pdf2img%s %s %s' %
-            (options, input_name, output_form))
     def _option_value(self, option_prefix):
         for option in self.options:
             if option.startswith(option_prefix):
@@ -120,8 +108,7 @@ class ArgumentParser(argparse.ArgumentParser):
             if key in ImageSize.OPTIONS: continue
             option = OPTIONS[OPTIONS.index(key)] if key in OPTIONS else None
             if isinstance(option, Flag):
-                if value is not option.default_value:
-                    self.options.append(flag_syntax % option)
+                if value: self.options.append(flag_syntax % option)
             elif isinstance(option, Option):
                 self.options.append(name_value_syntax % (option, value))
             elif value is True:
