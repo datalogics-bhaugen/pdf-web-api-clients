@@ -4,7 +4,8 @@ import logging
 
 import flask
 
-from .action import Action, Auth
+from .action import Action
+from .error import Auth, Error, ProcessCode, StatusCode
 from .file_handler import FileHandler
 from .stdout import Stdout
 

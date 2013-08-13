@@ -72,9 +72,9 @@ class ArgumentParser(argparse.ArgumentParser):
         self._logger = logger
         for option in OPTIONS + ImageSize.OPTIONS:
             self.add_argument('-%s' % option.name, action=option.action)
-    def __call__(self, input_name, output_form, options):
+    def __call__(self, options, output_form):
         self._set_options(options)
-        self._log_request(input_name, output_form)
+        self._logger(self.options)
         self.parse_args(self.options)
         self._pages = self._get_pages(output_form)
         self._add_smoothing_option()
@@ -97,12 +97,6 @@ class ArgumentParser(argparse.ArgumentParser):
         for key, value in options.iteritems():
             if key in ImageSize.OPTIONS: image_size[key] = value
         return image_size.options()
-    def _log_request(self, input_name, output_form):
-        options = ' '.join(self.options)
-        if options: options = ' ' + options
-        if ' ' in input_name: input_name = '"%s"' % input_name
-        self._logger.info('pdf2img%s %s %s' %
-            (options, input_name, output_form))
     def _option_value(self, option_prefix):
         for option in self.options:
             if option.startswith(option_prefix):
