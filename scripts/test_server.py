@@ -1,6 +1,7 @@
 "server regression tests"
 
 import test_client
+from test_client import ProcessCode, StatusCode
 from nose.tools import assert_equal, assert_is_none, assert_is_not_none
 
 
@@ -12,12 +13,12 @@ BAD_API_KEY = '5184f74f1e1917913e6adcc31b0c3b9c'
 
 
 class Result(object):
-    def __init__(self, status_code, process_code):
-        self._status_code = status_code
+    def __init__(self, process_code, status_code):
         self._process_code = process_code
+        self._status_code = status_code
     def validate(self, response):
-        assert_equal(self._status_code, response.status_code)
         assert_equal(self._process_code, response.process_code)
+        assert_equal(self._status_code, response.status_code)
         if self._process_code is None:
             assert_is_none(response.output)
             assert_is_none(response.exc_info)
@@ -43,34 +44,66 @@ class Test(object):
 
 def test_bad_version():
     pdf2img = Test.pdf2img('api-key', -1, BASE_URL)
-    Test(['../test/bad.pdf', 'jpg'], Result(404, None), pdf2img).validate()
+    result = Result(None, StatusCode.NotFound)
+    Test(['../test/bad.pdf', 'jpg'], result, pdf2img).validate()
 
-def test_pdf_input():
-    Test(['../test/bad.pdf', 'tif'], Result(422, 233)).validate()
+def test_bad_pdf():
+    result = Result(ProcessCode.InvalidInput, StatusCode.UnsupportedMediaType)
+    Test(['../test/bad.pdf', 'jpg'], result).validate()
 
-def test_drm_protection():
-    Test(['../test/ADEPT-DRM.pdf', 'tif'], Result(403, 233)).validate()
+def test_truncated_pdf():
+    result = Result(ProcessCode.InvalidInput, StatusCode.BadRequest)
+    Test(['../test/truncated.pdf', 'jpg'], result).validate()
 
-def test_pdf_file_integrity():
-    Test(['../test/truncated.pdf', 'tif'], Result(422, 233)).validate()
+def test_missing_password():
+    result = Result(ProcessCode.MissingPassword, StatusCode.Forbidden)
+    Test(['../test/protected.pdf', 'jpg'], result).validate()
 
-def test_no_arguments():
-    Test([], Result(417, 1)).validate()
-    
+def test_invalid_password():
+    result = Result(ProcessCode.InvalidPassword, StatusCode.Forbidden)
+    Test(['-password=spam', '../test/protected.pdf', 'jpg'], result).validate()
 
-# TODO: more tests
-# def test_arg_parsing():        #verify arg syntax to pdf2img
-# def test_correct_syntax():     #verify input syntax errors
-# def test_bmp_colormodel():     #verify BMP not RGB or Gray error
-# def test_memory():             #verify insufficient memory error
-# def test_color_model():        #verify color model error
-# def test_output_type():        #verifies out type error
-# def test_page_range():         #verifies page range error
-# def test_password_not_given(): #verifies password missing error
-# def test_password_incorrect(): #verifes password incorrect error
-# def test_pdf2img():            #verifies handling of pdf2img crash
-# def test_png():                #verify output vs baseline png
-# def test_jpg():                #verify output vs baseline jpg
-# def test_bmp():                #verify output vs baseline bmp
-# def test_tif():                #verify output vs baseline tif
+def test_adept_drm():
+    result = Result(ProcessCode.AdeptDRM, StatusCode.Forbidden)
+    Test(['../test/ADEPT-DRM.pdf', 'jpg'], result).validate()
+
+def test_invalid_output_type():
+    result = Result(ProcessCode.InvalidOutputType, StatusCode.BadRequest)
+    Test(['../test/four_pages.pdf', 'spam'], result).validate()
+
+def test_invalid_pages():
+    result = Result(ProcessCode.InvalidPage, StatusCode.BadRequest)
+    Test(['-pages=spam', '../test/four_pages.pdf', 'jpg'], result).validate()
+
+def test_page_out_of_range():
+    result = Result(ProcessCode.InvalidPage, StatusCode.BadRequest)
+    Test(['-pages=5', '../test/four_pages.pdf', 'jpg'], result).validate()
+
+
+# unused pdf2img error codes:
+# ERR_NOERROR
+# ERR_SYNTAX
+
+# pdf2img error codes for command-line syntax errors that cannot happen:
+# ERR_BPS_NOT_VALID
+# ERR_MAX_BAND_MEM_INVALID
+# ERR_NO_PERMISSION
+# ERR_OUTPUTFILE
+# ERR_QUALITY_INVALID
+# ERR_RESOLUTION_INVALID
+
+# pdf2img error codes, values (subtract 768 from #define value), and meaning:
+# ERR_INPUTFILE                 233     cannot open (various reasons)
+# ERR_COMPRESSION_INVALID       236     value unrecognized
+# ERR_COLORSPACE_NOT_VALID      237     value unrecognized
+# ERR_OUTPUT_TYPE_INVALID       239     value unrecognized, e.g. 'bmp'
+# ERR_UNDEFINED_PAGE            241     value unrecognized, or out of range
+# ERR_MEMORY                    243     too many pages
+# ERR_REGION_INVALID            244     value unrecognized
+
+# TODO: def test_insufficient_memory():
+# TODO: def test_invalid_color_space():
+# TODO: def test_invalid_compression():
+# TODO: def test_invalid_region():
+# TODO: def test_pdf2img_crash():
 
