@@ -32,8 +32,9 @@ This sample has the following dependencies:
 A request is a HTTP POST method. The message body is the request document,
 and the request parameters are encoded as form data.
 
+* Use the _apiKey_ parameter to specify the API key.
 * Any request options are encoded as JSON in the optional _options_ parameter.
-* To facilitate logging, please provide the optional _inputName_ parameter.
+* When the optional _inputName_ parameter is supplied, the server uses this when logging the request.
 * For image requests, use the optional _outputForm_ parameter to specify the image format (default=TIFF).
 
 Here is an [example of a request](examples/request.txt).
