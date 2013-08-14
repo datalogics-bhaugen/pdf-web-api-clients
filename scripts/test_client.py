@@ -16,7 +16,7 @@ from pdfclient import ProcessCode
 
 API_KEY = 'f54ab5d8-5775-42c7-b888-f074ba892b57'
 # BASE_URL = 'http://127.0.0.1:5000'
-BASE_URL = 'https://pdfprocess-test.datalogics-cloud.com/api'
+BASE_URL = 'https://pdfprocess-test.datalogics-cloud.com'
 VERSION = 0
 
 class StatusCode:
