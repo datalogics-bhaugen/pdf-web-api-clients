@@ -1,4 +1,4 @@
-"pdfprocess image errors"
+"pdfprocess image action errors"
 
 from pdfprocess import Error, ProcessCode, StatusCode
 
