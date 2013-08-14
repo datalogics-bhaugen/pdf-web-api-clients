@@ -20,7 +20,7 @@ MacOS (different versions) is the primary development platform, and Ubuntu is th
 
 ## Build
 
-We use Buildout, which is a three-step process. These steps are executed by the Makefile's `build` (default) target:
+We use Buildout, which is a three-step process. These steps are executed by the Makefile's _build_ (default) target:
 
 1. Documentation -- the build begins by cloning the doxygen repository, building a local copy of doxygen, and generating HTML pages for the API.
 
@@ -38,8 +38,8 @@ We use Buildout, which is a three-step process. These steps are executed by the 
         * Ubuntu: python-libxml2
         * Red Hat: libxml2-python
 * Clone the repository into /home/pdfprocess if you are deploying the server
-    * To get the password for pdfprocess (to run sudo), send mail to `pdfprocess@datalogics.com`.
-* `make`
+    * To get the password for pdfprocess (to run sudo), send mail to pdfprocess@datalogics.com.
+* make _build_
 
 ## Linux Installation
 
@@ -47,12 +47,16 @@ We use Buildout, which is a three-step process. These steps are executed by the 
     * Uncomment the last server section
     * Change the root
         * root /usr/share/nginx/www;
-    * Set SSL options
+    * On _pdfprocess_, set SSL options
+        * ssl_certificate /etc/nginx/ssl/server.crt;
+        * ssl_certificate_key /etc/nginx/ssl/server.key;
+        * ssl_verify_depth 3;
+    * On _pdfprocess-test_, set SSL options
         * ssl_certificate /etc/nginx/ssl/server-test.crt;
         * ssl_certificate_key /etc/nginx/ssl/server-test.key;
         * ssl_verify_depth 3;
     * If the SSL key is missing, copy the appropriate one from //zeus/raid1/proj/procyon/web-api/etc/nginx/ssl
-* On _pdfprocess_, `sudo make install-production` (this corrects the certificate and key names)
+* On _pdfprocess_, `sudo make install-production`
 * On _pdfprocess-test_, `sudo make install-test`
 * `bin/supervisord`
 * `bin/supervisorctl status`
@@ -61,18 +65,18 @@ We use Buildout, which is a three-step process. These steps are executed by the 
 
 ## PDF2IMG
 
-This application and its associated resources must be installed manually from archives stored at `//zeus/raid1/prducts/pdf2img/`.
+This application and its associated resources must be installed manually from archives stored at //zeus/raid1/products/pdf2img/.
 
 * See [PDF2IMG](http://www.datalogics.com/pdf/doc/pdf2img.pdf) for platform-specific instructions
 * For Linux
-    * Unpack the two archives (one for pdf2img, one for its resources)
-    * Make a link to the pdf2img executable in your bin directory, e.g. /home/thulasi/bin
-    * Make links to the resource folders in your pdf2img directory
+    * Extract the two archives (one for pdf2img, one for its resources)
+    * In your bin directory (e.g. /home/pdfprocess/bin), make a link to the pdf2img executable
+    * In your pdf2img directory, make links to the Resource folders
     * Add the pdf2img directory to your LD_LIBRARY_PATH
 
 ## Run
 
-We use Supervisor to control the Gunicorn process that runs our Flask application.
+We use Supervisor to control the Gunicorn server that runs our Flask application.
 
 * `bin/supervisord` starts the Supervisor daemon, which runs our Flask application in a Gunicorn process
 * `bin/supervisorctl` controls the Supervisor daemon
@@ -100,5 +104,4 @@ Common test procedures:
 
 Our Flask application creates a log file in the directory specified by the LOG_PATH environment variable. If this is not defined, the application creates its log file in the current working directory.
 
-`bin/pdfprocess` puts our eggs into the import path and sets LOG_PATH to `var/log`.
-
+bin/pdfprocess puts our eggs into the import path and sets LOG_PATH to var/log.

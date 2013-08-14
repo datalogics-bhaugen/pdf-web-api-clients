@@ -50,7 +50,7 @@ The pages parameter specifies the set of pages to print. It is a list of comma-s
 
 Default: all pages for TIFF, first page for other formats.
 
-Example: for a 16 page PDF file __2-4,7,9,14-last__ will draw pages 2, 3, 4, 7, 9, 14, 15 and 16.
+Example: for a 16 page PDF file _2-4,7,9,14-last_ will draw pages 2, 3, 4, 7, 9, 14, 15 and 16.
 <br>
 <br>
 <br>
