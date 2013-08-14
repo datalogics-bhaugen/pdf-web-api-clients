@@ -61,6 +61,8 @@ class Response(object):
         base_filename = os.path.splitext(pdf2img.input_filename)[0]
         self._image_filename = '.'.join((base_filename, pdf2img.output_form))
         self._image_response = image_response
+    def __str__(self):
+        return str(self._image_response)
     def __bool__(self):
         return bool(self._image_response)
     __nonzero__ = __bool__
