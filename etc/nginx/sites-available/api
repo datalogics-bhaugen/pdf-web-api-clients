@@ -1,6 +1,6 @@
 server {
 	listen 443;
-	server_name api.pdfprocess-test.datalogics-cloud.com;
+	server_name pdfprocess-test.datalogics-cloud.com;
 
 	ssl on;
 	ssl_certificate /etc/nginx/ssl/server-test.crt;
@@ -13,7 +13,7 @@ server {
 	ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv3:+EXP;
 	ssl_prefer_server_ciphers on;
 
-	location / {
+	location /api {
 		client_max_body_size 100m;
 		proxy_pass http://127.0.0.1:5000;
 		proxy_set_header Host $host;
