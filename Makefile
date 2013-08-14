@@ -24,11 +24,11 @@ install:
 	for s in $(SITES); do cp $(SITES_DIR)/$$s /$(SITES_DIR)/$$s; done
 	for s in $(SITES); do ln -s /$(SITES_DIR)/$$s /$(SITES_DIR)/../sites-enabled; done
 
-install-production: install
+install-production: uninstall-production install
 	for s in $(SITES); do sed -i s/-test//g /$(SITES_DIR)/$$s; done
 	cp etc/nginx/ssl/server.crt /etc/nginx/ssl
 
-install-test: install
+install-test: uninstall-test install
 	cp etc/nginx/ssl/server-test.crt /etc/nginx/ssl
 
 uninstall:
