@@ -29,9 +29,10 @@ ERRORS = [
     Error(ProcessCode.InvalidPage, "Could not parse '-pages' option."),
     Error(ProcessCode.InvalidPage, 'greater than last PDF page'),
     Error(ProcessCode.RequestTooLarge, 'Insufficient memory available',
-        StatusCode.RequestEntityTooLarge),
-    # the last entry must have text=''
-    Error(ProcessCode.UnknownError, '', StatusCode.InternalServerError)]
+        StatusCode.RequestEntityTooLarge)]
+
+UNKNOWN_ERROR =\
+    Error(ProcessCode.UnknownError, '', StatusCode.InternalServerError)
 
 
 class Action(pdfprocess.Action):
@@ -60,7 +61,11 @@ class Action(pdfprocess.Action):
             process_code = subprocess.call(args, stdout=stdout)
             if process_code:
                 errors = self._get_errors(stdout)
-                return self.abort(next(e for e in ERRORS if e.text in errors))
+                error = next((e for e in ERRORS if e.text in errors), None)
+                if error is None:
+                    error = UNKNOWN_ERROR
+                    self._logger.debug(errors)
+                return self.abort(error)
         with open(output_file.name, 'rb') as image_file:
             image = base64.b64encode(image_file.read())
             return self.response(ProcessCode.OK, image)
