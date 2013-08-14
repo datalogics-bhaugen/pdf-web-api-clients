@@ -6,10 +6,8 @@ from nose.tools import assert_equal, assert_is_none, assert_is_not_none
 
 
 API_KEY = test_client.API_KEY
-BASE_URL = test_client.BASE_URL
+BASE_URL = 'http://127.0.0.1:5000'
 VERSION = test_client.VERSION
-
-BAD_API_KEY = '5184f74f1e1917913e6adcc31b0c3b9c'
 
 
 class Result(object):
