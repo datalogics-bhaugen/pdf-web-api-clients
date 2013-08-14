@@ -55,7 +55,7 @@ import requests
 
 
 class Client(object):
-    BASE_URL = 'https://pdfprocess.datalogics-cloud.com'
+    BASE_URL = 'https://pdfprocess.datalogics-cloud.com/api'
     VERSION = 0
 
     ## Set #api_key and #base_url

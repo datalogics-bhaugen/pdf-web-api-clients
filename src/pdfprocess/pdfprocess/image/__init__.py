@@ -7,32 +7,11 @@ import tempfile
 
 import flask
 
+import errors
 import pdfprocess
-from pdfprocess import Auth, Error, ProcessCode, StatusCode
+from pdfprocess import Auth, Error, ProcessCode
 from .argument_parser import ArgumentParser, Flag
 from .output_file import OutputFile
-
-
-ERRORS = [
-    Error(ProcessCode.InvalidInput, "File does not begin with '%PDF-'.",
-        StatusCode.UnsupportedMediaType),
-    Error(ProcessCode.InvalidInput,
-        'The file is damaged and could not be repaired.'),
-    Error(ProcessCode.MissingPassword, 'missing_password',
-        StatusCode.Forbidden),
-    Error(ProcessCode.InvalidPassword, 'invalid_password',
-        StatusCode.Forbidden),
-    Error(ProcessCode.AdeptDRM,
-        'The security plug-in required by this command is unavailable.',
-        StatusCode.Forbidden),
-    Error(ProcessCode.InvalidOutputType, 'Invalid output type'),
-    Error(ProcessCode.InvalidPage, "Could not parse '-pages' option."),
-    Error(ProcessCode.InvalidPage, 'greater than last PDF page'),
-    Error(ProcessCode.RequestTooLarge, 'Insufficient memory available',
-        StatusCode.RequestEntityTooLarge)]
-
-UNKNOWN_ERROR =\
-    Error(ProcessCode.UnknownError, '', StatusCode.InternalServerError)
 
 
 class Action(pdfprocess.Action):
@@ -58,14 +37,8 @@ class Action(pdfprocess.Action):
         options = self._parser.options + output_file.options
         args = ['pdf2img'] + options + [input_name, self.output_form]
         with pdfprocess.Stdout() as stdout:
-            process_code = subprocess.call(args, stdout=stdout)
-            if process_code:
-                errors = self._get_errors(stdout)
-                error = next((e for e in ERRORS if e.text in errors), None)
-                if error is None:
-                    error = UNKNOWN_ERROR
-                    self._logger.debug(errors)
-                return self.abort(error)
+            if subprocess.call(args, stdout=stdout):
+                return self.abort(errors.get_error(self._logger.debug, stdout))
         with open(output_file.name, 'rb') as image_file:
             image = base64.b64encode(image_file.read())
             return self.response(ProcessCode.OK, image)
@@ -89,17 +62,6 @@ class Action(pdfprocess.Action):
             pages, output_form = (self.pages, self.output_form)
             with OutputFile(input_name, pages, output_form) as output_file:
                 return self._get_image(input_name, output_file)
-    @classmethod
-    def _get_errors(cls, stdout):
-        error_prefix = 'ERROR: '
-        lines = str(stdout).split('\n')
-        errors = []
-        for line in lines:
-            index = line.find(error_prefix)
-            if index < 0: index = line.find(error_prefix.lower())
-            if index < 0: continue
-            errors.append(line[index + len(error_prefix):])
-        return '\n'.join([error for error in errors])
     @property
     def input_name(self): return self._input_name
     @property
