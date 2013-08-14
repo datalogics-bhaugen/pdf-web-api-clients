@@ -55,14 +55,14 @@ import requests
 
 
 class Client(object):
-    BASE_URL = 'https://pdfprocess.datalogics-cloud.com/api'
+    BASE_URL = 'https://pdfprocess.datalogics-cloud.com'
     VERSION = 0
 
     ## Set #api_key and #base_url
     #  @param api_key from [3scale](http://datalogics-cloud.3scale.net/)
     def __init__(self, api_key, version=VERSION, base_url=BASE_URL):
         self._api_key = api_key
-        self._base_url = '%s/%s' % (base_url, version)
+        self._base_url = '%s/api/%s' % (base_url, version)
 
     ## Request factory
     # @return a Request object
