@@ -2,9 +2,6 @@ DOXYGEN = doc/html/index.html
 PDF2IMG = $(HOME)/bin/pdf2img
 PLATFORM = $(shell uname -s)
 
-SITES_DIR = etc/nginx/sites-available
-SITES = $(shell ls $(SITES_DIR))
-
 build: html $(PDF2IMG)
 ifeq ($(PLATFORM), Darwin)
 	echo "" > versions.cfg
@@ -16,32 +13,36 @@ clean:
 	rm -rf .installed.cfg bin develop-eggs parts var/log
 	cd doc/html; rm -rf *.css *.html *.js *.png search
 
+html: $(DOXYGEN)
+
+.PHONY: build clean html
+
+SITES_DIR = etc/nginx/sites-available
+SITES = $(shell ls $(SITES_DIR))
+
 install:
 	for s in $(SITES); do cp $(SITES_DIR)/$$s /$(SITES_DIR)/$$s; done
 	for s in $(SITES); do ln -s /$(SITES_DIR)/$$s /$(SITES_DIR)/../sites-enabled; done
 
-uninstall:
-	for s in $(SITES); do rm /$(SITES_DIR)/$$s; done
-	for s in $(SITES); do rm /$(SITES_DIR)/../sites-enabled/$$s; done
-
-html: $(DOXYGEN)
-
-.PHONY: build clean install uninstall html
-
-install-production:
-	for s in $(SITES); do sed s/-test//g /$(SITES_DIR)/$$s; done
+install-production: install
+	for s in $(SITES); do sed -i s/-test//g /$(SITES_DIR)/$$s; done
 	cp etc/nginx/ssl/server.crt /etc/nginx/ssl
 
-uninstall-production:
-	rm /etc/nginx/ssl/server.crt
-
-install-test:
+install-test: install
 	cp etc/nginx/ssl/server-test.crt /etc/nginx/ssl
 
-uninstall-test:
-	rm /etc/nginx/ssl/server-test.crt
+uninstall:
+	for s in $(SITES); do rm -f /$(SITES_DIR)/$$s; done
+	for s in $(SITES); do rm -f /$(SITES_DIR)/../sites-enabled/$$s; done
 
-.PHONY: install-production uninstall-production install-test uninstall-test
+uninstall-production: uninstall
+	rm -f /etc/nginx/ssl/server.crt
+
+uninstall-test: uninstall
+	rm -f /etc/nginx/ssl/server-test.crt
+
+.PHONY: install install-production install-test
+.PHONY: uninstall uninstall-production uninstall-test
 
 doxygen:
 	git clone https://github.com/doxygen/doxygen.git

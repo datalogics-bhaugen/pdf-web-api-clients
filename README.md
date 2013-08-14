@@ -26,21 +26,20 @@ We use Buildout, which is a three-step process. These steps are executed by the 
 
 2. Bootstrap -- the repository is initialized by a script that must be compatible with the version of Buildout we use (currently 2.2).
 
-3. Buildout -- the buildout script uses its configuration to download packages, etc. `BUILD` identifies the versions of the packages installed by Buildout.
+3. Buildout -- the buildout script uses its configuration to download packages, etc.
 
-To support this build, these packages must be installed on your system:
-
-* make
-* flex
-* bison
-* g++
-* python-dev
-* Python bindings for libxml2 (for ThreeScalePY)
-    * Debian/Ubuntu: python-libxml2
-    * Red Hat: libxml2-python
-
-Clone the repository into /home/pdfprocess if you are deploying the server.
-To get the password for this login (to run sudo), send mail to `pdfprocess@datalogics.com`.
+* To support this build, these packages must be installed on your system
+    * make
+    * flex
+    * bison
+    * g++
+    * python-dev
+    * Python bindings for libxml2 (for ThreeScalePY)
+        * Ubuntu: python-libxml2
+        * Red Hat: libxml2-python
+* Clone the repository into /home/pdfprocess if you are deploying the server
+    * To get the password for pdfprocess (to run sudo), send mail to `pdfprocess@datalogics.com`.
+* `make`
 
 ## Linux Installation
 
@@ -55,8 +54,10 @@ To get the password for this login (to run sudo), send mail to `pdfprocess@datal
     * If the SSL key is missing, copy the appropriate one from //zeus/raid1/proj/procyon/web-api/etc/nginx/ssl
 * On _pdfprocess_, `sudo make install-production` (this corrects the certificate and key names)
 * On _pdfprocess-test_, `sudo make install-test`
+* `bin/supervisord`
+* `bin/supervisorctl status`
 * If you are unfamiliar with /etc/init.d/nginx, run it without arguments
-* Restart nginx
+* `/etc/init.d/nginx restart`
 
 ## PDF2IMG
 
@@ -92,7 +93,7 @@ Common test procedures:
 * The regression tests validate our Flask application
 * If bin/supervisord fails to start Gunicorn, scripts/gunicorn might provide better diagnostic output
 * To test the nginx configuration
-    * /etc/init.d/nginx testconfig
+    * /etc/init.d/nginx configtest
     * Run test_client.py from another host
 
 ## Paths
