@@ -8,9 +8,7 @@ ERRORS = [
         StatusCode.UnsupportedMediaType),
     Error(ProcessCode.InvalidInput,
         'The file is damaged and could not be repaired.'),
-    Error(ProcessCode.MissingPassword, 'missing_password',
-        StatusCode.Forbidden),
-    Error(ProcessCode.InvalidPassword, 'invalid_password',
+    Error(ProcessCode.InvalidPassword, 'This document requires authentication',
         StatusCode.Forbidden),
     Error(ProcessCode.AdeptDRM,
         'The security plug-in required by this command is unavailable.',
@@ -33,9 +31,11 @@ def _get_errors(stdout):
         if 0 <= index: errors.append(line[index + len(error_prefix):])
     return '\n'.join([error for error in errors])
 
-def get_error(logger, stdout):
+def get_error(logger, password, stdout):
     errors = _get_errors(stdout)
     result = next((e for e in ERRORS if e.text in errors), UNKNOWN)
     if result == UNKNOWN: logger(errors)
+    if result.process_code == ProcessCode.InvalidPassword and not password:
+        result.process_code = ProcessCode.MissingPassword
     return result
 

@@ -34,11 +34,13 @@ class Action(pdfprocess.Action):
         if auth in (Auth.OK, Auth.Unknown): return self._pdf2img()
         return self.authorize_error(auth)
     def _get_image(self, input_name, output_file):
-        options = self._parser.options + output_file.options
-        args = ['pdf2img'] + options + [input_name, self.output_form]
         with pdfprocess.Stdout() as stdout:
+            options = self._parser.options + output_file.options
+            args = ['pdf2img'] + options + [input_name, self.output_form]
             if subprocess.call(args, stdout=stdout):
-                return self.abort(errors.get_error(self._logger.debug, stdout))
+                logger = self._logger.debug
+                password = self.request_form.get('password', None)
+                return self.abort(errors.get_error(logger, password, stdout))
         with open(output_file.name, 'rb') as image_file:
             image = base64.b64encode(image_file.read())
             return self.response(ProcessCode.OK, image)

@@ -52,4 +52,6 @@ class Error(object):
     def status_code(self): return self._status_code
     @property
     def text(self): return self._text
+    @process_code.setter
+    def process_code(self, value): self._process_code = value
 
