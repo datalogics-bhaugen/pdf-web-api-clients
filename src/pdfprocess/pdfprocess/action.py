@@ -9,7 +9,6 @@ from error import Auth, Error, ProcessCode, StatusCode
 
 APP_ID = '2555417684482'
 PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
-TODO_BOGUS_API_KEY = 'f54ab5d8-5775-42c7-b888-f074ba892b57'
 
 
 class AuthError(Error):

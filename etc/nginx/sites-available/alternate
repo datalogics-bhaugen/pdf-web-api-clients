@@ -25,7 +25,7 @@ server {
 
 server {
 	server_name pdfprocess-test.datalogics-cloud.com;
-	location /doc {
+	location /docs {
 		alias /home/pdfprocess/web-api/doc/html;
 		index index.html index.htm;
 	}

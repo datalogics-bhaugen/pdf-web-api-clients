@@ -3,7 +3,7 @@ Adobe and Datalogics PDF technologies. This is a RESTful service for the
 internet developer community that currently provides:
 
 * Rendering of PDF files using the Adobe PDF Library and Datalogics
-[PDF2IMG](http://www.datalogics.com/products/pdf2img/index.asp) product.
+[PDF2IMG](http://www.datalogics.com/products/pdf2img/index.asp) technologies
 
 ### API Key
 
@@ -27,6 +27,9 @@ This sample has the following dependencies:
 
 ### Service Interface
 
+This is a summary of the interface. For a detailed description, please review our sample client or visit our 3scale
+<a href="https://datalogics-cloud.3scale.net/docs">developer portal</a>.
+
 #### Request
 
 A request is a HTTP POST method. The message body is the request document,
@@ -34,7 +37,7 @@ and the request parameters are encoded as form data.
 
 * Use the _apiKey_ parameter to specify the API key.
 * Any request options are encoded as JSON in the optional _options_ parameter.
-* When the optional _inputName_ parameter is supplied, the server uses this when logging the request.
+* When the optional _inputName_ parameter is supplied, the server uses it when logging the request.
 * For image requests, use the optional _outputForm_ parameter to specify the image format (default=TIFF).
 
 Here is an [example of a request](examples/request.txt).
