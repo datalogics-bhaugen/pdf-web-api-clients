@@ -76,10 +76,12 @@ These scripts facilitate testing:
 * `bin/pdfprocess` runs our Flask application with its development server (Werkzeug)
 * `samples/pdf2img.py` is a driver for our sample Python API client
 * `scripts/gunicorn` runs our Flask application in a Gunicorn process
-* `scripts/test_app.py` tests our Flask application directly
-* `scripts/test_client.py` runs `samples/pdf2img.py` with test settings
-* `scripts/test_server.py` uses test_client.py to test our server
-* `bin/nose` runs regression tests in scripts/test_app.py and test_server.py
+* `test/test_app.py` tests our Flask application directly
+* `test/test_client.py` runs `samples/pdf2img.py` with test settings
+* `bin/nose` runs regression tests in test
+    * test_3scale.py
+    * test_options.py
+    * test_server.py
 
 Common test procedures:
 * The regression tests validate our Flask application
