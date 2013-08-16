@@ -16,8 +16,11 @@ ERRORS = [
     Error(ProcessCode.InvalidOutputType, 'Invalid output type'),
     Error(ProcessCode.InvalidPage, "Could not parse '-pages' option."),
     Error(ProcessCode.InvalidPage, 'greater than last PDF page'),
+    Error(ProcessCode.InvalidSyntax, 'An option is missing the = sign'),
+    Error(ProcessCode.InvalidSyntax, 'An option requiring a value has no value supplied.'),
     Error(ImageProcessCode.InvalidColorModel, 'Invalid color model'),
     Error(ImageProcessCode.InvalidCompression, 'Invalid compression type'),
+    Error(ImageProcessCode.InvalidRegion, 'Invalid PDF region type'),
     Error(ProcessCode.RequestTooLarge, 'Insufficient memory available',
         StatusCode.RequestEntityTooLarge)]
 

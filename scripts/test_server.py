@@ -92,6 +92,19 @@ def test_bad_compression():
     result = Result(ImageProcessCode.InvalidCompression, StatusCode.BadRequest)
     Test(args, result).validate()
 
+def test_invalid_region():
+    args = ['-pdfregion=spam', '../test/four_pages.pdf', 'tif']
+    result = Result(ImageProcessCode.InvalidRegion, StatusCode.BadRequest)
+    Test(args, result).validate
+
+def test_missing_equals():
+    result = Result(ProcessCode.InvalidSyntax, StatusCode.BadRequest)
+    Test(['-pages', '../test/four_pages.pdf', 'jpg'], result).validate
+
+def test_missing_value():
+    result = Result(ProcessCode.InvalidSyntax, StatusCode.BadRequest)
+    Test(['-pages=', '../test/four_pages.pdf', 'jpg'], result).validate
+
 # unused pdf2img error codes:
 # ERR_NOERROR
 # ERR_SYNTAX
