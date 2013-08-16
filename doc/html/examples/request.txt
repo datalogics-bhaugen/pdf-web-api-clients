@@ -1,30 +1,30 @@
 POST /api/0/actions/image HTTP/1.1
 Host: pdfprocess.datalogics-cloud.com
-Content-Length: 1406
-Content-Type: multipart/form-data; boundary=459dfb659a8e42199e3179c1c3c914d9
+Content-Length: 1398
+Content-Type: multipart/form-data; boundary=87662e59982c4b9cbc63d41ceabff950
 Accept-Encoding: gzip, deflate, compress
 Accept: */*
 User-Agent: python-requests/1.2.3 CPython/2.7.2 Darwin/12.4.0
 
---459dfb659a8e42199e3179c1c3c914d9
+--87662e59982c4b9cbc63d41ceabff950
 Content-Disposition: form-data; name="application"
 
 {"id": "84445ec0", "key": "2d3eac77bb3b9bea69a91e625b9241d2"}
---459dfb659a8e42199e3179c1c3c914d9
+--87662e59982c4b9cbc63d41ceabff950
 Content-Disposition: form-data; name="inputName"
 
-test/hello_world.pdf
---459dfb659a8e42199e3179c1c3c914d9
+hello_world.pdf
+--87662e59982c4b9cbc63d41ceabff950
 Content-Disposition: form-data; name="options"
 
 {"pages": "1", "printPreview": true}
---459dfb659a8e42199e3179c1c3c914d9
+--87662e59982c4b9cbc63d41ceabff950
 Content-Disposition: form-data; name="outputForm"
 
 jpg
---459dfb659a8e42199e3179c1c3c914d9
+--87662e59982c4b9cbc63d41ceabff950
 Content-Disposition: form-data; name="input"; filename="hello_world.pdf"
 Content-Type: application/pdf
 
 %PDF-1.1\n%\xc2\xa5\xc2\xb1\xc3\xab\n\n1 0 obj\n  << /Type /Catalog\n     /Pages 2 0 R\n  >>\nendobj\n\n2 0 obj\n  << /Type /Pages\n     /Kids [3 0 R]\n     /Count 1\n     /MediaBox [0 0 300 144]\n  >>\nendobj\n\n3 0 obj\n  <<  /Type /Page\n      /Parent 2 0 R\n      /Resources\n       << /Font\n           << /F1\n               << /Type /Font\n                  /Subtype /Type1\n                  /BaseFont /Times-Roman\n               >>\n           >>\n       >>\n      /Contents 4 0 R\n  >>\nendobj\n\n4 0 obj\n  << /Length 55 >>\nstream\n  BT\n    /F1 18 Tf\n    0 0 Td\n    (Hello World) Tj\n  ET\nendstream\nendobj\n\nxref\n0 5\n0000000000 65535 f \n0000000018 00000 n \n0000000077 00000 n \n0000000178 00000 n \n0000000457 00000 n \ntrailer\n  <<  /Root 1 0 R\n      /Size 5\n  >>\nstartxref\n565\n%%EOF\n
---459dfb659a8e42199e3179c1c3c914d9--
+--87662e59982c4b9cbc63d41ceabff950--
