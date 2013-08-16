@@ -19,7 +19,7 @@ class TestNotFound(object):
         pdfprocess.app.add_url_rule('/404', 'NOT FOUND', self.abort)
         self._app = FlaskClient(pdfprocess.app)
 
-    def test_default_error_result(self):
+    def test_not_found_error(self):
         data, status, headers = self._app.get('/404')
         assert_equal(status, '404 NOT FOUND')
         assert_equal(headers['Content-Type'], 'text/html')

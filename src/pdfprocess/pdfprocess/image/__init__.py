@@ -1,11 +1,11 @@
 "pdfprocess image package"
 
 import base64
-import json
 import subprocess
 import tempfile
 
 import flask
+import simplejson as json
 
 import errors
 import pdfprocess
@@ -19,8 +19,7 @@ class Action(pdfprocess.Action):
         pdfprocess.Action.__init__(self, logger, request)
         self._input_name = self.request_form.get('inputName', '<anon>')
         self._output_form = self._get_output_form()
-        options = self.request_form.get('options', '')
-        self._options = json.loads(options) if options else {}
+        self._options = json.loads(self.request_form.get('options', '{}'))
         self._parser = ArgumentParser(self._log_request)
     def __call__(self):
         try:
@@ -35,11 +34,12 @@ class Action(pdfprocess.Action):
         return self.authorize_error(auth)
     def _get_image(self, input_name, output_file):
         with pdfprocess.Stdout() as stdout:
-            options = self._parser.options + output_file.options
+            options = self._parser.pdf2img_options + output_file.options
             args = ['pdf2img'] + options + [input_name, self.output_form]
             if subprocess.call(args, stdout=stdout):
                 logger = self._logger.debug
-                password = self.request_form.get('password', None)
+                password = next(
+                    (o for o in options if o.startswith('-password')), None)
                 return self.abort(errors.get_error(logger, password, stdout))
         with open(output_file.name, 'rb') as image_file:
             image = base64.b64encode(image_file.read())
@@ -54,8 +54,8 @@ class Action(pdfprocess.Action):
         if ' ' in input_name: input_name = '"%s"' % input_name
         options = ' '.join(parser_options)
         if options: options = ' ' + options
-        self._logger.info('pdf2img%s %s %s (%s)' %
-            (options, input_name, self.output_form, self.api_key))
+        self._logger.info('pdf2img%s %s %s %s' %
+            (options, input_name, self.output_form, self.client))
     def _pdf2img(self):
         with tempfile.NamedTemporaryFile() as input_file:
             self.input.save(input_file)

@@ -48,41 +48,42 @@
 # DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
 
 import base64
-import json
 import sys
 
 import requests
+import simplejson as json
 
 
-class Client(object):
+class Application(object):
     BASE_URL = 'https://pdfprocess.datalogics-cloud.com'
     VERSION = 0
 
-    ## Set #api_key and #base_url
-    #  @param api_key from [3scale](http://datalogics-cloud.3scale.net/)
-    def __init__(self, api_key, version=VERSION, base_url=BASE_URL):
-        self._api_key = api_key
-        self._base_url = '%s/api/%s' % (base_url, version)
+    ## @param id from [3scale](http://datalogics-cloud.3scale.net/)
+    #  @param key from [3scale](http://datalogics-cloud.3scale.net/)
+    def __init__(self, id, key):
+        self._id, self._key = (id, key)
+    def __str__(self):
+        return json.dumps({'id': self.id, 'key': self.key})
 
     ## Request factory
     # @return a Request object
     # @param request_type e.g. 'image'
-    def make_request(self, request_type):
+    def make_request(self, request_type, version=VERSION, base_url=BASE_URL):
         if request_type == 'image':
-            return ImageRequest(self)
+            return ImageRequest(self, version, base_url)
 
     @property
-    ## API key property (string)
-    def api_key(self): return self._api_key
+    ## ID property (string)
+    def id(self): return self._id
     @property
-    ## %Client URL property (string)
-    def base_url(self): return self._base_url
+    ## Key property (string)
+    def key(self): return self._key
 
 
 class Request(object):
-    def __init__(self, client, request_type):
-        self._url = '%s/actions/%s' % (client.base_url, request_type)
-        self._client_data = {'apiKey': client.api_key}
+    def __init__(self, application, request_type, version, base_url):
+        self._application = {'application': str(application)}
+        self._url = '%s/api/%s/actions/%s' % (base_url, version, request_type)
         self.reset()
 
     ## Post request
@@ -96,7 +97,7 @@ class Request(object):
 
     ## Reset #data
     def reset(self):
-        self._data = self._client_data.copy()
+        self._data = self._application.copy()
 
     @property
     ## %Request data property (dict), set by #post
@@ -107,8 +108,8 @@ class Request(object):
 
 
 class ImageRequest(Request):
-    def __init__(self, client):
-        Request.__init__(self, client, 'image')
+    def __init__(self, client, version, base_url):
+        Request.__init__(self, client, 'image', version, base_url)
 
     ## Post request
     #  @return an ImageResponse object
@@ -173,7 +174,7 @@ class ImageResponse(Response):
 ## Returned by Response.process_code
 class ProcessCode:
     OK = 0
-    InvalidKey = 1
+    AuthorizationError = 1
     InvalidSyntax = 2
     InvalidInput = 3
     InvalidPassword = 4
@@ -182,12 +183,12 @@ class ProcessCode:
     InvalidOutputType = 7
     InvalidPage = 8
     RequestTooLarge = 9
-    TooManyRequests = 10
+    UsageLimitExceeded = 10
     UnknownError = 20
 
 ## Returned by ImageResponse.process_code
 class ImageProcessCode(ProcessCode):
-    InvalidColorSpace = 21
+    InvalidColorModel = 21
     InvalidCompression = 22
     InvalidRegion = 23
 

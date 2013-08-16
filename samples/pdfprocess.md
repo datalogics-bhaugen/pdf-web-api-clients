@@ -2,12 +2,12 @@ The Datalogics PDF Web API provides secure, cloud-based PDF processing using
 Adobe and Datalogics PDF technologies. This is a RESTful service for the
 internet developer community that currently provides:
 
-* Rendering of PDF files using the Adobe PDF Library and Datalogics
-[PDF2IMG](http://www.datalogics.com/products/pdf2img/index.asp) technologies
+* Rendering of PDF files using the Adobe PDF Library and Datalogics PDF2IMG
+technologies
 
-### API Key
+### Application Key
 
-To use this service, first get an API key from
+To use this service, first get an application ID and key from
 [3scale](http://datalogics-cloud.3scale.net/). Then, you may address
 image service requests to this URL:
 
@@ -24,6 +24,7 @@ This sample has the following dependencies:
 
 * Python 3.3 or 2.7 (other versions might work, but are not supported)
 * [Requests](http://docs.python-requests.org/en/latest/): HTTP for Humans (1.2.3)
+* [simplejson](http://simplejson.readthedocs.org/en/latest/): JSON encoder and decoder
 
 ### Service Interface
 
@@ -35,10 +36,10 @@ This is a summary of the interface. For a detailed description, please review ou
 A request is a HTTP POST method. The message body is the request document,
 and the request parameters are encoded as form data.
 
-* Use the _apiKey_ parameter to specify the API key.
+* The _application_ parameter is a JSON object specifying the application ID and key, e.g. {'id': yourID, 'key': yourKey}.
 * Any request options are encoded as JSON in the optional _options_ parameter.
 * When the optional _inputName_ parameter is supplied, the server uses it when logging the request.
-* For image requests, use the optional _outputForm_ parameter to specify the image format (default=TIFF).
+* For image requests, the _outputForm_ parameter specifies the image format.
 
 Here is an [example of a request](examples/request.txt).
 

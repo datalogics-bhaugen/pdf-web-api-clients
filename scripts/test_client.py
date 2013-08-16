@@ -7,16 +7,19 @@ import os
 import sys
 
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+json_dir = glob.glob(os.path.join(root_dir, 'eggs', 'simplejson-*.egg'))[0]
 requests_dir = glob.glob(os.path.join(root_dir, 'eggs', 'requests-*.egg'))[0]
-sys.path[0:0] = [requests_dir, os.path.join(root_dir, 'samples', 'python')]
+samples_dir = os.path.join(root_dir, 'samples', 'python')
+sys.path[0:0] = [json_dir, requests_dir, samples_dir]
 
 from pdf2img import PDF2IMG
-from pdfclient import ProcessCode
+from pdfclient import Application, ImageProcessCode, ProcessCode
 
 
-API_KEY = 'f54ab5d8-5775-42c7-b888-f074ba892b57'
+APPLICATION_ID = '84445ec0'
+APPLICATION_KEY = '2d3eac77bb3b9bea69a91e625b9241d2'
 BASE_URL = 'https://pdfprocess-test.datalogics-cloud.com'
-VERSION = 0
+VERSION = Application.VERSION
 
 class StatusCode:
     OK = 200
@@ -28,11 +31,11 @@ class StatusCode:
     TooManyRequests = 429
     InternalServerError = 500
 
-def pdf2img(api_key=API_KEY, version=VERSION, base_url=BASE_URL):
-    return PDF2IMG(api_key, version, base_url)
+def pdf2img(id=APPLICATION_ID, key=APPLICATION_KEY):
+    return PDF2IMG(id, key)
 
 def run(argv):
-    return pdf2img()(argv)
+    return pdf2img()(VERSION, BASE_URL, argv)
 
 if __name__ == '__main__':
     response = run(sys.argv)

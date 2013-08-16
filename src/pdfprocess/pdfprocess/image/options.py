@@ -2,14 +2,15 @@
 
 
 class Option(object):
-    def __init__(self, name, normalize=True):
+    def __init__(self, name, pdf2img_name=None):
         self._name = name
-        self._normalize = normalize
-        self._normalized_name = name.lower()
+        self._pdf2img_name = pdf2img_name if pdf2img_name else name
     def __str__(self):
-        return self._normalized_name if self._normalize else self.name
-    def __eq__(self, other): return self._normalized_name == other.lower()
-    def __ne__(self, other): return not self == other
+        return self._pdf2img_name
+    def __eq__(self, other):
+        return self.name.lower() == other.lower()
+    def __ne__(self, other):
+        return not self == other
     @property
     def name(self): return self._name
     @property
@@ -19,13 +20,6 @@ class Option(object):
 class Flag(Option):
     @property
     def action(self): return 'store_true'
-
-class FlagAlias(Flag):
-    def __init__(self, name, pdf2img_name):
-        Flag.__init__(self, name)
-        self._pdf2img_name = pdf2img_name.lower()
-    def __str__(self):
-        return self._pdf2img_name
 
 
 class ImageSize(object):
@@ -50,16 +44,16 @@ class ImageSize(object):
 
 
 OPTIONS = [
-    Flag('OPP', normalize=False),
-    FlagAlias('disableColorManagement', 'noCMM'),
-    FlagAlias('disableThinLineEnhancement', 'noEnhanceThinLines'),
-    FlagAlias('printPreview', 'asPrinted'),
-    FlagAlias('suppressAnnotations', 'noAnnot'),
-    Option('colorModel'),
+    Flag('OPP'),
+    Flag('disableColorManagement', 'nocmm'),
+    Flag('disableThinLineEnhancement', 'noenhancethinlines'),
+    Flag('printPreview', 'asprinted'),
+    Flag('suppressAnnotations', 'noannot'),
+    Option('colormodel'),
     Option('compression'),
     Option('pages'),
     Option('password'),
-    Option('pdfRegion'),
+    Option('pdfRegion', 'pdfregion'),
     Option('resolution'),
     Option('smoothing')]
 
