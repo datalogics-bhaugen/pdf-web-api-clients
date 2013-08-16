@@ -52,7 +52,7 @@
 import os
 import sys
 
-import pdfclient
+from pdfclient import Application, ImageRequest
 
 
 ## Returned by PDF2IMG.__call__
@@ -61,8 +61,6 @@ class Response(object):
         base_filename = os.path.splitext(pdf2img.input_filename)[0]
         self._image_filename = '.'.join((base_filename, pdf2img.output_form))
         self._image_response = image_response
-    def __str__(self):
-        return str(self._image_response)
     def __bool__(self):
         return bool(self._image_response)
     __nonzero__ = __bool__
@@ -80,12 +78,14 @@ class Response(object):
 
 
 ## Sample pdfclient driver
-class PDF2IMG(pdfclient.Client):
-    ## @param argv e.g.
+class PDF2IMG(Application):
+    ## @param version e.g. Application.VERSION
+    #  @param base_url e.g. Application.BASE_URL
+    #  @param argv e.g.
     #      ['%pdf2img.py', '-pages=1', '-printPreview', 'PDF2IMG.pdf', 'jpg']
-    def __call__(self, argv):
+    def __call__(self, version, base_url, argv):
         self._initialize(argv)
-        request = pdfclient.ImageRequest(self)
+        request = ImageRequest(self, version, base_url)
         with open(self._input_filename, 'rb') as input_file:
             return Response(self,
                 request.post(input_file, self.output_form, **self.options))
@@ -119,8 +119,8 @@ class PDF2IMG(pdfclient.Client):
 
 
 def run(argv):
-    pdf2img = PDF2IMG('TODO: paste your API key here')
-    return pdf2img(argv)
+    pdf2img = PDF2IMG('TODO: Application ID', 'TODO: Application key')
+    return pdf2img(Application.VERSION, Application.BASE_URL, argv)
 
 if __name__ == '__main__':
     repsonse = run(sys.argv)

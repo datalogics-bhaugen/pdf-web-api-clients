@@ -43,19 +43,7 @@ We use Buildout, which is a three-step process. These steps are executed by the 
 
 ## Linux Installation
 
-* Configure nginx by editing /etc/nginx/sites-available/default
-    * Uncomment the last server section
-    * Change the root
-        * root /usr/share/nginx/www;
-    * On _pdfprocess_, set SSL options
-        * ssl_certificate /etc/nginx/ssl/server.crt;
-        * ssl_certificate_key /etc/nginx/ssl/server.key;
-        * ssl_verify_depth 3;
-    * On _pdfprocess-test_, set SSL options
-        * ssl_certificate /etc/nginx/ssl/server-test.crt;
-        * ssl_certificate_key /etc/nginx/ssl/server-test.key;
-        * ssl_verify_depth 3;
-    * If the SSL key is missing, copy the appropriate one from //zeus/raid1/proj/procyon/web-api/etc/nginx/ssl
+* If there is no SSL key in /etc/nginx/ssl, copy the appropriate one from //zeus/raid1/proj/procyon/web-api/etc/nginx/ssl
 * On _pdfprocess_, `sudo make install-production`
 * On _pdfprocess-test_, `sudo make install-test`
 * `bin/supervisord`
@@ -71,8 +59,8 @@ This application and its associated resources must be installed manually from ar
 * For Linux
     * Extract the two archives (one for pdf2img, one for its resources)
     * In your bin directory (e.g. /home/pdfprocess/bin), make a link to the pdf2img executable
-    * In your pdf2img directory, make links to the Resource folders
-    * Add the pdf2img directory to your LD_LIBRARY_PATH
+    * In your pdf2img directory, make links to the Resource directories
+    * In .profile, add the pdf2img directory to your LD_LIBRARY_PATH
 
 ## Run
 

@@ -3,17 +3,19 @@
 
 class Auth:
     "for internal use only"
-    OK, TooFast, BadKey, BadPassword, NoPassword, DRM, Unknown = range(7)
+    OK, TooFast, NotAuthorized, Unknown = range(4)
 
 
 class Code(object):
     @classmethod
     def format(cls, code):
-        return next(kv for kv in cls.__dict__.iteritems() if kv[1] == code)[0]
+        iteritems = cls.__dict__.iteritems()
+        code_value = next((kv for kv in iteritems if kv[1] == code), None)
+        if code_value: return code_value[0]
 
 class ProcessCode(Code):
     OK = 0
-    InvalidKey = 1
+    AuthorizationError = 1
     InvalidSyntax = 2
     InvalidInput = 3
     InvalidPassword = 4
@@ -22,11 +24,11 @@ class ProcessCode(Code):
     InvalidOutputType = 7
     InvalidPage = 8
     RequestTooLarge = 9
-    TooManyRequests = 10
+    UsageLimitExceeded = 10
     UnknownError = 20
 
 class ImageProcessCode(ProcessCode):
-    InvalidColorSpace = 21
+    InvalidColorModel = 21
     InvalidCompression = 22
     InvalidRegion = 23
 
@@ -46,6 +48,10 @@ class Error(object):
         self._process_code = process_code
         self._status_code = status_code
         self._text = text
+    def __str__(self):
+        code = ProcessCode.format(self.process_code)
+        if code is None: code = ImageProcessCode.format(self.process_code)
+        return '%s: %s' % (code, self.text)
     @property
     def process_code(self): return self._process_code
     @property

@@ -1,8 +1,20 @@
 #!/usr/bin/env python
 
-"filter buildout output to produce versions.cfg"
+"extract package versions from buildout output to produce versions.cfg"
 
 import fileinput
+
+print('''\
+# If you do not want to use the latest package versions, set the PLATFORM
+# Makefile variable to a value other than 'Darwin'.
+#
+# If git indicates that this file changed, run all our tests and push the
+# new version of this file if there are no regressions.
+#
+# If there are regressions, add a comment to this file explaining why we
+# cannot use the latest package versions. Identify the package version(s)
+# causing the regression(s) so we will know when it's time to retest, etc.
+''')
 
 buildout_stdout = [line for line in fileinput.input()]
 

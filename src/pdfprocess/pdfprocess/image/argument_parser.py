@@ -4,27 +4,6 @@ import argparse
 from options import Flag, ImageSize, Option, OPTIONS
 
 
-class ImageSize(object):
-    OPTIONS = [Option('width'), Option('height')]
-    def __init__(self):
-        self._dimensions = {}
-    def __setitem__(self, key, value):
-        self._dimensions[key.lower()] = value
-    def options(self):
-        if len(self._dimensions) == 2:
-            return ['-pixelcount=%sx%s' % (self.width, self.height)]
-        elif 'width' in self._dimensions:
-            return ['-pixelcount=w:%s' % self.width]
-        elif self._dimensions:
-            return ['-pixelcount=h:%s' % self.height]
-        else:
-            return []
-    @property
-    def width(self): return self._dimensions['width']
-    @property
-    def height(self): return self._dimensions['height']
-
-
 class ArgumentParser(argparse.ArgumentParser):
     def __init__(self, logger):
         argparse.ArgumentParser.__init__(self, 'actions/image')
@@ -61,21 +40,29 @@ class ArgumentParser(argparse.ArgumentParser):
             if option.startswith(option_prefix):
                 return option[len(option_prefix):]
     def _set_options(self, options):
-        flag_syntax, name_value_syntax = ('-%s', '-%s=%s')
+        flag_syntax, option_syntax = ('-%s', '-%s=%s')
         self._options = self._image_size_options(options)
+        self._pdf2img_options = list(self.options)
         for key, value in options.iteritems():
             if key in ImageSize.OPTIONS: continue
             option = OPTIONS[OPTIONS.index(key)] if key in OPTIONS else None
             if isinstance(option, Flag):
-                if value: self.options.append(flag_syntax % option)
+                if value:
+                    self.options.append(flag_syntax % option.name)
+                    self.pdf2img_options.append(flag_syntax % option)
             elif isinstance(option, Option):
-                self.options.append(name_value_syntax % (option, value))
+                self.options.append(option_syntax % (option.name, value))
+                self.pdf2img_options.append(option_syntax % (option, value))
             elif value is True:
                 self.options.append(flag_syntax % key)
+                self.pdf2img_options.append(flag_syntax % key)
             else:
-                self.options.append(name_value_syntax % (key, value))
+                self.options.append(option_syntax % (key, value))
+                self.pdf2img_options.append(option_syntax % (key, value))
     @property
     def options(self): return self._options
     @property
     def pages(self): return self._pages
+    @property
+    def pdf2img_options(self): return self._pdf2img_options
 
