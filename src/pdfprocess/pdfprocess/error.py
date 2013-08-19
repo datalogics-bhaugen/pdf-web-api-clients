@@ -6,33 +6,31 @@ class Auth:
     OK, TooFast, NotAuthorized, Unknown = range(4)
 
 
-class Code(object):
-    @classmethod
-    def format(cls, code):
-        iteritems = cls.__dict__.iteritems()
-        code_value = next((kv for kv in iteritems if kv[1] == code), None)
-        if code_value: return code_value[0]
+class EnumValue(object):
+    def __init__(self, name, value):
+        self._name, self._value = (name, value)
+    def __str__(self):
+        return self._name
+    def __int__(self):
+        return self._value
 
-class ProcessCode(Code):
-    OK = 0
-    AuthorizationError = 1
-    InvalidSyntax = 2
-    InvalidInput = 3
-    InvalidPassword = 4
-    MissingPassword = 5
-    AdeptDRM = 6
-    InvalidOutputType = 7
-    InvalidPage = 8
-    RequestTooLarge = 9
-    UsageLimitExceeded = 10
-    UnknownError = 20
 
-class ImageProcessCode(ProcessCode):
-    InvalidColorModel = 21
-    InvalidCompression = 22
-    InvalidRegion = 23
+class ProcessCode(object):
+    OK = EnumValue('OK', 0)
+    AuthorizationError = EnumValue('AuthorizationError', 1)
+    InvalidSyntax = EnumValue('InvalidSyntax', 2)
+    InvalidInput = EnumValue('InvalidInput', 3)
+    InvalidPassword = EnumValue('InvalidPassword', 4)
+    MissingPassword = EnumValue('MissingPassword', 5)
+    AdeptDRM = EnumValue('AdeptDRM', 6)
+    InvalidOutputType = EnumValue('InvalidOutputType', 7)
+    InvalidPage = EnumValue('InvalidPage', 8)
+    RequestTooLarge = EnumValue('RequestTooLarge', 9)
+    UsageLimitExceeded = EnumValue('UsageLimitExceeded', 10)
+    UnknownError = EnumValue('UnknownError', 20)
 
-class StatusCode(Code):
+
+class StatusCode:
     OK = 200
     BadRequest = 400
     Forbidden = 403
@@ -49,9 +47,7 @@ class Error(object):
         self._status_code = status_code
         self._text = text
     def __str__(self):
-        code = ProcessCode.format(self.process_code)
-        if code is None: code = ImageProcessCode.format(self.process_code)
-        return '%s: %s' % (code, self.text)
+        return '%s: %s' % (self.process_code, self.text)
     @property
     def process_code(self): return self._process_code
     @property

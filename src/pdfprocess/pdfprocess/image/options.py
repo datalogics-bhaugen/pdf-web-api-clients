@@ -16,7 +16,6 @@ class Option(object):
     @property
     def action(self): return 'store'
 
-
 class Flag(Option):
     @property
     def action(self): return 'store_true'
@@ -51,6 +50,7 @@ OPTIONS = [
     Flag('suppressAnnotations', 'noannot'),
     Option('colormodel'),
     Option('compression'),
+    Option('outputForm'),
     Option('pages'),
     Option('password'),
     Option('pdfRegion', 'pdfregion'),
