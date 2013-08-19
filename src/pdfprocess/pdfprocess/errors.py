@@ -1,4 +1,4 @@
-"pdfprocess error classes"
+"pdfprocess error definitions"
 
 
 class Auth:
@@ -48,6 +48,8 @@ class Error(object):
         self._text = text
     def __str__(self):
         return '%s: %s' % (self.process_code, self.text)
+    def copy(self, text):
+        return Error(self.process_code, text, self.status_code)
     @property
     def process_code(self): return self._process_code
     @property
@@ -56,4 +58,18 @@ class Error(object):
     def text(self): return self._text
     @process_code.setter
     def process_code(self, value): self._process_code = value
+
+
+ERRORS = [
+    Error(ProcessCode.InvalidInput, "File does not begin with '%PDF-'.",
+        StatusCode.UnsupportedMediaType),
+    Error(ProcessCode.InvalidInput,
+        'The file is damaged and could not be repaired.'),
+    Error(ProcessCode.InvalidPassword, 'This document requires authentication',
+        StatusCode.Forbidden),
+    Error(ProcessCode.MissingPassword, 'This document requires authentication',
+        StatusCode.Forbidden),
+    Error(ProcessCode.AdeptDRM,
+        'The security plug-in required by this command is unavailable.',
+        StatusCode.Forbidden)]
 

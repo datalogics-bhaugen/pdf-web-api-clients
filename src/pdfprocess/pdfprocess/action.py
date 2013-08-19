@@ -5,13 +5,13 @@ import flask
 import simplejson as json
 
 from ThreeScalePY import ThreeScaleAuthorize
-from error import Auth, Error, ProcessCode, StatusCode
+from errors import Auth, Error, ProcessCode, StatusCode
 
 
 PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
 
 
-ERRORS = [
+AUTH_ERRORS = [
     None,
     Error(ProcessCode.UsageLimitExceeded, 'Usage limit exceeded',
         StatusCode.TooManyRequests),
@@ -29,11 +29,6 @@ class Client(object):
     def authorize(self):
         three_scale = ThreeScaleAuthorize(PROVIDER_KEY, self._id, self._key)
         return three_scale.authorize()
-    def report(self):
-        try:
-            asdf
-        except ThreeScalePY.ThreeScaleException as exc:
-            self.logger.error(exc)
 
 
 class Action(object):
@@ -56,7 +51,7 @@ class Action(object):
             return Auth.Unknown
         return self._not_authorized() # TODO: Auth.TooFast when appropriate
     def authorize_error(self, auth):
-        return self.abort(ERRORS[auth])
+        return self.abort(AUTH_ERRORS[auth])
     def _not_authorized(self):
         self.logger.error('%s not authorized' % self.client)
         return Auth.NotAuthorized

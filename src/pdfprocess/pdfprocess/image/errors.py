@@ -10,19 +10,10 @@ class ProcessCode(pdfprocess.ProcessCode):
     InvalidRegion = EnumValue('InvalidRegion', 23)
 
 
-ERRORS = [
+ERRORS = pdfprocess.ERRORS + [
     Error(ProcessCode.InvalidSyntax, 'An option is missing the = sign'),
     Error(ProcessCode.InvalidSyntax,
         'An option requiring a value has no value supplied.'),
-    Error(ProcessCode.InvalidInput, "File does not begin with '%PDF-'.",
-        StatusCode.UnsupportedMediaType),
-    Error(ProcessCode.InvalidInput,
-        'The file is damaged and could not be repaired.'),
-    Error(ProcessCode.InvalidPassword, 'This document requires authentication',
-        StatusCode.Forbidden),
-    Error(ProcessCode.AdeptDRM,
-        'The security plug-in required by this command is unavailable.',
-        StatusCode.Forbidden),
     Error(ProcessCode.InvalidOutputType, 'Invalid output type'),
     Error(ProcessCode.InvalidPage, "Could not parse '-pages' option."),
     Error(ProcessCode.InvalidPage, 'greater than last PDF page'),
@@ -35,15 +26,15 @@ ERRORS = [
 UNKNOWN = Error(ProcessCode.UnknownError, '', StatusCode.InternalServerError)
 
 
-def get_error(logger, no_password, stdout):
+def get_error(logger, stdout):
     errors = _get_errors(stdout)
-    error_string = ''.join([error for error in errors])
-    result = next((e for e in ERRORS if e.text in error_string), UNKNOWN)
-    if result == UNKNOWN:
+    error_text = ' '.join([error for error in errors])
+    try:
+        error = next(e for e in ERRORS if e.text in error_text)
+        return error.copy(error_text)
+    except StopIteration:
         for error in errors: logger(error)
-    if result.process_code == ProcessCode.InvalidPassword and no_password:
-        result.process_code = ProcessCode.MissingPassword
-    return result
+        return UNKNOWN
 
 def _get_errors(stdout):
     result = []

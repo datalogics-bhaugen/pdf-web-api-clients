@@ -5,7 +5,7 @@ import logging
 import flask
 
 from .action import Action
-from .error import Auth, EnumValue, Error, ProcessCode, StatusCode
+from .errors import Auth, ERRORS, EnumValue, Error, ProcessCode, StatusCode
 from .file_handler import FileHandler
 from .stdout import Stdout
 

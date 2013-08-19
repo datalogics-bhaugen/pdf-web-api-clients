@@ -14,6 +14,9 @@ from .argument_parser import ArgumentParser, Flag
 from .output_file import OutputFile
 
 
+OUTPUT_FORMS = ('gif', 'jpg', 'png', 'tif')
+
+
 class Action(pdfprocess.Action):
     def __init__(self, logger, request):
         pdfprocess.Action.__init__(self, logger, request)
@@ -28,15 +31,18 @@ class Action(pdfprocess.Action):
         if self.multipage_request and self.output_form != 'tif':
             exc_info = 'Use TIFF format for multi-page image requests'
             return self.abort(Error(ProcessCode.InvalidPage, exc_info))
-        if self.output_form not in ('gif', 'jpg', 'png', 'tif'):
-            error = "outputForm must be one of: 'gif', 'jpg', 'png', or 'tif'"
+        if self.output_form not in OUTPUT_FORMS:
+            error = 'outputForm must be one of ' + str(OUTPUT_FORMS)
             return self.abort(Error(ProcessCode.InvalidOutputType, error))
         auth = self.authorize()
         if auth in (Auth.OK, Auth.Unknown): return self._pdf2img()
         return self.authorize_error(auth)
     def _get_error(self, stdout):
-        no_password = not self._have_password()
-        return errors.get_error(self._logger.debug, no_password, stdout)
+        no_password = not self._password_received()
+        result = errors.get_error(self._logger.debug, stdout)
+        if result.process_code == ProcessCode.InvalidPassword and no_password:
+            result.process_code = ProcessCode.MissingPassword
+        return result
     def _get_image(self, input_name, output_file):
         with pdfprocess.Stdout() as stdout:
             options = self._parser.pdf2img_options + output_file.options
@@ -46,10 +52,6 @@ class Action(pdfprocess.Action):
         with open(output_file.name, 'rb') as image_file:
             image = base64.b64encode(image_file.read())
             return self.response(ProcessCode.OK, image)
-    def _have_password(self):
-        for option in self._parser.pdf2img_options:
-            if option.startswith('-password='):
-                return True
     def _log_request(self, parser_options):
         input_name = self.input_name
         if ' ' in input_name: input_name = '"%s"' % input_name
@@ -57,6 +59,10 @@ class Action(pdfprocess.Action):
         if options: options = ' ' + options
         self._logger.info('pdf2img%s %s %s %s' %
             (options, input_name, self.output_form, self.client))
+    def _password_received(self):
+        for option in self._parser.pdf2img_options:
+            if option.startswith('-password='):
+                return True
     def _pdf2img(self):
         with tempfile.NamedTemporaryFile() as input_file:
             self.input.save(input_file)
