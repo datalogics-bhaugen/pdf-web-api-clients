@@ -1,0 +1,308 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<style>
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote {
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", Arial, sans-serif;
+    font-size: 13px;
+    line-height: 18px;
+    color: #737373;
+    background-color: white;
+    margin: 10px 13px 10px 13px;
+}
+table {
+	margin: 10px 0 15px 0;
+	border-collapse: collapse;
+}
+td,th {	
+	border: 1px solid #ddd;
+	padding: 3px 10px;
+}
+th {
+	padding: 5px 10px;	
+}
+
+a {
+    color: #0069d6;
+}
+a:hover {
+    color: #0050a3;
+    text-decoration: none;
+}
+a img {
+    border: none;
+}
+p {
+    margin-bottom: 9px;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #404040;
+    line-height: 36px;
+}
+h1 {
+    margin-bottom: 18px;
+    font-size: 30px;
+}
+h2 {
+    font-size: 24px;
+}
+h3 {
+    font-size: 18px;
+}
+h4 {
+    font-size: 16px;
+}
+h5 {
+    font-size: 14px;
+}
+h6 {
+    font-size: 13px;
+}
+hr {
+    margin: 0 0 19px;
+    border: 0;
+    border-bottom: 1px solid #ccc;
+}
+blockquote {
+    padding: 13px 13px 21px 15px;
+    margin-bottom: 18px;
+    font-family:georgia,serif;
+    font-style: italic;
+}
+blockquote:before {
+    content:"\201C";
+    font-size:40px;
+    margin-left:-10px;
+    font-family:georgia,serif;
+    color:#eee;
+}
+blockquote p {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 18px;
+    margin-bottom: 0;
+    font-style: italic;
+}
+code, pre {
+    font-family: Monaco, Andale Mono, Courier New, monospace;
+}
+code {
+    background-color: #fee9cc;
+    color: rgba(0, 0, 0, 0.75);
+    padding: 1px 3px;
+    font-size: 12px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+pre {
+    display: block;
+    padding: 14px;
+    margin: 0 0 18px;
+    line-height: 16px;
+    font-size: 11px;
+    border: 1px solid #d9d9d9;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+pre code {
+    background-color: #fff;
+    color:#737373;
+    font-size: 11px;
+    padding: 0;
+}
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+* {
+	-webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:10px auto;
+    }
+}
+@media print {
+	body,code,pre code,h1,h2,h3,h4,h5,h6 {
+		color: black;
+	}
+	table, pre {
+		page-break-inside: avoid;
+	}
+}
+</style>
+<title>Image request parameters</title>
+
+</head>
+<body>
+<!-- use Mou to export .../doc/html/image/parameters.pdf from this document -->
+
+
+<h2>Image request parameters</h2>
+
+<p><br>
+Parameter names are case-insensitive.
+All boolean parameters default to <strong>false</strong>.</p>
+
+<h3><a id="colorModel">colorModel</a>: string</h3>
+
+<p>The colorModel setting sets the target output colorspace for drawing PDF pages.</p>
+
+<ul>
+<li><strong>rgb</strong> (default): draw 24-bit RGB images, using 8 bits/channel</li>
+<li><strong>gray</strong>: draw 8-bit grayscale images</li>
+<li><strong>rgba</strong>: draw 32-bit RGBA images, using 8 bits/channel</li>
+<li><strong>cmyk</strong>: draw 32-bit CMYK images, using 8 bits/channel</li>
+</ul>
+
+
+<p>Gray and RGB format are valid for all output formats. RGBA format is valid only for TIFF and PNG output formats. CMYK format is only valid for TIFF output format. When drawing to CMYK format, note that CMYK channels with color values of 0 are drawn in knockout mode, not as transparent pixels.</p>
+
+<h3><a id="compression">compression</a>: string</h3>
+
+<p>The compression setting controls the compression algorithm used by a TIFF file written by the PDF Web API.</p>
+
+<ul>
+<li><strong>lzw</strong> (default): create a file compressed via the LZW algorithm. Such files are compressed with a lossless algorithm, resulting in files larger than those compressed with JPEG but without any loss of image quality.</li>
+<li><strong>jpg</strong>: create a file compressed via the DCT (JPEG) algorithm. This file is compressed in a lossy manner, trading image quality for a significant reduction in file size.</li>
+</ul>
+
+
+<h3><a id="disableColorManagement">disableColorManagement</a>: boolean</h3>
+
+<p>Changing this setting is recommended only in rare cases where your workflow manages colors in a downstream process or engine and is using PDF files that are intentionally expressed in device colors.</p>
+
+<ul>
+<li><strong>false</strong> (default): Color management is enabled for required color conversions of PDF elements to intermediate and blending color spaces, and from intermediate color spaces to the target output color space; color conversion is done via the Adobe Color Engine (ACE).</li>
+<li><strong>true</strong>: No color management is performed. Simple transforms are used between color models, with colors in the same family used verbatim regardless of actual calibration.</li>
+</ul>
+
+
+<h3><a id="disableThinLineEnhancement">disableThinLineEnhancement</a>: boolean</h3>
+
+<p>Changing this setting is recommended only when creating high-resolution output files where line enhancement is not desired.</p>
+
+<ul>
+<li><strong>false</strong> (default): Thin line enhancement is performed with the goal of ensuring that very thin lines maintain their visibility in created output files. This can lead to some lines becoming slightly thicker than they are in the PDF file, in order to stay visible.</li>
+<li><strong>true</strong>: No thin line enhancement is performed.</li>
+</ul>
+
+
+<h3><a id="OPP">OPP</a>: boolean</h3>
+
+<p>When ink is placed by a printer, typically inks are layered over each other - rather than knocking out the color underneath, some blending of the color underneath takes place as inks are printed on top of each other (overprinted). Overprint Preview (OPP) may be used to simulate the effect of overprinting inks on devices that support overprinting. This can cause some conversion of black to gray in CMYK format output files.</p>
+
+<ul>
+<li><strong>false</strong> (default): No color blend conversion is performed.</li>
+<li><strong>true</strong>: PDF elements are converted through an intermediate CMYK blending space, before being written to the target output colorspace.</li>
+</ul>
+
+
+<p>Usually this will be used when generating previews or proofs of PDF files that will ultimately be printed on CMYK-format output devices where ink overprinting is supported.</p>
+
+<h3><a id="outputForm">outputForm</a>: string</h3>
+
+<p>One of the following output formats:</p>
+
+<ul>
+<li>tif (default)</li>
+<li>gif</li>
+<li>jpg</li>
+<li>png</li>
+</ul>
+
+
+<h3><a id="pages">pages</a>: string</h3>
+
+<p>The pages parameter specifies the set of pages to print. It is a list of comma-separated pages or page ranges to place in the output file, with the first page being page 1 and pages drawn in ascending order.</p>
+
+<ul>
+<li>[number]: a single page number to print</li>
+<li>[number]-[number]: a page range to print, inclusively</li>
+<li><strong>last</strong>: special keyword to designate the last page of a PDF file</li>
+</ul>
+
+
+<p>Default: all pages for TIFF, first page for other formats.</p>
+
+<p>Example: for a 16 page PDF file <em>2-4,7,9,14-last</em> will draw pages 2, 3, 4, 7, 9, 14, 15 and 16.</p>
+
+<h3><a id="password">password</a>: string</h3>
+
+<p>The password parameter specifies a password to be used to open PDF files that have been protected by a password. If required by a PDF file for processing, the password supplied must be one that allows for document permission for export and for content copying.</p>
+
+<p>Note that this API does not support opening certificate-protected PDF files; PDF files protected with the ADEPT DRM scheme (such as those protected by Adobe Content Server); nor PDF files protected by LiveCycle Policy Server.</p>
+
+<p>Valid values: any string value (no default)</p>
+
+<h3><a id="pdfRegion">pdfRegion</a>: string</h3>
+
+<p>The pdfRegion parameter specifies the region of PDF pages to draw. See section 14.11.2 of ISO 32000-1:2008 for a discussion on these regions and their relation to PDF pages.</p>
+
+<ul>
+<li><strong>crop</strong> (default)</li>
+<li><strong>art</strong></li>
+<li><strong>bleed</strong></li>
+<li><strong>bounding</strong></li>
+<li><strong>media</strong></li>
+<li><strong>trim</strong></li>
+</ul>
+
+
+<h3><a id="printPreview">printPreview</a>: boolean</h3>
+
+<ul>
+<li><strong>false</strong> (default): Annotations that have normal appearance streams defined are drawn if they are marked as for display.</li>
+<li><strong>true</strong>: Annotations that have default appearance streams defined are drawn if they are marked as for printing.</li>
+</ul>
+
+
+<p>This parameter has no effect if suppressAnnotations is <strong>true</strong>.</p>
+
+<h3><a id="resolution">resolution</a>: integer</h3>
+
+<p>The resolution parameter specifies the horizontal and vertical resoultions used in drawing PDF pages to output pages, in pixels per inch. This information is written to the output image (except for GIF files, where this is not supported by the format) in order to preserve the physical dimensions of the image in the output. Note that this API draws square pixels, and has no support for non-square pixel rendering.</p>
+
+<p>Valid values: 12 to 2400, inclusive (default=300)</p>
+
+<h3><a id="smoothing">smoothing</a>: string</h3>
+
+<p>The smoothing parameter specifies the types of elements that are antialiased when drawn.</p>
+
+<ul>
+<li><strong>all</strong> (default): antialias and smooth text, line elements and smooth images.</li>
+<li><strong>none</strong>: do not smooth any elements. This is typically only desired when rendering to a high resolution.</li>
+<li><strong>text</strong>: antialias and smooth text elements only. This can be useful when drawing PDF files with large amounts of line art, where sharp edges are required to be preserved.</li>
+</ul>
+
+
+<h3><a id="suppressAnnotations">suppressAnnotations</a>: boolean</h3>
+
+<ul>
+<li><strong>false</strong> (default): Annotations that have normal appearance streams defined and that are defined as for display will be drawn to the output file.</li>
+<li><strong>true</strong>: Annotation drawing is suppressed and only actual PDF page contents are drawn.</li>
+</ul>
+
+</body>
+</html>
