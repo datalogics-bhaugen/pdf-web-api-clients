@@ -1,13 +1,18 @@
 DOXYGEN = doc/html/index.html
 PDF2IMG = $(HOME)/bin/pdf2img
 PLATFORM = $(shell uname -s)
+VENV = eggs/virtualenv-*.egg/virtualenv.py
 
+# TODO: install libxml2 in venv
 build: html $(PDF2IMG)
 ifeq ($(PLATFORM), Darwin)
 	echo "" > versions.cfg
 endif
-	python bootstrap.py
+	python virtualenv.py --never-download --system-site-packages venv
+	venv/bin/python bootstrap.py
 	bin/buildout | scripts/versions > versions.cfg
+	@diff $(VENV) virtualenv.py > /dev/null || echo Upgrade virtualenv!
+	@cp $(VENV) .
 
 clean:
 	rm -rf .installed.cfg bin develop-eggs parts var/log

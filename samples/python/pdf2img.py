@@ -82,31 +82,33 @@ class PDF2IMG(Application):
     ## @param version e.g. Application.VERSION
     #  @param base_url e.g. Application.BASE_URL
     #  @param argv e.g.
-    #      ['%pdf2img.py', '-pages=1', '-printPreview', 'PDF2IMG.pdf', 'jpg']
+    #      ['%pdf2img.py', '-outputForm=jpg', '-printPreview', 'PDF2IMG.pdf']
     def __call__(self, version, base_url, argv):
         self._initialize(argv)
         request = ImageRequest(self, version, base_url)
         with open(self._input_filename, 'rb') as input_file:
             return Response(self,
-                request.post(input_file, self.output_form, **self.options))
+                request.post(input_file, **self.options))
 
     def _initialize(self, argv):
         try:
             self._parse_args(argv)
         except Exception:
-            sys.exit('syntax: %s [options] inputFile outputForm' % argv[0])
+            sys.exit('syntax: %s [options] inputFile' % argv[0])
         self._image_filename = None
     def _parse_args(self, argv):
-        self._set_options(argv[1:-2])
-        self._input_filename = argv[-2]
-        self._output_form = argv[-1]
+        self._output_form = 'tif'
+        self._set_options(argv[1:-1])
+        self._input_filename = argv[-1]
     def _set_options(self, argv):
         self._options = {}
         for arg in argv:
-            if arg.startswith('-'):
-                arg = arg[1:]
-                option, value = arg.split('=') if '=' in arg else (arg, True)
-                self._options[option] = value
+            if not arg.startswith('-'): sys.exit('syntax error: %s' % argv)
+            arg = arg[1:]
+            option, value = arg.split('=') if '=' in arg else (arg, True)
+            self._options[option] = value
+            if option.lower() == 'outputform':
+                self._output_form = value
     @property
     ## Input filename passed to __call__
     def input_filename(self): return self._input_filename

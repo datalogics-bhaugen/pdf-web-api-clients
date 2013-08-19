@@ -114,14 +114,22 @@ class ImageRequest(Request):
     ## Post request
     #  @return an ImageResponse object
     #  @param input request document file object
-    #  @param output_form output graphic format, e.g. 'jpg'
-    #  @param options e.g. {'pages': '1', 'printPreview': True}
-    #
-    #  Valid output_form values: 'eps', 'gif', 'jpg', 'png', 'raw', and 'tif'.
-    #  Here is a [description of the options](image/parameters.pdf).
-    def post(self, input, output_form, **options):
+    #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
+    #  * [colorModel](image/parameters.html#colorModel)
+    #  * [compression](image/parameters.html#compression)
+    #  * [disableColorManagement](image/parameters.html#disableColorManagement)
+    #  * [disableThinLineEnhancement](image/parameters.html#disableThinLineEnhancement)
+    #  * [OPP](image/parameters.html#OPP)
+    #  * [outputForm](image/parameters.html#outputForm)
+    #  * [pages](image/parameters.html#pages)
+    #  * [password](image/parameters.html#password)
+    #  * [pdfRegion](image/parameters.html#pdfRegion)
+    #  * [printPreview](image/parameters.html#printPreview)
+    #  * [resolution](image/parameters.html#resolution)
+    #  * [smoothing](image/parameters.html#smoothing)
+    #  * [suppressAnnotations](image/parameters.html#suppressAnnotations)
+    def post(self, input, **options):
         self.reset()
-        self.data['outputForm'] = output_form
         return ImageResponse(Request.post(self, input, **options))
 
 

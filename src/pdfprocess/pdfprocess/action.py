@@ -25,13 +25,15 @@ class Client(object):
         self._id = str(application.get('id', ''))
         self._key = str(application.get('key', ''))
     def __str__(self):
-        return "{id:'%s', key:'%s'}" % (self.id, self.key)
+        return "(id='%s', key='%s')" % (self._id, self._key)
     def authorize(self):
-        return ThreeScaleAuthorize(PROVIDER_KEY, self.id, self.key).authorize()
-    @property
-    def id(self): return self._id
-    @property
-    def key(self): return self._key
+        three_scale = ThreeScaleAuthorize(PROVIDER_KEY, self._id, self._key)
+        return three_scale.authorize()
+    def report(self):
+        try:
+            asdf
+        except ThreeScalePY.ThreeScaleException as exc:
+            self.logger.error(exc)
 
 
 class Action(object):
@@ -42,20 +44,25 @@ class Action(object):
         self._request_form = request.form
     def abort(self, error):
         self.logger.error(error)
-        return self.response(error.process_code, error.text, error.status_code)
+        process_code = int(error.process_code)
+        return self.response(process_code, error.text, error.status_code)
     def authorize(self):
-        try: return Auth.OK if self.client.authorize() else Auth.TooFast
+        try:
+            if self.client.authorize(): return Auth.OK
         except ThreeScalePY.ThreeScaleServerError:
-            self.logger.error('%s not authorized' % self.client)
-            return Auth.NotAuthorized
+            return self._not_authorized()
         except ThreeScalePY.ThreeScaleException as exc:
             self.logger.error(exc)
             return Auth.Unknown
+        return self._not_authorized() # TODO: Auth.TooFast when appropriate
     def authorize_error(self, auth):
         return self.abort(ERRORS[auth])
+    def _not_authorized(self):
+        self.logger.error('%s not authorized' % self.client)
+        return Auth.NotAuthorized
     @classmethod
     def response(cls, process_code, output, status_code=StatusCode.OK):
-        json = flask.jsonify(processCode=process_code, output=output)
+        json = flask.jsonify(processCode=int(process_code), output=output)
         return json, status_code
     @property
     def client(self): return self._client

@@ -13,19 +13,6 @@ image service requests to this URL:
 
     https://pdfprocess.datalogics-cloud.com/api/0/actions/image
 
-### Sample Client
-
-To facilitate using this service, we supply a sample Python
-[script](pdf2img_8py_source.html) and [client](classpdfclient_1_1_client.html)
-module. After downloading these files and copying your API key into the script,
-you can use the script's command-line interface to request images.
-
-This sample has the following dependencies:
-
-* Python 3.3 or 2.7 (other versions might work, but are not supported)
-* [Requests](http://docs.python-requests.org/en/latest/): HTTP for Humans (1.2.3)
-* [simplejson](http://simplejson.readthedocs.org/en/latest/): JSON encoder and decoder
-
 ### Service Interface
 
 This is a summary of the interface. For a detailed description, please review our sample client or visit our 3scale
@@ -50,7 +37,18 @@ The message body of the HTTP response is a JSON object:
 * _processCode_ (int) is 0 if the request was successful, or a nonzero code identifying the error.
 * _output_ (string) contains base64-encoded data if the request was successful, or information about the error.
 
-Here is an [example of a response](examples/response.txt).
+### Sample Client
+
+To facilitate using this service, we supply a sample Python
+[script](pdf2img_8py_source.html) and [client](classpdfclient_1_1_client.html)
+module. After downloading these files and copying your API key into the script,
+you can use the script's command-line interface to request images.
+
+This sample has the following dependencies:
+
+* Python 3.3 or 2.7 (other versions might work, but are not supported)
+* [Requests](http://docs.python-requests.org/en/latest/): HTTP for Humans (1.2.3)
+* [simplejson](http://simplejson.readthedocs.org/en/latest/): JSON encoder and decoder
 
 ### Resources
 

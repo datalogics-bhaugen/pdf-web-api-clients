@@ -10,11 +10,12 @@ class ArgumentParser(argparse.ArgumentParser):
         self._logger = logger
         for option in OPTIONS + ImageSize.OPTIONS:
             self.add_argument('-%s' % option.name, action=option.action)
-    def __call__(self, options, output_form):
+    def __call__(self, options):
         self._set_options(options)
+        self._set_output_form(options)
         self._logger(self.options)
         self.parse_args(self.options)
-        self._pages = self._get_pages(output_form)
+        self._pages = self._get_pages()
         self._add_smoothing_option()
     def error(self, message):
         "overrides argparse.ArgumentParser.error"
@@ -23,11 +24,15 @@ class ArgumentParser(argparse.ArgumentParser):
         smoothing_prefix = '-smoothing='
         smoothing = self._option_value(smoothing_prefix)
         if not smoothing: self.options.append(smoothing_prefix + 'all')
-    def _get_pages(self, output_form):
+    def _get_output_form(self, options):
+        for key, value in options.iteritems():
+            if key.lower() == 'outputform':
+                return value.lower()
+    def _get_pages(self):
         pages_prefix = '-pages='
         pages = self._option_value(pages_prefix)
         if pages: return pages
-        pages = '' if output_form == 'tif' else '1'
+        pages = '' if self.output_form == 'tif' else '1'
         if pages: self._options.append(pages_prefix + pages)
         return pages
     def _image_size_options(self, options):
@@ -44,7 +49,7 @@ class ArgumentParser(argparse.ArgumentParser):
         self._options = self._image_size_options(options)
         self._pdf2img_options = list(self.options)
         for key, value in options.iteritems():
-            if key in ImageSize.OPTIONS: continue
+            if key in ImageSize.OPTIONS or key == 'outputForm': continue
             option = OPTIONS[OPTIONS.index(key)] if key in OPTIONS else None
             if isinstance(option, Flag):
                 if value:
@@ -59,8 +64,15 @@ class ArgumentParser(argparse.ArgumentParser):
             else:
                 self.options.append(option_syntax % (key, value))
                 self.pdf2img_options.append(option_syntax % (key, value))
+    def _set_output_form(self, options):
+        output_form = self._get_output_form(options)
+        if output_form == 'jpeg': output_form = 'jpg'
+        if output_form == 'tiff': output_form = 'tif'
+        self._output_form = output_form or 'tif'
     @property
     def options(self): return self._options
+    @property
+    def output_form(self): return self._output_form
     @property
     def pages(self): return self._pages
     @property
