@@ -107,7 +107,7 @@ class PDF2IMG(Application):
             arg = arg[1:]
             option, value = arg.split('=') if '=' in arg else (arg, True)
             self._options[option] = value
-            if arg.lower() == 'outputform':
+            if option.lower() == 'outputform':
                 self._output_form = value
     @property
     ## Input filename passed to __call__
