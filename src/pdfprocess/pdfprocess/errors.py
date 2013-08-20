@@ -3,7 +3,7 @@
 
 class Auth:
     "for internal use only"
-    OK, TooFast, NotAuthorized, Unknown = range(4)
+    OK, TooFast, Invalid, Unknown = range(4)
 
 
 class EnumValue(object):
@@ -46,10 +46,10 @@ class Error(object):
         self._process_code = process_code
         self._status_code = status_code
         self._text = text
-    def __str__(self):
+    def __repr__(self):
         return '%s: %s' % (self.process_code, self.text)
-    def copy(self, text):
-        return Error(self.process_code, text, self.status_code)
+    def copy(self, text=None):
+        return Error(self.process_code, text or self.text, self.status_code)
     @property
     def process_code(self): return self._process_code
     @property
@@ -67,9 +67,9 @@ ERRORS = [
         'The file is damaged and could not be repaired.'),
     Error(ProcessCode.InvalidPassword, 'This document requires authentication',
         StatusCode.Forbidden),
-    Error(ProcessCode.MissingPassword, 'This document requires authentication',
-        StatusCode.Forbidden),
     Error(ProcessCode.AdeptDRM,
         'The security plug-in required by this command is unavailable.',
         StatusCode.Forbidden)]
+
+UNKNOWN = Error(ProcessCode.UnknownError, None, StatusCode.InternalServerError)
 
