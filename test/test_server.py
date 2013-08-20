@@ -42,6 +42,11 @@ def test_page_out_of_range():
     result = Result(ProcessCode.InvalidPage, StatusCode.BadRequest)
     Test(['-pages=5', 'data/four_pages.pdf'], result).validate()
 
-# TODO: def test_insufficient_memory():
+def test_insufficient_memory():
+    request_entity_too_large = StatusCode.RequestEntityTooLarge
+    result = Result(ProcessCode.RequestTooLarge, request_entity_too_large)
+    with test.BackEnd('scripts/insufficient_memory') as insufficient_memory:
+        Test(['data/bad.pdf'], result).validate()
+
 # TODO: def test_pdf2img_crash():
 

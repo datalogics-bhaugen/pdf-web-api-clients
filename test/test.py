@@ -1,5 +1,7 @@
 "server test classes"
 
+import os
+import subprocess
 import test_client
 from nose.tools import assert_equal, assert_is_none, assert_is_not_none
 
@@ -8,6 +10,27 @@ APPLICATION_ID = test_client.APPLICATION_ID
 APPLICATION_KEY = test_client.APPLICATION_KEY
 BASE_URL = 'http://127.0.0.1:5000'
 VERSION = test_client.VERSION
+
+
+class BackEnd(object):
+    def __init__(self, back_end, pdf2img='pdf2img'):
+        self._set_pdf2img(pdf2img)
+        if not self.pdf2img: sys.exit('no %s in PATH' % pdf2img)
+        subprocess.call(['mv', self.pdf2img, '%s~' % self.pdf2img])
+        subprocess.call(['ln', '-s', os.path.abspath(back_end), self.pdf2img])
+    def __del__(self):
+        subprocess.call(['mv', '%s~' % self.pdf2img, self.pdf2img])
+    def __enter__(self):
+        return self
+    def __exit__(self, type, value, traceback):
+        pass
+    def _set_pdf2img(self, pdf2img):
+        for dir in os.environ['PATH'].split(os.pathsep):
+            filename = os.path.join(dir, pdf2img)
+            if os.path.isfile(filename) and os.access(filename, os.X_OK):
+                self._pdf2img = filename
+    @property
+    def pdf2img(self): return self._pdf2img
 
 
 class Result(object):
