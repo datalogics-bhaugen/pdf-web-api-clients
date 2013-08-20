@@ -17,12 +17,9 @@ endif
 clean:
 	rm -rf .installed.cfg bin develop-eggs parts var/log
 
-html: clean-html $(DOXYGEN)
+html: $(DOXYGEN)
 
-clean-html:
-	cd doc/html; rm -rf *.css *.html *.js *.png search
-
-.PHONY: build clean html clean-html
+.PHONY: build clean html
 
 SITES_DIR = etc/nginx/sites-available
 SITES = $(shell ls $(SITES_DIR))
@@ -56,6 +53,7 @@ doxygen:
 	cd doxygen; ./configure; make
 
 $(DOXYGEN): doxygen doc/Doxyfile samples/python/*
+	cd doc/html; rm -rf *.css *.html *.js *.png search; cd ../..
 	doxygen/bin/doxygen doc/Doxyfile
 
 $(PDF2IMG):
