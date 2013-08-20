@@ -16,11 +16,13 @@ endif
 
 clean:
 	rm -rf .installed.cfg bin develop-eggs parts var/log
+
+html: clean-html $(DOXYGEN)
+
+clean-html:
 	cd doc/html; rm -rf *.css *.html *.js *.png search
 
-html: $(DOXYGEN)
-
-.PHONY: build clean html
+.PHONY: build clean html clean-html
 
 SITES_DIR = etc/nginx/sites-available
 SITES = $(shell ls $(SITES_DIR))

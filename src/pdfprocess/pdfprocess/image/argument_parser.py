@@ -30,11 +30,11 @@ class ArgumentParser(argparse.ArgumentParser):
                 return value.lower()
     def _get_pages(self):
         pages_prefix = '-pages='
-        pages = self._option_value(pages_prefix)
-        if pages: return pages
-        pages = '' if self.output_form == 'tif' else '1'
-        if pages: self._options.append(pages_prefix + pages)
-        return pages
+        result = self._option_value(pages_prefix)
+        if result: return result
+        result = '' if self.output_form == 'tif' else '1'
+        if result: self._options.append(pages_prefix + result)
+        return result
     def _image_size_options(self, options):
         image_size = ImageSize()
         for key, value in options.iteritems():

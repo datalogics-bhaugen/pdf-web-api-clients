@@ -5,7 +5,7 @@ import logging
 import flask
 
 from .action import Action
-from .error import Auth, EnumValue, Error, ProcessCode, StatusCode
+from .errors import Auth, ERRORS, EnumValue, Error, ProcessCode, StatusCode
 from .file_handler import FileHandler
 from .stdout import Stdout
 
@@ -13,7 +13,7 @@ import image
 
 
 app = flask.Flask(__name__)
-app.logger.setLevel(logging.DEBUG) # TODO: get level from configuration
+app.logger.setLevel(logging.DEBUG)
 app.logger.addHandler(FileHandler(app.name))
 
 @app.before_first_request

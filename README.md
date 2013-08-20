@@ -41,9 +41,21 @@ We use Buildout, which is a three-step process. These steps are executed by the 
     * To get the password for pdfprocess (to run sudo), send mail to pdfprocess@datalogics.com.
 * make _build_
 
-## Linux Installation
+## Upgrade nginx
 
+* apt-get autoremove nginx
+* apt-key add etc/nginx/nginx_signing.key
+* Append the following to the end of /etc/apt/sources.list
+    * deb http://nginx.org/packages/ubuntu/ precise nginx
+    * deb-src http://nginx.org/packages/ubuntu/ precise nginx
+    * (replace *precise* with the appropriate Ubuntu codename as needed)
+* apt-get update
+* apt-get install nginx
 * If there is no SSL key in /etc/nginx/ssl, copy the appropriate one from //zeus/raid1/proj/procyon/web-api/etc/nginx/ssl
+
+## Install pdfprocess
+
+* If an older version is installed, we recommend that you uninstall it, e.g. `sudo make uninstall-test`
 * On _pdfprocess_, `sudo make install-production`
 * On _pdfprocess-test_, `sudo make install-test`
 * `bin/supervisord`
@@ -51,7 +63,7 @@ We use Buildout, which is a three-step process. These steps are executed by the 
 * If you are unfamiliar with /etc/init.d/nginx, run it without arguments
 * `/etc/init.d/nginx restart`
 
-## PDF2IMG
+## Install PDF2IMG
 
 This application and its associated resources must be installed manually from archives stored at //zeus/raid1/products/pdf2img/.
 
@@ -90,8 +102,8 @@ Common test procedures:
     * /etc/init.d/nginx configtest
     * Run test_client.py from another host
 
-## Paths
+## Logging
 
 Our Flask application creates a log file in the directory specified by the LOG_PATH environment variable. If this is not defined, the application creates its log file in the current working directory.
 
-bin/pdfprocess puts our eggs into the import path and sets LOG_PATH to var/log.
+`scripts\configure_logger.py` defines LOG_PATH to our var/log directory, and configures the logger to use UTC timestamps.
