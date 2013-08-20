@@ -44,6 +44,7 @@ We use Buildout, which is a three-step process. These steps are executed by the 
 ## Linux Installation
 
 * If there is no SSL key in /etc/nginx/ssl, copy the appropriate one from //zeus/raid1/proj/procyon/web-api/etc/nginx/ssl
+* If an older version is installed, we recommend that you uninstall it, e.g. `sudo make uninstall-test`
 * On _pdfprocess_, `sudo make install-production`
 * On _pdfprocess-test_, `sudo make install-test`
 * `bin/supervisord`
@@ -90,8 +91,8 @@ Common test procedures:
     * /etc/init.d/nginx configtest
     * Run test_client.py from another host
 
-## Paths
+## Logging
 
 Our Flask application creates a log file in the directory specified by the LOG_PATH environment variable. If this is not defined, the application creates its log file in the current working directory.
 
-bin/pdfprocess puts our eggs into the import path and sets LOG_PATH to var/log.
+`scripts\configure_logger.py` defines LOG_PATH to our var/log directory, and configures the logger to use UTC timestamps.
