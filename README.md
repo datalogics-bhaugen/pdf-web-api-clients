@@ -43,6 +43,7 @@ We use Buildout, which is a three-step process. These steps are executed by the 
 
 ## Upgrade nginx
 
+* /etc/init.d/nginx stop
 * apt-get autoremove nginx
 * apt-key add etc/nginx/nginx_signing.key
 * Append the following to the end of /etc/apt/sources.list
@@ -52,6 +53,14 @@ We use Buildout, which is a three-step process. These steps are executed by the 
 * apt-get update
 * apt-get install nginx
 * If there is no SSL key in /etc/nginx/ssl, copy the appropriate one from //zeus/raid1/proj/procyon/web-api/etc/nginx/ssl
+
+Near the bottom of /etc/nginx/nginx.conf, you should see this:
+
+    include /etc/nginx/conf.d/*.conf;
+
+If necessary, add this line immediately after it:
+
+    include /etc/nginx/sites-enabled/*;
 
 ## Install pdfprocess
 
@@ -70,9 +79,9 @@ This application and its associated resources must be installed manually from ar
 * See [PDF2IMG](http://www.datalogics.com/pdf/doc/pdf2img.pdf) for platform-specific instructions
 * For Linux
     * Extract the two archives (one for pdf2img, one for its resources)
-    * In your bin directory (e.g. /home/pdfprocess/bin), make a link to the pdf2img executable
+    * In ~/bin directory (e.g. /home/pdfprocess/bin), make a link to the pdf2img executable
     * In your pdf2img directory, make links to the Resource directories
-    * In .profile, add the pdf2img directory to your LD_LIBRARY_PATH
+    * In ~/.profile, add the pdf2img directory to your LD_LIBRARY_PATH
 
 ## Run
 

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo ERROR: Insufficient memory available.
+exit 1011
+
