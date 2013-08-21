@@ -115,19 +115,19 @@ class ImageRequest(Request):
     #  @return an ImageResponse object
     #  @param input request document file object
     #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
-    #  * [colorModel](image/parameters.html#colorModel)
-    #  * [compression](image/parameters.html#compression)
-    #  * [disableColorManagement](image/parameters.html#disableColorManagement)
-    #  * [disableThinLineEnhancement](image/parameters.html#disableThinLineEnhancement)
-    #  * [OPP](image/parameters.html#OPP)
-    #  * [outputForm](image/parameters.html#outputForm)
-    #  * [pages](image/parameters.html#pages)
-    #  * [password](image/parameters.html#password)
-    #  * [pdfRegion](image/parameters.html#pdfRegion)
-    #  * [printPreview](image/parameters.html#printPreview)
-    #  * [resolution](image/parameters.html#resolution)
-    #  * [smoothing](image/parameters.html#smoothing)
-    #  * [suppressAnnotations](image/parameters.html#suppressAnnotations)
+    #  * [colorModel](https://datalogics-cloud.3scale.net/docs#colorModel)
+    #  * [compression](https://datalogics-cloud.3scale.net/docs#compression)
+    #  * [disableColorManagement](https://datalogics-cloud.3scale.net/docs#disableColorManagement)
+    #  * [disableThinLineEnhancement](https://datalogics-cloud.3scale.net/docs#disableThinLineEnhancement)
+    #  * [OPP](https://datalogics-cloud.3scale.net/docs#OPP)
+    #  * [outputForm](https://datalogics-cloud.3scale.net/docs#outputForm)
+    #  * [pages](https://datalogics-cloud.3scale.net/docs#pages)
+    #  * [password](https://datalogics-cloud.3scale.net/docs#password)
+    #  * [pdfRegion](https://datalogics-cloud.3scale.net/docs#pdfRegion)
+    #  * [printPreview](https://datalogics-cloud.3scale.net/docs#printPreview)
+    #  * [resolution](https://datalogics-cloud.3scale.net/docs#resolution)
+    #  * [smoothing](https://datalogics-cloud.3scale.net/docs#smoothing)
+    #  * [suppressAnnotations](https://datalogics-cloud.3scale.net/docs#suppressAnnotations)
     def post(self, input, **options):
         self.reset()
         return ImageResponse(Request.post(self, input, **options))
@@ -179,7 +179,7 @@ class ImageResponse(Response):
         if self: return self._image()
 
 
-## Returned by Response.process_code
+## Values returned by Response.process_code
 class ProcessCode:
     OK = 0
     AuthorizationError = 1
@@ -194,7 +194,7 @@ class ProcessCode:
     UsageLimitExceeded = 10
     UnknownError = 20
 
-## Returned by ImageResponse.process_code
+## Values returned by ImageResponse.process_code
 class ImageProcessCode(ProcessCode):
     InvalidColorModel = 21
     InvalidCompression = 22

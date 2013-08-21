@@ -23,10 +23,9 @@ This is a summary of the interface. For a detailed description, please review ou
 A request is a HTTP POST method. The message body is the request document,
 and the request parameters are encoded as form data.
 
-* The _application_ parameter is a JSON object specifying the application ID and key, e.g. {'id': yourID, 'key': yourKey}.
-* Any request options are encoded as JSON in the optional _options_ parameter.
-* When the optional _inputName_ parameter is supplied, the server uses it when logging the request.
-* For image requests, the _outputForm_ parameter specifies the image format.
+* The [application](https://datalogics-cloud.3scale.net/docs#application) parameter is a JSON object identifying your application, e.g. {"id": yourID, "key": yourKey}.
+* _Optional:_ Any request options are encoded as JSON in the [options](https://datalogics-cloud.3scale.net/docs#options) parameter.
+* _Optional:_ If the [inputName](https://datalogics-cloud.3scale.net/docs#inputName) parameter is supplied, the server uses it when logging the request.
 
 Here is an [example of a request](examples/request.txt).
 
@@ -34,8 +33,8 @@ Here is an [example of a request](examples/request.txt).
 
 The message body of the HTTP response is a JSON object:
 
-* _processCode_ (int) is 0 if the request was successful, or a nonzero code identifying the error.
-* _output_ (string) contains base64-encoded data if the request was successful, or information about the error.
+* [output](https://datalogics-cloud.3scale.net/docs#output) contains base64-encoded data if the request was successful, or information about the error.
+* [processCode](https://datalogics-cloud.3scale.net/docs#processCode) is 0 if the request was successful, or a nonzero code identifying the error.
 
 ### Sample Client
 
