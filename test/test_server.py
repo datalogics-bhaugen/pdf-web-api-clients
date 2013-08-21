@@ -48,5 +48,7 @@ def test_insufficient_memory():
     with test.BackEnd('scripts/insufficient_memory') as insufficient_memory:
         Test(['data/bad.pdf'], result).validate()
 
-# TODO: def test_pdf2img_crash():
-
+def test_pdf2img_crash():
+    result = Result(ProcessCode.UnknownError, StatusCode.InternalServerError)
+    with test.BackEnd('scripts/program_crash') as pdf2img_crash:
+        Test(['data/bad.pdf'], result).validate()
