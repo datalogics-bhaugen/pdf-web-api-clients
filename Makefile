@@ -4,7 +4,7 @@ PLATFORM = $(shell uname -s)
 VENV = eggs/virtualenv-*.egg/virtualenv.py
 
 # TODO: install libxml2 in venv
-build: html $(PDF2IMG)
+build: html $(PDF2IMG) build_backend
 ifeq ($(PLATFORM), Darwin)
 	echo "" > versions.cfg
 endif
@@ -58,6 +58,9 @@ $(DOXYGEN): doxygen doc/Doxyfile samples/python/*
 
 $(PDF2IMG):
 	@echo Install pdf2img!
+
+build_backend:
+	gcc src/backends/program_crash.c -o test/scripts/program_crash
 
 ifeq ($(shell uname -s), Darwin)
 LIBXML2 = libxml2-python-2.6.21
