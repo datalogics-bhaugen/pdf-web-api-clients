@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo ERROR: pdf2img ran out of memory. \ Stopped.
+exit 1
+

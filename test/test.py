@@ -6,20 +6,22 @@ import test_client
 from nose.tools import assert_equal, assert_is_none, assert_is_not_none
 
 
-APPLICATION_ID = test_client.APPLICATION_ID
-APPLICATION_KEY = test_client.APPLICATION_KEY
 BASE_URL = 'http://127.0.0.1:5000'
 VERSION = test_client.VERSION
 
+TEST_ID = test_client.TEST_ID
+TEST_KEY = test_client.TEST_KEY
 
-class BackEnd(object):
-    def __init__(self, back_end, pdf2img='pdf2img'):
+
+class Mock(object):
+    def __init__(self, mock, pdf2img='pdf2img'):
         self._set_pdf2img(pdf2img)
         if not self.pdf2img: sys.exit('no %s in PATH' % pdf2img)
-        subprocess.call(['mv', self.pdf2img, '%s~' % self.pdf2img])
-        subprocess.call(['ln', '-s', os.path.abspath(back_end), self.pdf2img])
+        self._set_temporary_name(pdf2img)
+        subprocess.call(['mv', self.pdf2img, self.temporary_name])
+        subprocess.call(['ln', '-s', os.path.abspath(mock), self.pdf2img])
     def __del__(self):
-        subprocess.call(['mv', '%s~' % self.pdf2img, self.pdf2img])
+        subprocess.call(['mv', self.temporary_name, self.pdf2img])
     def __enter__(self):
         return self
     def __exit__(self, type, value, traceback):
@@ -29,8 +31,14 @@ class BackEnd(object):
             filename = os.path.join(dir, pdf2img)
             if os.path.isfile(filename) and os.access(filename, os.X_OK):
                 self._pdf2img = filename
+    def _set_temporary_name(self, pdf2img):
+        root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        pdf2img_basename = os.path.basename(pdf2img)
+        self._temporary_name = os.path.join(root_dir, 'bin', pdf2img_basename)
     @property
     def pdf2img(self): return self._pdf2img
+    @property
+    def temporary_name(self): return self._temporary_name
 
 
 class Result(object):
@@ -49,17 +57,18 @@ class Result(object):
         else:
             assert_is_none(response.output)
             assert_is_not_none(response.exc_info)
+        return response
 
 
 class Test(object):
     def __init__(self, args, result, pdf2img=None):
-        self._args = ['test'] + args
-        self._result = result
+        self._args, self._result = (args, result)
         self._pdf2img = pdf2img if pdf2img else Test.pdf2img()
-    def validate(self, version=VERSION, base_url=BASE_URL):
-        response = self._pdf2img(version, base_url, self._args)
-        self._result.validate(response)
+    def __call__(self, version=VERSION, base_url=BASE_URL):
+        return self._result.validate(self.post(version, base_url))
+    def post(self, version, base_url):
+        return self._pdf2img(version, base_url, ['test'] + self._args)
     @classmethod
-    def pdf2img(cls, id=APPLICATION_ID, key=APPLICATION_KEY):
+    def pdf2img(cls, id=TEST_ID, key=TEST_KEY):
         return test_client.pdf2img(id, key)
 
