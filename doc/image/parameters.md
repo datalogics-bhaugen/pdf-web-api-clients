@@ -1,5 +1,3 @@
-<!-- use Mou to export .../doc/html/image/parameters.html from this document -->
-
 ## Image request parameters
 <br>
 Parameter names are case-insensitive.
@@ -32,6 +30,12 @@ Changing this setting is recommended only when creating high-resolution output f
 
 * __false__ (default): Thin line enhancement is performed with the goal of ensuring that very thin lines maintain their visibility in created output files. This can lead to some lines becoming slightly thicker than they are in the PDF file, in order to stay visible.
 * __true__: No thin line enhancement is performed.
+
+### <a id="imageHeight">imageHeight</a>: int
+Image height in pixels.
+
+### <a id="imageWidth">imageWidth</a>: int
+Image width in pixels.
 
 ### <a id="OPP">OPP</a>: boolean
 When ink is placed by a printer, typically inks are layered over each other - rather than knocking out the color underneath, some blending of the color underneath takes place as inks are printed on top of each other (overprinted). Overprint Preview (OPP) may be used to simulate the effect of overprinting inks on devices that support overprinting. This can cause some conversion of black to gray in CMYK format output files.
