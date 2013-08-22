@@ -21,39 +21,15 @@ class Flag(Option):
     def action(self): return 'store_true'
 
 
-class ImageSize(object):
-    OPTIONS = [Option('width'), Option('height')]
-    def __init__(self):
-        self._dimensions = {}
-    def __setitem__(self, key, value):
-        self._dimensions[key.lower()] = value
-    def options(self):
-        if len(self._dimensions) == 2:
-            return ['-pixelcount=%sx%s' % (self.width, self.height)]
-        elif 'width' in self._dimensions:
-            return ['-pixelcount=w:%s' % self.width]
-        elif self._dimensions:
-            return ['-pixelcount=h:%s' % self.height]
-        else:
-            return []
-    @property
-    def width(self): return self._dimensions['width']
-    @property
-    def height(self): return self._dimensions['height']
-
-
 OPTIONS = [
     Flag('OPP'),
     Flag('disableColorManagement', 'nocmm'),
     Flag('disableThinLineEnhancement', 'noenhancethinlines'),
     Flag('printPreview', 'asprinted'),
     Flag('suppressAnnotations', 'noannot'),
-    Option('colormodel'),
+    Option('colorModel', 'colormodel'),
     Option('compression'),
-    Option('outputForm'),
     Option('pages'),
     Option('password'),
-    Option('pdfRegion', 'pdfregion'),
-    Option('resolution'),
-    Option('smoothing')]
+    Option('pdfRegion', 'pdfregion')]
 

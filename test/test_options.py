@@ -30,11 +30,11 @@ class TestAliases(MockFixture):
     def test_noenhancethinlines(self):
         self.validate(['-disableThinLineEnhancement'], '-noenhancethinlines')
     def test_width(self):
-        self.validate(['-width=1'], '-pixelcount=w:1')
+        self.validate(['-imageWidth=1'], '-pixelcount=w:1')
     def test_height(self):
-        self.validate(['-height=1'], '-pixelcount=h:1')
+        self.validate(['-imageHeight=1'], '-pixelcount=h:1')
     def test_width_and_height(self):
-        self.validate(['-width=1', '-height=1'], '-pixelcount=1x1')
+        self.validate(['-imageWidth=1', '-imageHeight=1'], '-pixelcount=1x1')
 
 class TestDefaults(MockFixture):
     def test_output_form(self):

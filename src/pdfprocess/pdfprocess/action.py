@@ -6,7 +6,7 @@ import simplejson as json
 
 from ThreeScalePY import ThreeScaleAuthorize
 from client import Client
-from errors import ERRORS, Error, ProcessCode, StatusCode, UNKNOWN
+from errors import APDFL_ERRORS, Error, ProcessCode, StatusCode, UNKNOWN
 
 
 PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
@@ -14,9 +14,8 @@ PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
 
 AUTH_ERRORS = [
     None,
-    Error(ProcessCode.UsageLimitExceeded, 'Usage limit exceeded',
-        StatusCode.TooManyRequests),
-    Error(ProcessCode.AuthorizationError, '3scale', StatusCode.Forbidden),
+    Error(ProcessCode.UsageLimitExceeded, None, StatusCode.TooManyRequests),
+    Error(ProcessCode.AuthorizationError, None, StatusCode.Forbidden),
     None]
 
 
@@ -33,19 +32,17 @@ class Action(object):
         if error.process_code == ProcessCode.InvalidPassword and no_password:
             error.process_code = ProcessCode.MissingPassword
         self.logger.error(error)
-        process_code = int(error.process_code)
-        return self.response(process_code, error.text, error.status_code)
+        return \
+            self.response(error.process_code, error.message, error.status_code)
     def authorize(self):
         return self.client.auth()
     def authorize_error(self, auth):
-        error = AUTH_ERRORS[auth]
-        if error.process_code == ProcessCode.UsageLimitExceeded:
-            error = error.copy(self.client.exc_info)
-        return self.abort(error)
+        return self.abort(AUTH_ERRORS[auth].copy(self.client.exc_info))
     def get_error(self):
         import image
-        for errors in (ERRORS, image.ERRORS):
-            error = next((e for e in errors if e.text in self.exc_info), None)
+        for errors in (APDFL_ERRORS, image.ERRORS):
+            error =\
+                next((e for e in errors if e.message in self.exc_info), None)
             if error: return error.copy(self.exc_info)
         return UNKNOWN.copy(self.exc_info)
     def _password_received(self):
