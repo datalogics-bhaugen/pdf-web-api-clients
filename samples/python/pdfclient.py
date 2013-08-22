@@ -199,4 +199,5 @@ class ImageProcessCode(ProcessCode):
     InvalidColorModel = 21
     InvalidCompression = 22
     InvalidRegion = 23
+    InvalidResolution = 24
 
