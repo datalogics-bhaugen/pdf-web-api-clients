@@ -17,6 +17,7 @@ MacOS (different versions) is the primary development platform, and Ubuntu is th
 * Gunicorn
 * Supervisor
 * ThreeScalePY
+* Sendmail
 
 ## Build
 
