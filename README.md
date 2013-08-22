@@ -33,6 +33,7 @@ We use Buildout, which is a three-step process. These steps are executed by the 
     * flex
     * bison
     * g++
+    * sendmail
     * python-dev
     * Python bindings for libxml2 (for ThreeScalePY)
         * Ubuntu: python-libxml2
