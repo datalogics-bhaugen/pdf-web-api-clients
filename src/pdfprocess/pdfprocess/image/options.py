@@ -29,7 +29,6 @@ OPTIONS = [
     Flag('suppressAnnotations', 'noannot'),
     Option('colorModel', 'colormodel'),
     Option('compression'),
-    Option('pages'),
     Option('password'),
     Option('pdfRegion', 'pdfregion')]
 

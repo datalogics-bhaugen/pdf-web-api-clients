@@ -20,9 +20,6 @@ class Action(pdfprocess.Action):
         self._exc_info = None
         try:
             self._parser(self.options)
-            if self.multipage_request and self.output_form != 'tif':
-                message = 'Use TIFF format for multi-page image requests'
-                raise Error(ProcessCode.InvalidOutputType, message)
         except Error as error:
             self._exc_info = error.message
             return self.abort(error)
@@ -69,8 +66,6 @@ class Action(pdfprocess.Action):
     def exc_info(self): return self._exc_info
     @property
     def input_name(self): return self._input_name
-    @property
-    def multipage_request(self): return '-' in self.pages or ',' in self.pages
     @property
     def output_form(self): return self._parser.output_form
     @property

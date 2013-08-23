@@ -7,22 +7,24 @@ and deletes the image files created by pdf2img.
 '''
 
 import os
+import glob
 
 
 class OutputFile(object):
-    def __init__(self, name, page, extension):
-        self._options = ['-digits=1']
-        if not page or '-' in page or ',' in page:
-            self._options.append('-multipage')
-            page = ''
-        self._name = '%s%s.%s' % (name, page, extension) # no underscore!
+    def __init__(self, name, pages, extension):
+        page_suffix = '' if '-' in pages or ',' in pages else '*'
+        self._options = [] if page_suffix else ['-multipage']
+        self._pattern = '%s%s.%s' % (name, page_suffix, extension)
+    def __del__(self):
+        try: os.remove(self.name)
+        except Exception: pass
     def __enter__(self):
         return self
     def __exit__(self, type, value, traceback):
-        try: os.remove(self.name)
-        except OSError as error: pass
+        pass
     @property
-    def name(self): return self._name
+    def name(self):
+        return glob.glob(self._pattern)[0]
     @property
     def options(self): return self._options
 
