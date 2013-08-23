@@ -40,6 +40,18 @@ def test_invalid_page_range():
     result = Result(ProcessCode.InvalidPage, StatusCode.BadRequest)
     Test(['-pages=1-2-3', 'data/four_pages.pdf'], result)()
 
+def test_inverted_page_range():
+    result = Result(ProcessCode.InvalidPage, StatusCode.BadRequest)
+    Test(['-pages=2-1', 'data/four_pages.pdf'], result)()
+
+def test_no_start_page():
+    result = Result(ProcessCode.InvalidPage, StatusCode.BadRequest)
+    Test(['-pages=-2', 'data/four_pages.pdf'], result)()
+
+def test_no_end_page():
+    result = Result(ProcessCode.InvalidPage, StatusCode.BadRequest)
+    Test(['-pages=1-', 'data/four_pages.pdf'], result)()
+
 def test_start_page_out_of_range():
     result = Result(ProcessCode.InvalidPage, StatusCode.BadRequest)
     Test(['-pages=5', 'data/four_pages.pdf'], result)()
@@ -47,6 +59,22 @@ def test_start_page_out_of_range():
 def test_end_page_out_of_range():
     result = Result(ProcessCode.InvalidPage, StatusCode.BadRequest)
     Test(['-pages=1-5', 'data/four_pages.pdf'], result)()
+
+def test_last_page():
+    result = Result(ProcessCode.OK, StatusCode.OK)
+    Test(['-pages=last', 'data/four_pages.pdf'], result)()
+
+def test_valid_page():
+    result = Result(ProcessCode.OK, StatusCode.OK)
+    Test(['-pages=2', 'data/four_pages.pdf'], result)()
+
+def test_valid_page_list():
+    result = Result(ProcessCode.OK, StatusCode.OK)
+    Test(['-pages=1,2,3', 'data/four_pages.pdf'], result)()
+
+def test_valid_page_range():
+    result = Result(ProcessCode.OK, StatusCode.OK)
+    Test(['-pages=1-2', 'data/four_pages.pdf'], result)()
 
 def test_bad_color_model():
     result = Result(ProcessCode.InvalidColorModel, StatusCode.BadRequest)
