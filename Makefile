@@ -7,7 +7,7 @@ build: html $(PDF2IMG)
 ifeq ($(PLATFORM), Darwin)
 	echo "" > versions.cfg
 endif
-	python virtualenv.py --never-download --system-site-packages venv
+	python virtualenv.py --never-download venv
 	venv/bin/python bootstrap.py
 	@make bin/segfault
 	bin/buildout | scripts/versions > versions.cfg
