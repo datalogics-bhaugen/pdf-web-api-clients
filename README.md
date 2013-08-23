@@ -34,9 +34,6 @@ We use Buildout, which is a three-step process. These steps are executed by the 
     * bison
     * g++
     * python-dev
-    * Python bindings for libxml2 (for 3scale)
-        * Ubuntu: python-libxml2
-        * Red Hat: libxml2-python
     * sendmail (for Supervisor)
 * Clone the repository into /home/pdfprocess if you are deploying the server
     * To get the password for pdfprocess (to run sudo), send mail to pdfprocess@datalogics.com.
