@@ -119,6 +119,8 @@ class ImageRequest(Request):
     #  * [compression](https://datalogics-cloud.3scale.net/docs#compression)
     #  * [disableColorManagement](https://datalogics-cloud.3scale.net/docs#disableColorManagement)
     #  * [disableThinLineEnhancement](https://datalogics-cloud.3scale.net/docs#disableThinLineEnhancement)
+    #  * [imageHeight](https://datalogics-cloud.3scale.net/docs#imageHeight)
+    #  * [imageWidth](https://datalogics-cloud.3scale.net/docs#imageWidth)
     #  * [OPP](https://datalogics-cloud.3scale.net/docs#OPP)
     #  * [outputForm](https://datalogics-cloud.3scale.net/docs#outputForm)
     #  * [pages](https://datalogics-cloud.3scale.net/docs#pages)
