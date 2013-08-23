@@ -10,7 +10,7 @@ def test_missing_equals():
 
 def test_missing_value():
     result = Result(ProcessCode.InvalidSyntax, StatusCode.BadRequest)
-    Test(['-pages=', 'data/four_pages.pdf'], result)()
+    Test(['-pdfRegion=', 'data/four_pages.pdf'], result)()
 
 def test_invalid_flag():
     result = Result(ProcessCode.InvalidSyntax, StatusCode.BadRequest)
