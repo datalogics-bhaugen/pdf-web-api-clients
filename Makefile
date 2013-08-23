@@ -9,7 +9,7 @@ ifeq ($(PLATFORM), Darwin)
 endif
 	python virtualenv.py --never-download --system-site-packages venv
 	venv/bin/python bootstrap.py
-	make bin/segfault
+	@make bin/segfault
 	bin/buildout | scripts/versions > versions.cfg
 	@diff $(VENV) virtualenv.py > /dev/null || echo Upgrade virtualenv!
 	@cp $(VENV) .
