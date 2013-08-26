@@ -3,13 +3,13 @@ PDF2IMG = $(HOME)/bin/pdf2img
 PLATFORM = $(shell uname -s)
 VENV = eggs/virtualenv-*.egg/virtualenv.py
 
-# TODO: install libxml2 in venv
-build: html $(PDF2IMG) build_backend
+build: html $(PDF2IMG)
 ifeq ($(PLATFORM), Darwin)
 	echo "" > versions.cfg
 endif
-	python virtualenv.py --never-download --system-site-packages venv
+	python virtualenv.py --never-download venv
 	venv/bin/python bootstrap.py
+	@make bin/segfault
 	bin/buildout | scripts/versions > versions.cfg
 	@diff $(VENV) virtualenv.py > /dev/null || echo Upgrade virtualenv!
 	@cp $(VENV) .
@@ -48,20 +48,21 @@ uninstall-test: uninstall
 .PHONY: install install-production install-test
 .PHONY: uninstall uninstall-production uninstall-test
 
+bin/segfault: test/src/segfault.c
+	gcc $^ -o $@
+
 doxygen:
 	git clone https://github.com/doxygen/doxygen.git
 	cd doxygen; ./configure; make
 
-$(DOXYGEN): doxygen doc/Doxyfile samples/python/*
+$(DOXYGEN): doxygen doc/Doxyfile samples/* samples/python/*
 	cd doc/html; rm -rf *.css *.html *.js *.png search; cd ../..
 	doxygen/bin/doxygen doc/Doxyfile
 
 $(PDF2IMG):
 	@echo Install pdf2img!
 
-build_backend:
-	gcc src/backends/program_crash.c -o test/scripts/program_crash
-
+# TODO: remove libxml2 dependency from README.md (replace with lxml wrapper)
 ifeq ($(shell uname -s), Darwin)
 LIBXML2 = libxml2-python-2.6.21
 python-libxml2:

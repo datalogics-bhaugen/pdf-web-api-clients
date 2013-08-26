@@ -41,35 +41,36 @@ class StatusCode:
     InternalServerError = 500
 
 
-class Error(object):
-    def __init__(self, process_code, text, status_code=StatusCode.BadRequest):
+class Error(Exception):
+    def __init__(self, process_code, message,
+      status_code=StatusCode.BadRequest):
+        Exception.__init__(self, message)
         self._process_code = process_code
         self._status_code = status_code
-        self._text = text
     def __repr__(self):
-        return '%s: %s' % (self.process_code, self.text)
-    def copy(self, text=None):
-        return Error(self.process_code, text or self.text, self.status_code)
+        return '%s: %s' % (self.process_code, self.message)
+    def copy(self, message=None):
+        message = message or self.message
+        return Error(self.process_code, message, self.status_code)
     @property
     def process_code(self): return self._process_code
     @property
     def status_code(self): return self._status_code
-    @property
-    def text(self): return self._text
     @process_code.setter
     def process_code(self, value): self._process_code = value
 
 
-ERRORS = [
-    Error(ProcessCode.InvalidInput, "File does not begin with '%PDF-'.",
+APDFL_ERRORS = [
+    Error(ProcessCode.InvalidInput, "File does not begin with '%PDF-'",
         StatusCode.UnsupportedMediaType),
     Error(ProcessCode.InvalidInput,
-        'The file is damaged and could not be repaired.'),
+        'The file is damaged and could not be repaired'),
     Error(ProcessCode.InvalidPassword, 'This document requires authentication',
         StatusCode.Forbidden),
     Error(ProcessCode.AdeptDRM,
-        'The security plug-in required by this command is unavailable.',
+        'The security plug-in required by this command is unavailable',
         StatusCode.Forbidden)]
 
-UNKNOWN = Error(ProcessCode.UnknownError, None, StatusCode.InternalServerError)
+UNKNOWN = Error(ProcessCode.UnknownError, 'Internal server error',
+    StatusCode.InternalServerError)
 

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# write arguments to specified image file (sometimes assumes -pages=1)
+
+if [ ${@: -1} == tif ]; then
+    page=''
+else
+    page=1
+fi
+
+input_name_and_output_form=${@: -2}
+
+echo $* > ${input_name_and_output_form/ /$page.}
+

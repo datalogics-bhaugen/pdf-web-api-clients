@@ -5,7 +5,7 @@ import logging
 import flask
 
 from .action import Action
-from .errors import Auth, ERRORS, EnumValue, Error, ProcessCode, StatusCode
+from .errors import Auth, EnumValue, Error, ProcessCode, StatusCode
 from .file_handler import FileHandler
 from .stdout import Stdout
 
@@ -13,11 +13,11 @@ import image
 
 
 app = flask.Flask(__name__)
-app.logger.setLevel(logging.DEBUG)
-app.logger.addHandler(FileHandler(app.name))
 
 @app.before_first_request
 def initialize():
+    app.logger.setLevel(logging.DEBUG)
+    app.logger.addHandler(FileHandler(app.name))
     app.logger.info('%s started' % app.name)
 
 @app.route('/api')

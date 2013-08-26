@@ -8,8 +8,8 @@ from pdfprocess.errors import Auth
 from nose.tools import assert_equal, assert_false
 
 
-RATE_LIMITED_ID = 'c953bc0d'
-RATE_LIMITED_KEY = 'c7a7c21fb25c384127879ded5ed3b0a4'
+PUBLIC_ID = 'c953bc0d'
+PUBLIC_KEY = 'c7a7c21fb25c384127879ded5ed3b0a4'
 
 
 class Logger:
@@ -21,17 +21,15 @@ def pdfprocess_client(app_id, app_key):
 
 
 def test_bad_application_id():
-    bad_application_id = str(uuid.uuid4())[:8]
-    client = pdfprocess_client(bad_application_id, test.APPLICATION_KEY)
+    client = pdfprocess_client(str(uuid.uuid4())[:8], test.TEST_KEY)
     assert_equal(client.auth(), Auth.Invalid)
 
 def test_bad_application_key():
-    bad_application_key = str(uuid.uuid4()).replace('-', '')
-    client = pdfprocess_client(test.APPLICATION_ID, bad_application_key)
+    client = pdfprocess_client(test.TEST_ID, PUBLIC_KEY)
     assert_equal(client.auth(), Auth.Invalid)
 
-def test_usage_limit_exceeded():
-    client = pdfprocess_client(RATE_LIMITED_ID, RATE_LIMITED_KEY)
+def _test_usage_limit_exceeded():
+    client = pdfprocess_client(PUBLIC_ID, PUBLIC_KEY)
     for j in range(100):
         auth = client.auth()
         if auth == Auth.TooFast: return

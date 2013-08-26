@@ -12,11 +12,11 @@ MacOS (different versions) is the primary development platform, and Ubuntu is th
 
 ## Major Dependencies
 
-* Doxygen
-* Flask
-* Gunicorn
-* Supervisor
-* ThreeScalePY
+* [3scale](http://3scale.net)
+* [Doxygen](http://www.stack.nl/~dimitri/doxygen/)
+* [Flask](http://flask.pocoo.org)
+* [Gunicorn](http://gunicorn.org)
+* [Supervisor](http://supervisord.org)
 
 ## Build
 
@@ -28,16 +28,13 @@ We use Buildout, which is a three-step process. These steps are executed by the 
 
 3. Buildout -- the buildout script uses its configuration to download packages, etc.
 
-* To support this build, these packages must be installed on your system
+* These packages must be installed on your system
     * make
     * flex
     * bison
     * g++
-    * sendmail
     * python-dev
-    * Python bindings for libxml2 (for ThreeScalePY)
-        * Ubuntu: python-libxml2
-        * Red Hat: libxml2-python
+    * sendmail (for Supervisor)
 * Clone the repository into /home/pdfprocess if you are deploying the server
     * To get the password for pdfprocess (to run sudo), send mail to pdfprocess@datalogics.com.
 * make _build_
@@ -104,6 +101,7 @@ These scripts facilitate testing:
     * test_3scale.py
     * test_options.py
     * test_server.py
+    * test_syntax.py
 
 Common test procedures:
 * The regression tests validate our Flask application
