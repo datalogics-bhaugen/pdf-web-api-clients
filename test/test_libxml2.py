@@ -11,6 +11,11 @@ def test_exception():
     assert_raises(libxml2.parserError, libxml2.parseDoc, XML[:-1])
 
 def test_get_content():
-    root = libxml2.parseDoc(XML)
-    assert_equal(root.xpathEval('/status/plan')[0].getContent(), 'public')
+    xml = libxml2.parseDoc(XML)
+    assert_equal(xml.xpathEval('/status/plan')[0].getContent(), 'public')
+
+def test_set_metric():
+    xml = libxml2.parseDoc(XML)
+    usage_report = xml.xpathEval('/status/usage_reports/usage_report')[0]
+    assert_equal(usage_report.xpathEval('@metric')[0].getContent(), 'hits')
 

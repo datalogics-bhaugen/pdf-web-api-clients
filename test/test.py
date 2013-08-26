@@ -3,6 +3,7 @@
 import os
 import subprocess
 import test_client
+from test_client import StatusCode
 from nose.tools import assert_equal, assert_is_none, assert_is_not_none
 
 
@@ -42,7 +43,7 @@ class Mock(object):
 
 
 class Result(object):
-    def __init__(self, process_code, status_code):
+    def __init__(self, process_code, status_code=StatusCode.BadRequest):
         self._process_code = process_code
         self._status_code = status_code
     def validate(self, response):
