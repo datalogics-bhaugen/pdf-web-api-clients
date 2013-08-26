@@ -60,13 +60,17 @@ class Pages(Translator):
     def __init__(self):
         Translator.__init__(self, 'pages')
     def validate(self, *args):
-        output_form = args[0]
-        if output_form != 'tif':
-            if '-' in self.option or ',' in self.option:
-                message = 'Use TIFF format for multi-page image requests'
-                raise Error(ProcessCode.InvalidOutputType, message)
-            if not self.option: self._option = '1'
-        return self.options
+        multipage_options = []
+        if args[0] == 'tif':
+            if self.multipage: multipage_options = ['-multipage']
+        elif self.multipage:
+            message = 'Use TIFF format for multi-page image requests'
+            raise Error(ProcessCode.InvalidOutputType, message)
+        elif not self.option:
+            self._option = '1'
+        return self.options + multipage_options
+    @property
+    def multipage(self): return '-' in self.option or ',' in self.option
 
 class Resolution(Translator):
     OPTIONS = [Option('resolution')]

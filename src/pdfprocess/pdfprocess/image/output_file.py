@@ -8,23 +8,26 @@ and deletes the image files created by pdf2img.
 
 import os
 import glob
+from pdfprocess import Error, ProcessCode, StatusCode, UNKNOWN
 
 
 class OutputFile(object):
-    def __init__(self, name, pages, extension):
-        page_suffix = '' if '-' in pages or ',' in pages else '*'
-        self._options = [] if page_suffix else ['-multipage']
-        self._pattern = '%s%s.%s' % (name, page_suffix, extension)
+    def __init__(self, name, extension):
+        self._pattern = '%s*.%s' % (name, extension)
     def __del__(self):
-        try: os.remove(self.name)
-        except Exception: pass
+        for filename in self.glob():
+            try: os.remove(filename)
+            except Exception: pass
     def __enter__(self):
         return self
     def __exit__(self, type, value, traceback):
         pass
+    def glob(self):
+        return glob.glob(self._pattern)
     @property
     def name(self):
-        return glob.glob(self._pattern)[0]
-    @property
-    def options(self): return self._options
+        names = self.glob()
+        if len(names) == 1: return names[0]
+        message = 'unsupported multi-page image request' if names else None
+        raise UNKNOWN.copy(message)
 

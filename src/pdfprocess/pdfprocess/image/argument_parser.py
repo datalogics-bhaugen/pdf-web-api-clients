@@ -22,8 +22,8 @@ class ArgumentParser(argparse.ArgumentParser):
         self._request_logger(self.options)
         self.parse_args(self.options)
         self._output_form(options)
-        self.pdf2img_options.extend(self._pages(options, self.output_form))
         self.pdf2img_options.extend(self._image_size(options))
+        self.pdf2img_options.extend(self._pages(options, self.output_form))
         self.pdf2img_options.extend(self._resolution(options))
         self.pdf2img_options.extend(self._smoothing(options))
     def error(self, message):
