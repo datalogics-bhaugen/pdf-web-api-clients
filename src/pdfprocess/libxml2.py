@@ -1,4 +1,8 @@
-"lxml wrapper supports subset of libxml2 interface used by ThreeScalePY"
+'''
+this lxml wrapper implements the subset of libxml2 used by ThreeScalePY,
+because libxml2 is (a) quite old, and (b) not buildout-friendly.
+'''
+
 
 from lxml import etree
 
@@ -6,17 +10,14 @@ from lxml import etree
 parserError = etree.Error
 
 class Element(object):
-    def __init__(self, element):
-        self._element = element
+    def __init__(self, impl):
+        self._impl = impl
     def getContent(self):
-        return self._element.text
-
-class Root(object):
-    def __init__(self, root):
-        self._root = root
+        try: return self._impl.text
+        except AttributeError: return str(self._impl)
     def xpathEval(self, path):
-        return [Element(element) for element in self._root.xpath(path)]
+        return [Element(impl) for impl in self._impl.xpath(path)]
 
 def parseDoc(xml):
-    return Root(etree.fromstring(xml))
+    return Element(etree.fromstring(xml))
 
