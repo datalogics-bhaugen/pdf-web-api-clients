@@ -64,14 +64,14 @@ class Pages(Translator):
         multipage_options, multipage_request = ([], self.multipage_request())
         if args[0] == 'tif':
             if multipage_request: multipage_options = ['-multipage']
+        elif self.option is None:
+            self._option = '1'
         elif multipage_request:
             message = 'Use TIFF format for multi-page image requests'
             raise Error(ProcessCode.InvalidOutputType, message)
-        elif self.option is None:
-            self._option = '1'
         return self.options + multipage_options
     def multipage_request(self):
-        return self.option and ('-' in self.option or ',' in self.option)
+        return self.option is None or '-' in self.option or ',' in self.option
 
 class Resolution(Translator):
     OPTIONS = [Option('resolution')]
