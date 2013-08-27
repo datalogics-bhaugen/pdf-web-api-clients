@@ -32,13 +32,12 @@ class Client(ThreeScaleAuthorize):
     def _current_hits(self):
         reports = self.build_auth_response().get_usage_reports()
         hits = next((r for r in reports if r.get_metric() == 'hits'), None)
-        if hits: return hits.get_current_value()
+        if hits: return hits.get_current_value() # TODO: this is always 0!
     def _report(self):
         hits = self._current_hits()
         if hits:
             usage = {'hits': int(hits) + 1}
             transaction = {'app_id': self.app_id, 'usage': usage}
-            self._logger.debug(transaction)
             report = ThreeScaleReport(PROVIDER_KEY, self.app_id, self.app_key)
             transaction.update({'timestamp': time.gmtime(time.time())})
             report.report([transaction])
