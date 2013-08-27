@@ -34,7 +34,7 @@ def test_bad_application_key():
     client = pdfprocess_client(test.TEST_ID)
     assert_equal(client.auth(), Auth.Invalid)
 
-def _test_usage_limit_exceeded():
+def test_usage_limit_exceeded():
     client = pdfprocess_client()
     for j in range(100):
         auth = client.auth()
