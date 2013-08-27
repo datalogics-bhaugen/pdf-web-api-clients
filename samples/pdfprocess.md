@@ -20,8 +20,9 @@ This is a summary of the interface. For a detailed description, please review ou
 
 #### Request
 
-A request is a HTTP POST method. The message body is the request document,
-and the request parameters are encoded as form data.
+A request is a HTTP POST method. The [request body](https://datalogics-cloud.3scale.net/docs#requestBody) is a PDF document (Content-Type: application/pdf).
+
+The request parameters are encoded as form data.
 
 * The [application](https://datalogics-cloud.3scale.net/docs#application) parameter is a JSON object identifying your application, e.g. {"id": yourID, "key": yourKey}.
 * _Optional:_ Any request options are encoded as JSON in the [options](https://datalogics-cloud.3scale.net/docs#options) parameter.
