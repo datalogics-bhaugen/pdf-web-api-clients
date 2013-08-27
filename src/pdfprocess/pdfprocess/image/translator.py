@@ -49,7 +49,7 @@ class OutputForm(Translator):
         Translator.__init__(self, 'outputForm')
     def validate(self, *args):
         if self.option == 'jpeg': self._option = 'jpg'
-        if self.option == 'tiff' or self.option is None: self._option = 'tif'
+        if self.option == 'tiff' or not self.option: self._option = 'tif'
         output_forms = ('gif', 'jpg', 'png', 'tif')
         if self.option not in output_forms:
             message = 'outputForm must be one of ' + str(output_forms)
