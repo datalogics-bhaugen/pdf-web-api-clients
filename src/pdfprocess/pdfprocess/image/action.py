@@ -31,7 +31,7 @@ class Action(pdfprocess.Action):
         return self.authorize_error(auth)
     def _get_image(self, input_name, output_file):
         with pdfprocess.Stdout() as stdout:
-            options = self._parser.pdf2img_options + output_file.options
+            options = self._parser.pdf2img_options
             args = ['pdf2img'] + options + [input_name, self.output_form]
             if subprocess.call(args, stdout=stdout):
                 self._set_exc_info(stdout)
@@ -50,10 +50,8 @@ class Action(pdfprocess.Action):
         with tempfile.NamedTemporaryFile() as input_file:
             self.input.save(input_file)
             input_file.flush()
-            input_name = input_file.name
-            pages, output_form = (self.pages, self.output_form)
-            with OutputFile(input_name, pages, output_form) as output_file:
-                return self._get_image(input_name, output_file)
+            with OutputFile(input_file.name, self.output_form) as output_file:
+                return self._get_image(input_file.name, output_file)
     def _set_exc_info(self, stdout):
         errors = []
         error_prefix = 'ERROR: '

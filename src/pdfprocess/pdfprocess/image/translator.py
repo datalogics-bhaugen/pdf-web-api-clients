@@ -6,7 +6,7 @@ from options import Option
 
 class Translator(object):
     def __init__(self, name):
-        self._name, self._option = (name, '')
+        self._name, self._option = (name, None)
     def __call__(self, options, *args):
         for key, value in options.iteritems():
             if key in type(self).OPTIONS: self.set_option(value)
@@ -19,7 +19,8 @@ class Translator(object):
     def option(self): return self._option
     @property
     def options(self):
-        return ['-%s=%s' % (self._name, self.option)] if self.option else []
+        if self.option is None: return []
+        return ['-%s=%s' % (self._name, self.option)]
 
 class ImageSize(Translator):
     OPTIONS = [Option('imageWidth'), Option('imageHeight')]
@@ -60,20 +61,24 @@ class Pages(Translator):
     def __init__(self):
         Translator.__init__(self, 'pages')
     def validate(self, *args):
-        output_form = args[0]
-        if output_form != 'tif':
-            if '-' in self.option or ',' in self.option:
-                message = 'Use TIFF format for multi-page image requests'
-                raise Error(ProcessCode.InvalidOutputType, message)
-            if not self.option: self._option = '1'
-        return self.options
+        multipage_options, multipage_request = ([], self.multipage_request())
+        if args[0] == 'tif':
+            if multipage_request: multipage_options = ['-multipage']
+        elif multipage_request:
+            message = 'Use TIFF format for multi-page image requests'
+            raise Error(ProcessCode.InvalidOutputType, message)
+        elif self.option is None:
+            self._option = '1'
+        return self.options + multipage_options
+    def multipage_request(self):
+        return self.option and ('-' in self.option or ',' in self.option)
 
 class Resolution(Translator):
     OPTIONS = [Option('resolution')]
     def __init__(self):
         Translator.__init__(self, 'resolution')
     def validate(self, *args):
-        if 'x' in self.option:
+        if self.option and 'x' in self.option:
             message = 'No support for non-square pixel rendering.'
             raise Error(ProcessCode.InvalidResolution, message)
         return self.options
@@ -83,7 +88,7 @@ class Smoothing(Translator):
     def __init__(self):
         Translator.__init__(self, 'smoothing')
     def validate(self, *args):
-        if not self.option: self._option = 'all'
+        if self.option is None: self._option = 'all'
         if self.option == 'none': self._option = None
         return self.options
 

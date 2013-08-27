@@ -35,6 +35,9 @@ We use Buildout, which is a three-step process. These steps are executed by the 
     * g++
     * python-dev
     * sendmail (for Supervisor)
+    * for lxml on Ubuntu
+        * libxml2-dev
+        * libxslt-dev
 * Clone the repository into /home/pdfprocess if you are deploying the server
     * To get the password for pdfprocess (to run sudo), send mail to pdfprocess@datalogics.com.
 * make _build_
@@ -95,13 +98,14 @@ These scripts facilitate testing:
 * `bin/pdfprocess` runs our Flask application with its development server (Werkzeug)
 * `samples/pdf2img.py` is a driver for our sample Python API client
 * `scripts/gunicorn` runs our Flask application in a Gunicorn process
-* `test/test_app.py` tests our Flask application directly
 * `test/test_client.py` runs `samples/pdf2img.py` with test settings
+* `test/app_test.py` tests our Flask application directly
 * `bin/nose` runs regression tests in test
-    * test_3scale.py
-    * test_options.py
-    * test_server.py
-    * test_syntax.py
+    * 3scale_test.py
+    * libxml2_test.py
+    * options_test.py
+    * server_test.py
+    * syntax_test.py
 
 Common test procedures:
 * The regression tests validate our Flask application
