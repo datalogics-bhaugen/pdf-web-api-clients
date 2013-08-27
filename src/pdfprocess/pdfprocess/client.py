@@ -30,12 +30,19 @@ class Client(ThreeScaleAuthorize):
         except ThreeScalePY.ThreeScaleException as exc:
             self._logger.error(exc)
             return Auth.Unknown
+    def _current_hits(self):
+        reports = self.build_auth_response().get_usage_reports()
+        hits = next((r for r in reports if r.get_metric() == 'hits'), None)
+        if hits: return hits.get_current_value()
     def _report(self):
-        usage = {'hits': 1}
-        now = time.gmtime(time.time())
-        transaction = {'app_id': self.app_id, 'timestamp': now, 'usage': usage}
-        report = ThreeScaleReport(PROVIDER_KEY, self.app_id, self.app_key)
-        report.report([transaction])
+        hits = self._current_hits()
+        if hits:
+            usage = {'hits': int(hits) + 1}
+            transaction = {'app_id': self.app_id, 'usage': usage}
+            self._logger.debug(transaction)
+            report = ThreeScaleReport(PROVIDER_KEY, self.app_id, self.app_key)
+            transaction.update({'timestamp': time.gmtime(time.time())})
+            report.report([transaction])
         return Auth.OK
     @property
     def exc_info(self): return self._exc_info
