@@ -13,11 +13,14 @@ PUBLIC_KEY = 'c7a7c21fb25c384127879ded5ed3b0a4'
 
 
 class Logger:
-    def debug(self, debug): print('debug: %s' % debug)
-    def error(self, error): print('error: %s' % error)
+    def __getattr__(self, name):
+        return self._logger(name)
+    def _logger(self, name):
+        def log(value): print('%s: %s' % (name, value))
+        return log
 
 def pdfprocess_client(app_id=PUBLIC_ID, app_key=PUBLIC_KEY):
-    return Client(Logger(), '{"id": "%s", "key": "%s"}' % (app_id, app_key))
+    return Client(Logger(), {'application': {'id': app_id, 'key': app_key}})
 
 
 def test_auth_ok():

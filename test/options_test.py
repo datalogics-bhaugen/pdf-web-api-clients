@@ -37,6 +37,8 @@ class TestAliases(MockFixture):
         self.validate(['-imageWidth=1', '-imageHeight=1'], '-pixelcount=1x1')
 
 class TestDefaults(MockFixture):
+    def test_multipage(self):
+        self.validate([], '-multipage')
     def test_output_form(self):
         self.validate([], 'tif')
     def test_pages(self):

@@ -21,9 +21,9 @@ AUTH_ERRORS = [
 
 class Action(object):
     def __init__(self, logger, request):
-        request_application = request.form.get('application', '{}')
-        self._client = Client(logger, request_application)
-        self._input = request.files['input']
+        self._client = Client(logger, request.form)
+        request_files = request.files.values()
+        self._input = request_files[0] if request_files else None
         self._logger = logger
         self._options = json.loads(request.form.get('options', '{}'))
         self._request_form = request.form

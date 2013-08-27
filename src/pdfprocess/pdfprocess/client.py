@@ -11,13 +11,12 @@ PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
 
 
 class Client(ThreeScaleAuthorize):
-    def __init__(self, logger, request_application):
-        application = json.loads(request_application)
-        app_id = str(application.get('id', ''))
-        app_key = str(application.get('key', ''))
-        ThreeScaleAuthorize.__init__(self, PROVIDER_KEY, app_id, app_key)
-        self._exc_info = None
+    def __init__(self, logger, request_form):
         self._logger = logger
+        app_id, app_key = self._application(request_form)
+        ThreeScaleAuthorize.__init__(self, PROVIDER_KEY, app_id, app_key)
+        logger.info('request client: %s' % self)
+        self._exc_info = None
     def __str__(self):
         return "(id='%s', key='%s')" % (self.app_id, self.app_key)
     def auth(self):
@@ -44,6 +43,17 @@ class Client(ThreeScaleAuthorize):
             transaction.update({'timestamp': time.gmtime(time.time())})
             report.report([transaction])
         return Auth.OK
+    def _application(self, request_form):
+        application = request_form.get('application', None)
+        if isinstance(application, unicode) or isinstance(application, str):
+            application = json.loads(application)
+        if application:
+            app_id = application.get('id', '')
+            app_key = application.get('key', '')
+        else:
+            app_id = request_form.get('application[id]', '')
+            app_key = request_form.get('application[key]', '')
+        return app_id, app_key
     @property
     def exc_info(self): return self._exc_info
 
