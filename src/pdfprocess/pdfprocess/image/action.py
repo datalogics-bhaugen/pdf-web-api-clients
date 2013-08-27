@@ -14,13 +14,13 @@ from .output_file import OutputFile
 class Action(pdfprocess.Action):
     def __init__(self, logger, request):
         pdfprocess.Action.__init__(self, logger, request)
-        if not self.input:
-            return self.abort(Error(ProcessCode.InvalidInput, 'no input'))
         self._input_name = self.request_form.get('inputName', '<anon>')
         self._parser = ArgumentParser(self._log_request)
     def __call__(self):
         self._exc_info = None
         try:
+            if not self.input:
+                return self.abort(Error(ProcessCode.InvalidInput, 'no input'))
             self._parser(self.options)
         except Error as error:
             self._exc_info = error.message
