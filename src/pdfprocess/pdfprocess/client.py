@@ -29,9 +29,7 @@ class Client(ThreeScaleAuthRep):
             self._logger.error(exc)
             return Auth.Unknown
     def _application(self, request_form):
-        application = request_form.get('application', None)
-        if isinstance(application, unicode) or isinstance(application, str):
-            application = json.loads(application)
+        application = self._decode_application(request_form)
         if application:
             app_id = application.get('id', '')
             app_key = application.get('key', '')
@@ -39,6 +37,15 @@ class Client(ThreeScaleAuthRep):
             app_id = request_form.get('application[id]', '')
             app_key = request_form.get('application[key]', '')
         return app_id, app_key
+    def _decode_application(self, request_form):
+        application = request_form.get('application', None)
+        if isinstance(application, unicode) or isinstance(application, str):
+            try:
+                return json.loads(application)
+            except Exception: 
+                self._logger.error('cannot parse %s' % application)
+        else:
+            return application
     @property
     def exc_info(self): return self._exc_info
 
