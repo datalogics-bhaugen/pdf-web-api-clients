@@ -19,6 +19,8 @@ class Action(pdfprocess.Action):
     def __call__(self):
         self._exc_info = None
         try:
+            if not self.input:
+                return self.abort(Error(ProcessCode.InvalidInput, 'no input'))
             self._parser(self.options)
         except Error as error:
             self._exc_info = error.message
@@ -40,12 +42,14 @@ class Action(pdfprocess.Action):
             image = base64.b64encode(image_file.read())
             return self.response(ProcessCode.OK, image)
     def _log_request(self, parser_options):
-        input_name = self.input_name
-        if ' ' in input_name: input_name = '"%s"' % input_name
         options = ' '.join(parser_options)
         if options: options = ' ' + options
-        self.logger.info('pdf2img%s %s %s %s' %
-            (options, input_name, self.output_form, self.client))
+        input_name = self.input_name
+        if ' ' in input_name: input_name = '"%s"' % input_name
+        output_form = self.output_form
+        if output_form: output_form = ' ' + output_form
+        info_args = (options, input_name, output_form, self.client)
+        self.logger.info('pdf2img%s %s%s %s' % info_args)
     def _pdf2img(self):
         with tempfile.NamedTemporaryFile() as input_file:
             self.input.save(input_file)
