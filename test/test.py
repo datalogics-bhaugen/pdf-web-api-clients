@@ -10,8 +10,22 @@ from nose.tools import assert_equal, assert_is_none, assert_is_not_none
 BASE_URL = 'http://127.0.0.1:5000'
 VERSION = test_client.VERSION
 
+PUBLIC_ID = 'c953bc0d'
+PUBLIC_KEY = 'c7a7c21fb25c384127879ded5ed3b0a4'
+
 TEST_ID = test_client.TEST_ID
 TEST_KEY = test_client.TEST_KEY
+
+
+class Logger:
+    def __init__(self):
+        self._log = []
+    def __getattr__(self, name):
+        def log(value): self._log.append('[%s] %s' % (name.upper(), value))
+        if name.startswith('_'): raise AttributeError(name)
+        return log
+    @property
+    def log(self): return self._log
 
 
 class Mock(object):

@@ -2,7 +2,7 @@
 
 import ThreeScalePY
 import flask
-import simplejson as json
+import safe_json
 
 from ThreeScalePY import ThreeScaleAuthorize
 from client import Client
@@ -24,9 +24,10 @@ class Action(object):
         self._client = Client(logger, request.form)
         request_files = request.files.values()
         self._input = request_files[0] if request_files else None
-        self._logger = logger
-        self._options = json.loads(request.form.get('options', '{}'))
+        options = request.form.get('options', '{}')
+        self._options = safe_json.parse(logger, options)
         self._request_form = request.form
+        self._logger = logger
     def abort(self, error):
         no_password = not self._password_received()
         if error.process_code == ProcessCode.InvalidPassword and no_password:
