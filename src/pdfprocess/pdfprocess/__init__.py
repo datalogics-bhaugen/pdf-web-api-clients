@@ -6,7 +6,7 @@ import flask
 
 from .action import Action
 from .errors import Auth, EnumValue, Error, ProcessCode, StatusCode, UNKNOWN
-from .file_handler import FileHandler
+from .handlers import FileHandler, SysLogHandler
 from .stdout import Stdout
 
 import image
@@ -17,6 +17,7 @@ app = flask.Flask(__name__)
 @app.before_first_request
 def initialize():
     app.logger.setLevel(logging.DEBUG)
+    app.logger.addHandler(SysLogHandler())
     app.logger.addHandler(FileHandler(app.name))
     app.logger.info('%s started' % app.name)
 
