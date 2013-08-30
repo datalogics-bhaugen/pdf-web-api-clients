@@ -17,18 +17,18 @@ TEST_ID = test_client.TEST_ID
 TEST_KEY = test_client.TEST_KEY
 
 
-class Logger:
+class MockLogger:
     def __init__(self):
         self._log = []
     def __getattr__(self, name):
-        def log(value): self._log.append('[%s] %s' % (name.upper(), value))
         if name.startswith('_'): raise AttributeError(name)
+        def log(value): self._log.append((name, value))
         return log
     @property
     def log(self): return self._log
 
 
-class Mock(object):
+class MockPDF2IMG(object):
     def __init__(self, mock, pdf2img='pdf2img'):
         self._set_pdf2img(pdf2img)
         if not self.pdf2img: sys.exit('no %s in PATH' % pdf2img)

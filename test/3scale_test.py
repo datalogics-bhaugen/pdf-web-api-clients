@@ -5,13 +5,13 @@ import test
 
 from pdfprocess.errors import Auth
 from pdfprocess.client import Client
-from test import Logger, PUBLIC_ID, PUBLIC_KEY
+from test import MockLogger, PUBLIC_ID, PUBLIC_KEY
 from nose.tools import assert_equal, assert_false
 
 
 def pdfprocess_client(app_id=PUBLIC_ID, app_key=PUBLIC_KEY):
     application = {'id': app_id, 'key': app_key}
-    return Client(Logger(), {'application': application})
+    return Client(MockLogger(), {'application': application})
 
 
 def test_auth_ok():

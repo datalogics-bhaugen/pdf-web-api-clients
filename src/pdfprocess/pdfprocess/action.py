@@ -2,11 +2,10 @@
 
 import ThreeScalePY
 import flask
-import safe_json
 
 from ThreeScalePY import ThreeScaleAuthorize
 from client import Client
-from errors import APDFL_ERRORS, Error, ProcessCode, StatusCode, UNKNOWN
+from errors import APDFL_ERRORS, Error, JSON, ProcessCode, StatusCode, UNKNOWN
 
 
 PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
@@ -24,8 +23,7 @@ class Action(object):
         self._client = Client(logger, request.form)
         request_files = request.files.values()
         self._input = request_files[0] if request_files else None
-        options = request.form.get('options', '{}')
-        self._options = safe_json.parse(logger, options)
+        self._options = JSON(logger).parse(request.form.get('options', '{}'))
         self._request_form = request.form
         self._logger = logger
     def abort(self, error):
