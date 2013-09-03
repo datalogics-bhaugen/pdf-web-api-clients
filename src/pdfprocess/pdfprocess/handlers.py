@@ -1,0 +1,40 @@
+import os
+import logging
+from platform import system
+from logging.handlers import SysLogHandler as BaseSysLogHandler
+from logging.handlers import TimedRotatingFileHandler as BaseFileHandler
+
+
+class BaseHandler(object):
+    "format depends on level"
+    def __init__(self):
+        prefix = '%(asctime)s:'
+        level = '[%(levelname)s]'
+        message = '%(message)s'
+        basic_formatter = logging.Formatter(' '.join((prefix, message)))
+        level_formatter = logging.Formatter(' '.join((prefix, level, message)))
+        self._formatters = {
+            logging.DEBUG: basic_formatter,
+            logging.INFO: basic_formatter,
+            logging.WARNING: level_formatter,
+            logging.ERROR: level_formatter,
+            logging.CRITICAL: level_formatter}
+    def emit(self, record):
+        self.setFormatter(self._formatters[record.levelno])
+        super(BaseHandler, self).emit(record)
+
+
+class FileHandler(BaseHandler, BaseFileHandler):
+    def __init__(self, log_name, when='D', interval=1):
+        "rotate daily by default"
+        BaseHandler.__init__(self)
+        log_dir = os.environ['LOG_PATH'] if 'LOG_PATH' in os.environ else '.'
+        path = os.path.join(log_dir, '%s.log' % log_name)
+        BaseFileHandler.__init__(self, path, when=when, interval=interval)
+
+class SysLogHandler(BaseHandler, BaseSysLogHandler):
+    def __init__(self):
+        BaseHandler.__init__(self)
+        address = '/var/run/syslog' if system() == 'Darwin' else '/dev/log'
+        BaseSysLogHandler.__init__(self, address)
+

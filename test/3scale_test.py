@@ -5,22 +5,13 @@ import test
 
 from pdfprocess.errors import Auth
 from pdfprocess.client import Client
+from test import MockLogger, PUBLIC_ID, PUBLIC_KEY
 from nose.tools import assert_equal, assert_false
 
 
-PUBLIC_ID = 'c953bc0d'
-PUBLIC_KEY = 'c7a7c21fb25c384127879ded5ed3b0a4'
-
-
-class Logger:
-    def __getattr__(self, name):
-        return self._logger(name)
-    def _logger(self, name):
-        def log(value): print('%s: %s' % (name, value))
-        return log
-
 def pdfprocess_client(app_id=PUBLIC_ID, app_key=PUBLIC_KEY):
-    return Client(Logger(), {'application': {'id': app_id, 'key': app_key}})
+    application = {'id': app_id, 'key': app_key}
+    return Client(MockLogger(), {'application': application})
 
 
 def test_auth_ok():
@@ -33,12 +24,6 @@ def test_bad_application_id():
 def test_bad_application_key():
     client = pdfprocess_client(test.TEST_ID)
     assert_equal(client.auth(), Auth.Invalid)
-
-def test_bad_application_json():
-    application_json = {'id': PUBLIC_ID, 'key': PUBLIC_KEY}
-    client = Client(Logger(), {'application': str(application_json)})
-    assert_false(client.app_id)
-    assert_false(client.app_key)
 
 def test_usage_limit_exceeded():
     client = pdfprocess_client()

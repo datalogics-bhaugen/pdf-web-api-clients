@@ -10,11 +10,25 @@ from nose.tools import assert_equal, assert_is_none, assert_is_not_none
 BASE_URL = 'http://127.0.0.1:5000'
 VERSION = test_client.VERSION
 
+PUBLIC_ID = 'c953bc0d'
+PUBLIC_KEY = 'c7a7c21fb25c384127879ded5ed3b0a4'
+
 TEST_ID = test_client.TEST_ID
 TEST_KEY = test_client.TEST_KEY
 
 
-class Mock(object):
+class MockLogger:
+    def __init__(self):
+        self._log = []
+    def __getattr__(self, name):
+        if name.startswith('_'): raise AttributeError(name)
+        def log(value): self._log.append((name, value))
+        return log
+    @property
+    def log(self): return self._log
+
+
+class MockPDF2IMG(object):
     def __init__(self, mock, pdf2img='pdf2img'):
         self._set_pdf2img(pdf2img)
         if not self.pdf2img: sys.exit('no %s in PATH' % pdf2img)

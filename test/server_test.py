@@ -44,11 +44,11 @@ def test_out_of_memory(): _memory_error('scripts/out_of_memory')
 def _memory_error(mock_script):
     request_entity_too_large = StatusCode.RequestEntityTooLarge
     result = Result(ProcessCode.RequestTooLarge, request_entity_too_large)
-    with test.Mock(mock_script):
+    with test.MockPDF2IMG(mock_script):
         Test(['data/bad.pdf'], result)()
 
 def test_pdf2img_crash():
     result = Result(ProcessCode.UnknownError, StatusCode.InternalServerError)
-    with test.Mock('../bin/segfault'):
+    with test.MockPDF2IMG('../bin/segfault'):
         Test(['data/bad.pdf'], result)()
 

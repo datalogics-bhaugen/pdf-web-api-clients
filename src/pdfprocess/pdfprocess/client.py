@@ -2,9 +2,8 @@
 
 import time
 import ThreeScalePY
-import simplejson as json
 from ThreeScalePY import ThreeScaleAuthRep, ThreeScaleReport
-from errors import Auth
+from errors import Auth, JSON
 
 
 PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
@@ -38,14 +37,9 @@ class Client(ThreeScaleAuthRep):
             app_key = request_form.get('application[key]', '')
         return app_id, app_key
     def _decode_application(self, request_form):
-        application = request_form.get('application', None)
-        if isinstance(application, unicode) or isinstance(application, str):
-            try:
-                return json.loads(application)
-            except Exception: 
-                self._logger.error('cannot parse %s' % application)
-        else:
-            return application
+        app = request_form.get('application', None)
+        is_string = isinstance(app, unicode) or isinstance(app, str)
+        return JSON(self._logger).parse(app) if is_string else app
     @property
     def exc_info(self): return self._exc_info
 

@@ -8,7 +8,7 @@ from nose.tools import assert_in, assert_not_in
 class MockFixture(object):
     @classmethod
     def setup_class(cls):
-        cls.mock = test.Mock('scripts/options_test')
+        cls.mock = test.MockPDF2IMG('scripts/options_test')
     @classmethod
     def teardown_class(cls):
         cls.mock = None
