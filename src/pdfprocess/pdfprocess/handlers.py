@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 from platform import system
 from logging.handlers import SysLogHandler as BaseSysLogHandler
@@ -21,8 +22,9 @@ class BaseHandler(object):
             logging.CRITICAL: level_formatter}
     def emit(self, record):
         self.setFormatter(self._formatters[record.levelno])
-        super(BaseHandler, self).emit(record)
-
+        major_version = sys.version_info.major
+        handler = super(BaseHandler, self) if major_version < 3 else super()
+        handler.emit(record)
 
 class FileHandler(BaseHandler, BaseFileHandler):
     def __init__(self, log_name, when='D', interval=1):
