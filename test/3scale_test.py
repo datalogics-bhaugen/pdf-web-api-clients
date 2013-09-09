@@ -6,7 +6,7 @@ import test
 from pdfprocess.errors import Auth
 from pdfprocess.client import Client
 from test import MockLogger, PUBLIC_ID, PUBLIC_KEY
-from nose.tools import assert_equal, assert_false
+from nose.tools import assert_equal, assert_is_none
 
 
 def pdfprocess_client(app_id=PUBLIC_ID, app_key=PUBLIC_KEY):
@@ -29,7 +29,7 @@ def test_usage_limit_exceeded():
     client = pdfprocess_client()
     for j in range(100):
         auth = client.auth()
-        if auth == Auth.TooFast: return
+        if auth == Auth.UsageLimitExceeded: return
         assert_equal(auth, Auth.OK)
-    assert_false('usage limit exceeded')
+    assert_is_none('usage limit exceeded')
 

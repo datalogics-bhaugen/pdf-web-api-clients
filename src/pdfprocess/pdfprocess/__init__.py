@@ -30,11 +30,7 @@ def image_action():
     try:
         return image.Action(app.logger, flask.request)()
     except Error as error:
-        return _error(error.process_code, error.message, error.status_code)
+        return Action.error_response(error)
     except Exception as exception:
-        return _error(ProcessCode.UnknownError, exception.message)
-
-def _error(process_code, output, status_code=StatusCode.InternalServerError):
-    json = flask.jsonify(processCode=int(process_code), output=output)
-    return json, status_code
+        return Action.error_response(UNKNOWN.copy(exception.message))
 

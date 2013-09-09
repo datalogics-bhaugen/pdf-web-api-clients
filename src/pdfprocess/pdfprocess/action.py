@@ -26,27 +26,31 @@ class Action(object):
         self._options = JSON(logger).parse(request.form.get('options', '{}'))
         self._request_form = request.form
         self._logger = logger
-    def abort(self, error):
+    def authorize(self):
+        return self.client.auth()
+    def authorize_error(self, auth):
+        return self.error(AUTH_ERRORS[auth].copy(self.client.exc_info))
+    def error(self, error):
         no_password = not self._password_received()
         if error.process_code == ProcessCode.InvalidPassword and no_password:
             error.process_code = ProcessCode.MissingPassword
         self.logger.error(error)
-        return \
-            self.response(error.process_code, error.message, error.status_code)
-    def authorize(self):
-        return self.client.auth()
-    def authorize_error(self, auth):
-        return self.abort(AUTH_ERRORS[auth].copy(self.client.exc_info))
-    def get_error(self):
-        import image
-        for errors in (APDFL_ERRORS, image.ERRORS):
-            error =\
-                next((e for e in errors if e.message in self.exc_info), None)
-            if error: return error.copy(self.exc_info)
-        return UNKNOWN.copy(self.exc_info)
+        return Action.error_response(error)
     def _password_received(self):
         for key in self.options.keys():
             if key.lower() == 'password': return True
+    @classmethod
+    def error_response(cls, e):
+        return cls.response(e.process_code, e.message, e.status_code)
+    @classmethod
+    def get_error(cls, stdout):
+        import image
+        stdout_errors = stdout.errors()
+        for errors in (APDFL_ERRORS, image.ERRORS):
+            error =\
+                next((e for e in errors if e.message in stdout_errors), None)
+            if error: return error.copy(stdout_errors)
+        return UNKNOWN.copy(stdout_errors)
     @classmethod
     def response(cls, process_code, output, status_code=StatusCode.OK):
         json = flask.jsonify(processCode=int(process_code), output=output)
