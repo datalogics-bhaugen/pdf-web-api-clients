@@ -125,7 +125,7 @@ def run(argv):
     return pdf2img(Application.VERSION, Application.BASE_URL, argv)
 
 if __name__ == '__main__':
-    repsonse = run(sys.argv)
+    response = run(sys.argv)
     if not response: sys.exit(response)
     response.save_image()
     print('created: %s' % response.image_filename)
