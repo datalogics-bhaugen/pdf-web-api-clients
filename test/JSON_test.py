@@ -4,7 +4,7 @@ from pdfprocess.action import Action
 from pdfprocess.client import Client
 from pdfprocess.errors import Error
 from test import MockLogger, TEST_ID, TEST_KEY
-from nose.tools import assert_in, assert_raises
+from nose.tools import assert_equal, assert_in, assert_is_none
 
 
 class MockRequest(object):
@@ -19,12 +19,16 @@ class MockRequest(object):
 def test_bad_application():
     logger = MockLogger()
     application = {'id': TEST_ID, 'key': TEST_KEY}
-    assert_raises(Error, Client, logger, {'application': str(application)})
-    assert_in(('error', 'cannot parse %s' % application), logger.log)
+    error_message = 'cannot parse %s' % application
+    try: assert_is_none(Client(logger, {'application': str(application)}))
+    except Error as error: assert_equal(error.message, error_message)
+    assert_in(('error', error_message), logger.log)
 
 def test_bad_options():
     logger = MockLogger()
     options = {'outputForm': 'jpg', 'printPreview': True}
-    assert_raises(Error, Action, logger, MockRequest(str(options)))
-    assert_in(('error', 'cannot parse %s' % options), logger.log)
+    error_message = 'cannot parse %s' % options
+    try: assert_is_none(Action(logger, MockRequest(str(options))))
+    except Error as error: assert_equal(error.message, error_message)
+    assert_in(('error', error_message), logger.log)
 
