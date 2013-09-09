@@ -13,17 +13,17 @@ class Client(ThreeScaleAuthRep):
     def __init__(self, logger, request_form):
         self._logger = logger
         app_id, app_key = self._application(request_form)
+        logger.info("id='%s': key='%s'" % (app_id, app_key))
         ThreeScaleAuthRep.__init__(self, PROVIDER_KEY, app_id, app_key)
-        logger.info('request client: %s' % self)
         self._exc_info = None
     def __str__(self):
-        return "(id='%s', key='%s')" % (self.app_id, self.app_key)
+        return "(id='%s', key='*%s')" % (self.app_id, self.app_key[-7:])
     def auth(self):
         try:
             if self.authrep(): return Auth.OK
             self._exc_info = self.build_response().get_reason()
-            if 'usage limit' in self.exc_info: return Auth.TooFast
-            return Auth.Invalid
+            usage_limit = 'usage limit' in self.exc_info
+            return Auth.UsageLimitExceeded if usage_limit else Auth.Invalid
         except ThreeScalePY.ThreeScaleException as exc:
             self._logger.error(exc)
             return Auth.Unknown

@@ -5,7 +5,7 @@ import simplejson
 
 class Auth:
     "for internal use only"
-    OK, TooFast, Invalid, Unknown = range(4)
+    OK, UsageLimitExceeded, Invalid, Unknown = range(4)
 
 
 class EnumValue(object):

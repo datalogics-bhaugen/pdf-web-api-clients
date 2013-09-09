@@ -17,17 +17,15 @@ class Action(pdfprocess.Action):
         self._input_name = self.request_form.get('inputName', '<anon>')
         self._parser = ArgumentParser(self._log_request)
     def __call__(self):
-        self._exc_info = None
         try:
             if not self.input:
-                return self.abort(Error(ProcessCode.InvalidInput, 'no input'))
+                return self.error(Error(ProcessCode.InvalidInput, 'no input'))
             self._parser(self.options)
         except Error as error:
-            self._exc_info = error.message
-            return self.abort(error)
+            return self.error(error)
         except Exception as exception:
-            self._exc_info = exception.message
-            return self.abort(Error(ProcessCode.InvalidSyntax, self.exc_info))
+            error = Error(ProcessCode.InvalidSyntax, exception.message)
+            return self.error(error)
         auth = self.authorize()
         if auth in (Auth.OK, Auth.Unknown): return self._pdf2img()
         return self.authorize_error(auth)
@@ -36,8 +34,7 @@ class Action(pdfprocess.Action):
             options = self._parser.pdf2img_options
             args = ['pdf2img'] + options + [input_name, self.output_form]
             if subprocess.call(args, stdout=stdout):
-                self._set_exc_info(stdout)
-                return self.abort(self.get_error())
+                return self.error(Action.get_error(stdout))
         with open(output_file.name, 'rb') as image_file:
             image = base64.b64encode(image_file.read())
             return self.response(ProcessCode.OK, image)
@@ -56,16 +53,6 @@ class Action(pdfprocess.Action):
             input_file.flush()
             with OutputFile(input_file.name, self.output_form) as output_file:
                 return self._get_image(input_file.name, output_file)
-    def _set_exc_info(self, stdout):
-        errors = []
-        error_prefix = 'ERROR: '
-        for line in str(stdout).split('\n'):
-            index = line.find(error_prefix)
-            if index < 0: index = line.find(error_prefix.lower())
-            if 0 <= index: errors.append(line[index + len(error_prefix):])
-        self._exc_info = '\n'.join(errors)
-    @property
-    def exc_info(self): return self._exc_info
     @property
     def input_name(self): return self._input_name
     @property
