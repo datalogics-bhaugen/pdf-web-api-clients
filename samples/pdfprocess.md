@@ -40,7 +40,7 @@ The message body of the HTTP response is a JSON object:
 ### Sample Client
 
 To facilitate using this service, we supply a sample Python
-[script](pdf2img_8py_source.html) and [client](classpdfclient_1_1_client.html)
+[script](pdf2img_8py_source.html) and [client](pdfclient_8py_source.html)
 module. After downloading these files and copying your API key into the script,
 you can use the script's command-line interface to request images.
 
