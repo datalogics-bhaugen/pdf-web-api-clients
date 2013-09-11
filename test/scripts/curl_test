@@ -1,0 +1,7 @@
+#!/bin/sh
+
+APP='application={"id":"84445ec0","key":"2d3eac77bb3b9bea69a91e625b9241d2"}'
+URL=http://127.0.0.1:5000/api/0/actions/image
+
+curl --form $APP $* $URL 2> /dev/null | scripts/process_code
+

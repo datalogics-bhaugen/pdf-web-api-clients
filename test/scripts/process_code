@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+"extract process code from curl_request output"
+
+import fileinput
+import json
+import sys
+
+stdout = '\n'.join([line for line in fileinput.input()])
+print(stdout)
+
+sys.exit(json.loads(stdout)['processCode'])
+
