@@ -75,14 +75,17 @@ If necessary, add this line immediately after it:
 
 ## Install PDF2IMG
 
-This application and its associated resources must be installed manually from archives stored at //zeus/raid1/products/pdf2img/.
+Install this application and its associated resources from archives stored at //zeus/raid1/products/pdf2img/.
 
-* See [PDF2IMG](http://www.datalogics.com/pdf/doc/pdf2img.pdf) for platform-specific instructions
 * For Linux
     * Extract the two archives (one for pdf2img, one for its resources)
     * In ~/bin directory (e.g. /home/pdfprocess/bin), make a link to the pdf2img executable
     * In your pdf2img directory, make links to the Resource directories
     * In ~/.profile, add the pdf2img directory to your LD_LIBRARY_PATH
+* For Mac
+    * Create ~/Frameworks for the framework directories
+    * Copy the pdf2img executable to ~/bin
+    * Ignore the resources
 
 ## Run
 
