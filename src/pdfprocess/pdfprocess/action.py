@@ -12,17 +12,15 @@ PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
 
 
 AUTH_ERRORS = [
-    None,
+    None, # Auth.OK
     Error(ProcessCode.UsageLimitExceeded, None, StatusCode.TooManyRequests),
-    Error(ProcessCode.AuthorizationError, None, StatusCode.Forbidden),
-    None]
+    Error(ProcessCode.AuthorizationError, None, StatusCode.Forbidden)]
 
 
 class Action(object):
     def __init__(self, logger, request):
         self._client = Client(logger, request.form)
-        request_files = request.files.values()
-        self._input = request_files[0] if request_files else None
+        self._input = Action.request_input(request)
         self._options = JSON(logger).parse(request.form.get('options', '{}'))
         self._request_form = request.form
         self._logger = logger
@@ -51,6 +49,13 @@ class Action(object):
                 next((e for e in errors if e.message in stdout_errors), None)
             if error: return error.copy(stdout_errors)
         return UNKNOWN.copy(stdout_errors)
+    @classmethod
+    def request_input(cls, request):
+        request_files = request.files.values()
+        invalid_input = ProcessCode.InvalidInput
+        if not request_files: raise Error(invalid_input, 'no input')
+        if len(request_files) > 1: raise Error(invalid_input, 'excess input')
+        return request_files[0]
     @classmethod
     def response(cls, process_code, output, status_code=StatusCode.OK):
         json = flask.jsonify(processCode=int(process_code), output=output)

@@ -11,7 +11,7 @@ class MockRequest(object):
     def __init__(self, options):
         self._options = options
     @property
-    def files(self): return {}
+    def files(self): return {'spam': 0}
     @property
     def form(self): return {'options': self._options}
 

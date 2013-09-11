@@ -17,8 +17,16 @@ def pdfprocess_client(app_id=PUBLIC_ID, app_key=PUBLIC_KEY):
 def test_auth_ok():
     assert_equal(pdfprocess_client().auth(), Auth.OK)
 
+def test_no_application_id():
+    client = pdfprocess_client('')
+    assert_equal(client.auth(), Auth.Invalid)
+
 def test_bad_application_id():
     client = pdfprocess_client(str(uuid.uuid4())[:8])
+    assert_equal(client.auth(), Auth.Invalid)
+
+def test_no_application_key():
+    client = pdfprocess_client(app_key='')
     assert_equal(client.auth(), Auth.Invalid)
 
 def test_bad_application_key():

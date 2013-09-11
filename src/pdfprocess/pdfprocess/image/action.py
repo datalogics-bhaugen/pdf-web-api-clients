@@ -18,8 +18,6 @@ class Action(pdfprocess.Action):
         self._parser = ArgumentParser(self._log_request)
     def __call__(self):
         try:
-            if not self.input:
-                return self.error(Error(ProcessCode.InvalidInput, 'no input'))
             self._parser(self.options)
         except Error as error:
             return self.error(error)
@@ -27,7 +25,7 @@ class Action(pdfprocess.Action):
             error = Error(ProcessCode.InvalidSyntax, exception.message)
             return self.error(error)
         auth = self.authorize()
-        if auth in (Auth.OK, Auth.Unknown): return self._pdf2img()
+        if auth == Auth.OK: return self._pdf2img()
         return self.authorize_error(auth)
     def _get_image(self, input_name, output_file):
         with pdfprocess.Stdout() as stdout:

@@ -62,12 +62,3 @@ $(DOXYGEN): doxygen doc/Doxyfile samples/* samples/python/*
 $(PDF2IMG):
 	@echo Install pdf2img!
 
-# TODO: remove libxml2 dependency from README.md (replace with lxml wrapper)
-ifeq ($(shell uname -s), Darwin)
-LIBXML2 = libxml2-python-2.6.21
-python-libxml2:
-	ftp xmlsoft.org:/libxml2/python/$(LIBXML2).tar.gz
-	tar xzf $(LIBXML2).tar.gz
-	cd $(LIBXML2); python setup.py build; sudo python setup.py install
-endif
-
