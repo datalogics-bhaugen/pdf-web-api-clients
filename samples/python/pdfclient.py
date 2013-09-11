@@ -142,7 +142,7 @@ class Response(object):
         try: self._json = request_response.json()
         except ValueError: self._json = {}
     def __str__(self):
-        return '%s: %s' % (response.process_code, response.output)
+        return '%s: %s' % (self.process_code, self.output or self.exc_info)
     def __bool__(self):
         return self.process_code == 0
     __nonzero__ = __bool__
