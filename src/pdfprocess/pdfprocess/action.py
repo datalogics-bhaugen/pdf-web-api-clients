@@ -27,19 +27,15 @@ class Action(object):
     def authorize(self):
         return self.client.auth()
     def authorize_error(self, auth):
-        return self.error(AUTH_ERRORS[auth].copy(self.client.exc_info))
-    def error(self, error):
+        self.raise_error(AUTH_ERRORS[auth].copy(self.client.exc_info))
+    def raise_error(self, error):
         no_password = not self._password_received()
         if error.process_code == ProcessCode.InvalidPassword and no_password:
             error.process_code = ProcessCode.MissingPassword
-        self.logger.error(error)
-        return Action.error_response(error)
+        raise error
     def _password_received(self):
         for key in self.options.keys():
             if key.lower() == 'password': return True
-    @classmethod
-    def error_response(cls, e):
-        return cls.response(e.process_code, e.message, e.status_code)
     @classmethod
     def get_error(cls, stdout):
         import image
@@ -56,10 +52,6 @@ class Action(object):
         if not request_files: raise Error(invalid_input, 'no input')
         if len(request_files) > 1: raise Error(invalid_input, 'excess input')
         return request_files[0]
-    @classmethod
-    def response(cls, process_code, output, status_code=StatusCode.OK):
-        json = flask.jsonify(processCode=int(process_code), output=output)
-        return json, status_code
     @property
     def client(self): return self._client
     @property

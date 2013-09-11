@@ -20,22 +20,21 @@ class Action(pdfprocess.Action):
         try:
             self._parser(self.options)
         except Error as error:
-            return self.error(error)
-        except Exception as exception:
-            error = Error(ProcessCode.InvalidSyntax, exception.message)
-            return self.error(error)
+            self.raise_error(error)
+        except Exception as exc:
+            self.raise_error(Error(ProcessCode.InvalidSyntax, exc.message))
         auth = self.authorize()
-        if auth == Auth.OK: return self._pdf2img()
-        return self.authorize_error(auth)
+        if auth != Auth.OK: self.authorize_error(auth)
+        return self._pdf2img()
     def _get_image(self, input_name, output_file):
         with pdfprocess.Stdout() as stdout:
             options = self._parser.pdf2img_options
             args = ['pdf2img'] + options + [input_name, self.output_form]
             if subprocess.call(args, stdout=stdout):
-                return self.error(Action.get_error(stdout))
+                self.raise_error(Action.get_error(stdout))
         with open(output_file.name, 'rb') as image_file:
             image = base64.b64encode(image_file.read())
-            return self.response(ProcessCode.OK, image)
+            return pdfprocess.response(ProcessCode.OK, image)
     def _log_request(self, parser_options):
         options = ' '.join(parser_options)
         if options: options = ' ' + options
