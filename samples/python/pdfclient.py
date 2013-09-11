@@ -91,9 +91,11 @@ class Request(object):
     #  @param input request document file object
     #  @param options e.g. {'pages': '1', 'printPreview': True}
     def post(self, input, **options):
+        files = {'input': input}
         if input.name: self.data['inputName'] = input.name
         if options: self.data['options'] = json.dumps(options)
-        return requests.post(self.url, data=self.data, files={'input': input})
+        return \
+            requests.post(self.url, data=self.data, files=files, verify=False)
 
     ## Reset #data
     def reset(self):
