@@ -1,6 +1,8 @@
 "pdfprocess application"
 
+import sys
 import logging
+import traceback
 
 import flask
 
@@ -36,6 +38,9 @@ def image_action():
 
 def error_response(error):
     app.logger.error(error)
+    if error.process_code == ProcessCode.UnknownError:
+        for entry in traceback.format_tb(sys.exc_info()[2]):
+            app.logger.debug(entry.rstrip())
     return response(error.process_code, error.message, error.status_code)
 
 def response(process_code, output, status_code=StatusCode.OK):
