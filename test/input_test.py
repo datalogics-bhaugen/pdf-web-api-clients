@@ -27,7 +27,7 @@ def validate(input, process_code, error=None):
             assert_in(error, str(stdout))
 
 def args(input):
-    result = ['scripts/curl_test']
+    result = ['scripts/curl']
     for file in input:
         result.extend(['--form', '%s=@%s' % (os.path.basename(file), file)])
     return result
