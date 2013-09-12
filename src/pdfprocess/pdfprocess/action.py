@@ -21,7 +21,7 @@ class Action(object):
     def __init__(self, logger, request):
         self._client = Client(logger, request.form)
         self._input = Action.request_input(request)
-        self._options = JSON(logger).parse(request.form.get('options', '{}'))
+        self._options = JSON.parse(request.form.get('options', '{}'))
         self._request_form = request.form
         self._logger = logger
     def authorize(self):

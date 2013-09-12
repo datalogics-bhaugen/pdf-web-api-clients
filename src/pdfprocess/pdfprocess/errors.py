@@ -77,14 +77,11 @@ UNKNOWN = Error(ProcessCode.UnknownError, 'Internal server error',
     StatusCode.InternalServerError)
 
 
-class JSON(object):
-    def __init__(self, logger):
-        self._logger = logger
-    def parse(self, s):
+class JSON:
+    @classmethod
+    def parse(cls, json):
         try:
-            return simplejson.loads(s)
+            return simplejson.loads(json)
         except Exception: 
-            error = Error(ProcessCode.InvalidSyntax, 'cannot parse %s' % s)
-            self._logger.error(error.message)
-            raise error
+            raise Error(ProcessCode.InvalidSyntax, 'cannot parse %s' % json)
 
