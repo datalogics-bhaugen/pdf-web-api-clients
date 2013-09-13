@@ -39,7 +39,7 @@ class Client(ThreeScaleAuthRep):
     def _decode_application(self, request_form):
         app = request_form.get('application', None)
         is_string = isinstance(app, unicode) or isinstance(app, str)
-        return JSON(self._logger).parse(app) if is_string else app
+        return JSON.parse(app) if is_string else app
     @property
     def exc_info(self): return self._exc_info
 

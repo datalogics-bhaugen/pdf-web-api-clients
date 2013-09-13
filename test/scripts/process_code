@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"extract process code from curl_request output"
+"extract process code from curl output"
 
 import fileinput
 import json

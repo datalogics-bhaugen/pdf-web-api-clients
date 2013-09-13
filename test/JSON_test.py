@@ -22,7 +22,6 @@ def test_bad_application():
     error_message = 'cannot parse %s' % application
     try: assert_is_none(Client(logger, {'application': str(application)}))
     except Error as error: assert_equal(error.message, error_message)
-    assert_in(('error', error_message), logger.log)
 
 def test_bad_options():
     logger = MockLogger()
@@ -30,5 +29,4 @@ def test_bad_options():
     error_message = 'cannot parse %s' % options
     try: assert_is_none(Action(logger, MockRequest(str(options))))
     except Error as error: assert_equal(error.message, error_message)
-    assert_in(('error', error_message), logger.log)
 
