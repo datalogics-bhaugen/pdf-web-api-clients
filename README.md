@@ -6,7 +6,6 @@ Internet-accessible PDF API, a.k.a. "PDF Web API" and "pdfprocess".
 
 * PDF2IMG
 * Python 2.7
-* nginx
 
 MacOS (different versions) is the primary development platform, and Ubuntu is the target deployment platform.
 
@@ -17,6 +16,20 @@ MacOS (different versions) is the primary development platform, and Ubuntu is th
 * [Flask](http://flask.pocoo.org)
 * [Gunicorn](http://gunicorn.org)
 * [Supervisor](http://supervisord.org)
+
+## Install PDF2IMG
+
+This application must be in the PATH used by pdfprocess. Install it and its associated resources from archives stored at //zeus/raid1/products/pdf2img/.
+
+* For Linux
+    * Extract the two archives (one for pdf2img, one for its resources)
+    * In ~/bin directory (e.g. /home/pdfprocess/bin), make a link to the pdf2img executable
+    * In your pdf2img directory, make links to the Resource directories
+    * In ~/.profile, add the pdf2img directory to your LD_LIBRARY_PATH
+* For Mac
+    * Create ~/Frameworks for the framework directories
+    * Copy the pdf2img executable to ~/bin
+    * Ignore the resources
 
 ## Build
 
@@ -38,54 +51,10 @@ We use Buildout, which is a three-step process. These steps are executed by the 
     * for lxml on Ubuntu
         * libxml2-dev
         * libxslt-dev
-* Clone the repository into /home/pdfprocess if you are deploying the server
-    * To get the password for pdfprocess (to run sudo), send mail to pdfprocess@datalogics.com.
+* Clone the web-api repository into /home/pdfprocess
+    * To get the password for pdfprocess, send mail to pdfprocess@datalogics.com.
+    * This password is also the pass phrase for the web-api deploy key.
 * make _build_
-
-## Upgrade nginx
-
-* /etc/init.d/nginx stop
-* apt-get autoremove nginx
-* apt-key add etc/nginx/nginx_signing.key
-* Append the following to the end of /etc/apt/sources.list
-    * deb http://nginx.org/packages/ubuntu/ precise nginx
-    * deb-src http://nginx.org/packages/ubuntu/ precise nginx
-    * (replace *precise* with the appropriate Ubuntu codename as needed)
-* apt-get update
-* apt-get install nginx
-* If there is no SSL key in /etc/nginx/ssl, copy the appropriate one from //zeus/raid1/proj/procyon/web-api/etc/nginx/ssl
-
-Near the bottom of /etc/nginx/nginx.conf, you should see this:
-
-    include /etc/nginx/conf.d/*.conf;
-
-If necessary, add this line immediately after it:
-
-    include /etc/nginx/sites-enabled/*;
-
-## Install pdfprocess
-
-* If an older version is installed, we recommend that you uninstall it, e.g. `sudo make uninstall-test`
-* On _pdfprocess_, `sudo make install-production`
-* On _pdfprocess-test_, `sudo make install-test`
-* `bin/supervisord`
-* `bin/supervisorctl status`
-* If you are unfamiliar with /etc/init.d/nginx, run it without arguments
-* `/etc/init.d/nginx restart`
-
-## Install PDF2IMG
-
-Install this application and its associated resources from archives stored at //zeus/raid1/products/pdf2img/.
-
-* For Linux
-    * Extract the two archives (one for pdf2img, one for its resources)
-    * In ~/bin directory (e.g. /home/pdfprocess/bin), make a link to the pdf2img executable
-    * In your pdf2img directory, make links to the Resource directories
-    * In ~/.profile, add the pdf2img directory to your LD_LIBRARY_PATH
-* For Mac
-    * Create ~/Frameworks for the framework directories
-    * Copy the pdf2img executable to ~/bin
-    * Ignore the resources
 
 ## Run
 
@@ -103,22 +72,11 @@ These scripts facilitate testing:
 * `scripts/gunicorn` runs our Flask application in a Gunicorn process
 * `test/test_client.py` runs `samples/pdf2img.py` with test settings
 * `test/app_test.py` tests our Flask application directly
-* `bin/nose` runs regression tests in test
-    * 3scale_test.py
-    * JSON_test.py
-    * input_test.py
-    * libxml2_test.py
-    * options_test.py
-    * pdf2img_test.py
-    * server_test.py
-    * syntax_test.py
+* `bin/nose` runs regression tests
 
 Common test procedures:
 * The regression tests validate our Flask application
 * If bin/supervisord fails to start Gunicorn, scripts/gunicorn might provide better diagnostic output
-* To test the nginx configuration
-    * /etc/init.d/nginx configtest
-    * Run test_client.py from another host
 
 ## Logging
 
