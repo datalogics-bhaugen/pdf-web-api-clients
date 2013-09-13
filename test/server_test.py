@@ -4,6 +4,7 @@ import platform
 import test
 from test import Result, Test
 from test_client import ImageProcessCode as ProcessCode, StatusCode
+from nose.tools import assert_in
 
 
 def linux_only(func):
@@ -14,7 +15,10 @@ def linux_only(func):
 
 def test_bad_version():
     result = Result(None, StatusCode.NotFound)
-    Test(['data/bad.pdf'], result)('spam', test.BASE_URL)
+    try: Test(['data/bad.pdf'], result)('spam', test.BASE_URL)
+    except Exception as exception:
+        max_retries = 'Max retries exceeded with url: /api/spam/actions/image'
+        assert_in(max_retries, str(exception))
 
 def test_bad_pdf():
     result = Result(ProcessCode.InvalidInput, StatusCode.UnsupportedMediaType)
