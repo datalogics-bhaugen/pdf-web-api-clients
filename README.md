@@ -105,8 +105,11 @@ These scripts facilitate testing:
 * `test/app_test.py` tests our Flask application directly
 * `bin/nose` runs regression tests in test
     * 3scale_test.py
+    * JSON_test.py
+    * input_test.py
     * libxml2_test.py
     * options_test.py
+    * pdf2img_test.py
     * server_test.py
     * syntax_test.py
 
