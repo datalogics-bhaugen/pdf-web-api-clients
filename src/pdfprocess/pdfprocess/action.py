@@ -1,7 +1,6 @@
 "pdfprocess action"
 
 import ThreeScalePY
-import flask
 
 from ThreeScalePY import ThreeScaleAuthorize
 from client import Client
