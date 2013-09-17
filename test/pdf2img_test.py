@@ -1,4 +1,4 @@
-"sample regression tests"
+"pdf2img regression tests"
 
 import os
 import glob
@@ -14,7 +14,13 @@ def set_python_path():
     requests_dir = glob.glob(os.path.join(eggs_dir, 'requests-*.egg'))[0]
     os.environ['PYTHONPATH'] = '%s:%s' % (json_dir, requests_dir)
 
-def test_pdf2img():
+def test_pdf2img_application():
+    args = ['pdf2img', 'data/hello_world.pdf', 'tif']
+    with Stdout() as stdout:
+        assert_equal(subprocess.call(args, stdout=stdout), 0)
+        assert_in('PDF2IMG', str(stdout))
+
+def test_pdf2img_sample():
     set_python_path()
     args = ['python', '../samples/python/pdf2img.py', 'data/bad.pdf']
     with Stdout() as stdout:

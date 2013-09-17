@@ -38,10 +38,13 @@ def image_action():
 
 def error_response(error):
     app.logger.error(error)
-    if error.process_code == ProcessCode.UnknownError:
-        for entry in traceback.format_tb(sys.exc_info()[2]):
-            app.logger.debug(entry.rstrip())
+    if error.process_code == ProcessCode.UnknownError: log_traceback()
     return response(error.process_code, error.message, error.status_code)
+
+def log_traceback():
+    for entry in traceback.format_tb(sys.exc_info()[2]):
+        app.logger.error(entry.rstrip())
+        if '/eggs/' in entry: return
 
 def response(process_code, output, status_code=StatusCode.OK):
     json = flask.jsonify(processCode=int(process_code), output=output)
