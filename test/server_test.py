@@ -1,16 +1,9 @@
 "server regression tests"
 
-import platform
 import test
 from test import Result, Test
 from test_client import ImageProcessCode as ProcessCode, StatusCode
 from nose.tools import assert_in
-
-
-def linux_only(func):
-    "enable/disable tests that require APDFL 10"
-    func.__test__ = platform.system() == 'Linux'
-    return func
 
 
 def test_bad_version():
@@ -28,12 +21,10 @@ def test_truncated_pdf():
     result = Result(ProcessCode.InvalidInput, StatusCode.BadRequest)
     Test(['data/truncated.pdf'], result)()
 
-@linux_only
 def test_missing_password():
     result = Result(ProcessCode.MissingPassword, StatusCode.Forbidden)
     Test(['data/protected.pdf'], result)()
 
-@linux_only
 def test_invalid_password():
     result = Result(ProcessCode.InvalidPassword, StatusCode.Forbidden)
     Test(['-password=spam', 'data/protected.pdf'], result)()
