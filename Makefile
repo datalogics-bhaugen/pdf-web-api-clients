@@ -44,4 +44,3 @@ $(DOXYGEN): doxygen doc/Doxyfile samples/* samples/python/*
 doxygen:
 	git clone https://github.com/doxygen/doxygen.git
 	cd doxygen; ./configure; make
-
