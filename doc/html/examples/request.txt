@@ -9,7 +9,7 @@ User-Agent: python-requests/1.2.3 CPython/2.7.2 Darwin/12.4.0
 --7aa5609277fb4ebbaa6ccebd2b981d3d
 Content-Disposition: form-data; name="application"
 
-{"id": "84445ec0", "key": "2d3eac77bb3b9bea69a91e625b9241d2"}
+{"id": "********", "key": "********************************"}
 --7aa5609277fb4ebbaa6ccebd2b981d3d
 Content-Disposition: form-data; name="inputName"
 
