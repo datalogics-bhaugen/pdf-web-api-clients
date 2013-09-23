@@ -4,6 +4,7 @@ import os
 import glob
 import subprocess
 from pdfprocess.stdout import Stdout
+from test_client import ProcessCode
 from nose.tools import assert_equal, assert_in
 
 
@@ -20,9 +21,16 @@ def test_pdf2img_application():
         assert_equal(subprocess.call(args, stdout=stdout), 0)
         assert_in('PDF2IMG', str(stdout))
 
-def test_pdf2img_sample():
+def test_pdf2img_sample_perl():
+    args = ['../samples/perl/pdf2img.pl', 'data/bad.pdf']
+    with Stdout() as stdout:
+        process_code = subprocess.call(args, stdout=stdout)
+        assert_equal(process_code, ProcessCode.AuthorizationError)
+        assert_in('TODO: Application ID', str(stdout))
+
+def test_pdf2img_sample_python():
     set_python_path()
-    args = ['python', '../samples/python/pdf2img.py', 'data/bad.pdf']
+    args = ['../samples/python/pdf2img.py', 'data/bad.pdf']
     with Stdout() as stdout:
         assert_equal(subprocess.call(args, stdout=stdout), 0)
         assert_in('TODO: Application ID', str(stdout))

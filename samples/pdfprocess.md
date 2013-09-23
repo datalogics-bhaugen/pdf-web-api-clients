@@ -37,18 +37,20 @@ The message body of the HTTP response is a JSON object:
 * [output](https://datalogics-cloud.3scale.net/docs#output) contains base64-encoded data if the request was successful, or information about the error.
 * [processCode](https://datalogics-cloud.3scale.net/docs#processCode) is 0 if the request was successful, or a nonzero code identifying the error.
 
-### Sample Client
+### Sample Clients
 
-To facilitate using this service, we supply a sample Python
-[script](pdf2img_8py_source.html) and [client](pdfclient_8py_source.html)
-module. After downloading these files and copying your API key into the script,
-you can use the script's command-line interface to request images.
+To facilitate using this service, we supply two sample clients:
 
-This sample has the following dependencies:
+* For Perl, download this [script](examples/pdf2img.pl). After copying your API key into it, you can use its command-line interface to request images. This client has the following dependencies:
+    * HTTP::Request::Common
+    * JSON
+    * LWP::UserAgent
+    * MIME::Base64
 
-* Python 3.3 or 2.7 (other versions might work, but are not supported)
-* [Requests](http://docs.python-requests.org/en/latest/): HTTP for Humans (1.2.3)
-* [simplejson](http://simplejson.readthedocs.org/en/latest/): JSON encoder and decoder
+* For Python, download this [script](pdf2img_8py_source.html) and [client](pdfclient_8py_source.html) module. After copying your API key into the script, you can use its command-line interface to request images. This client has the following dependencies:
+    * Python 3.3 or 2.7 (other versions might work, but are not supported)
+    * [Requests](http://docs.python-requests.org/en/latest/): HTTP for Humans (1.2.3)
+    * [simplejson](http://simplejson.readthedocs.org/en/latest/): JSON encoder and decoder
 
 ### Resources
 
