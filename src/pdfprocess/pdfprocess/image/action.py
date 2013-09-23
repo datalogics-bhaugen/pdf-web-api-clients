@@ -7,7 +7,6 @@ import tempfile
 import pdfprocess
 from pdfprocess import Auth, Error, ProcessCode
 from .argument_parser import ArgumentParser
-from .options import Flag
 from .output_file import OutputFile
 
 
