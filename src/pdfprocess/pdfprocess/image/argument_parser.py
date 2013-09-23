@@ -34,27 +34,19 @@ class ArgumentParser(argparse.ArgumentParser):
             if option.startswith(option_prefix):
                 return option[len(option_prefix):]
     def _set_options(self, options):
-        flag_syntax, option_syntax = ('-%s', '-%s=%s')
         self._options, self._pdf2img_options = ([], [])
-        pdf2img_options, all_options = (OPTIONS, OPTIONS + translator.OPTIONS)
         for key, value in options.iteritems():
-            if key in pdf2img_options:
-                option = pdf2img_options[pdf2img_options.index(key)]
-                if value is True:
-                    pdf2img_option = flag_syntax % option
-                elif not isinstance(option, Flag):
-                    pdf2img_option = option_syntax % (option, value)
-                self.pdf2img_options.append(pdf2img_option)
-            if key in all_options:
-                option = all_options[all_options.index(key)]
-                if value is True:
-                    self.options.append(flag_syntax % option.name)
-                elif not isinstance(option, Flag):
-                    self.options.append(option_syntax % (option.name, value))
+            if key in OPTIONS:
+                option = OPTIONS[OPTIONS.index(key)]
+                self.pdf2img_options.append(option.format(value, True))
+                self.options.append(option.format(value))
+            elif key in translator.OPTIONS:
+                option = translator.OPTIONS[translator.OPTIONS.index(key)]
+                self.options.append(option.format(value))
             elif value is True:
-                self.options.append(flag_syntax % key)
+                self.options.append(Flag.FORMAT % key)
             else:
-                self.options.append(option_syntax % (key, value))
+                self.options.append(Option.FORMAT % (key, value))
     @property
     def options(self): return self._options
     @property
