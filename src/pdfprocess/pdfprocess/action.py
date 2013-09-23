@@ -1,8 +1,5 @@
 "pdfprocess action"
 
-import ThreeScalePY
-
-from ThreeScalePY import ThreeScaleAuthorize
 from client import Client
 from errors import APDFL_ERRORS, Error, JSON, ProcessCode, StatusCode, UNKNOWN
 
@@ -11,7 +8,7 @@ PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
 
 
 AUTH_ERRORS = [
-    None, # Auth.OK
+    None,  # Auth.OK
     Error(ProcessCode.UsageLimitExceeded, None, StatusCode.TooManyRequests),
     Error(ProcessCode.AuthorizationError, None, StatusCode.Forbidden)]
 
@@ -38,12 +35,11 @@ class Action(object):
     @classmethod
     def get_error(cls, stdout):
         import image
-        stdout_errors = stdout.errors()
-        for errors in (APDFL_ERRORS, image.ERRORS):
-            error =\
-                next((e for e in errors if e.message in stdout_errors), None)
-            if error: return error.copy(stdout_errors)
-        return UNKNOWN.copy(stdout_errors)
+        errors = stdout.errors()
+        for error_list in (APDFL_ERRORS, image.ERRORS):
+            error = next((e for e in error_list if e.message in errors), None)
+            if error: return error.copy(errors)
+        return UNKNOWN.copy(errors)
     @classmethod
     def request_input(cls, request):
         request_files = request.files.values()

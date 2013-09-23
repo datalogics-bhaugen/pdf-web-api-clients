@@ -8,7 +8,7 @@ from nose.tools import assert_equal, assert_in
 
 
 def test_hello_world():
-    validate(['data/hello_world.pdf'], ProcessCode.OK)
+    validate_input(['data/hello_world.pdf'], ProcessCode.OK)
 
 def test_excess_input():
     validate_error(['data/hello_world.pdf', 'data/bad.pdf'], 'excess input')
@@ -18,13 +18,12 @@ def test_no_input():
 
 
 def validate_error(input, error):
-    validate(input, ProcessCode.InvalidInput, error)
+    validate_input(input, ProcessCode.InvalidInput, error)
 
-def validate(input, process_code, error=None):
+def validate_input(input, process_code, error=None):
     with Stdout() as stdout:
         assert_equal(subprocess.call(args(input), stdout=stdout), process_code)
-        if process_code != ProcessCode.OK:
-            assert_in(error, str(stdout))
+        if error: assert_in(error, str(stdout))
 
 def args(input):
     result = ['scripts/curl']

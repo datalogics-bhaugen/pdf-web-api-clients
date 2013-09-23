@@ -10,9 +10,9 @@ class SyntaxFixture(object):
         Test(args, Result(process_code) if process_code else self.result)()
 
 class TestColorModel(SyntaxFixture):
-    def test_bad_color_model(self):
+    def test_invalid_color_model(self):
         self.validate(['-colorModel=spam'])
-    def test_bad_gif_color_model(self):
+    def test_invalid_gif_color_model(self):
         self.validate(['-outputForm=gif', '-colorModel=cmyk'])
     @property
     def result(self): return Result(ProcessCode.InvalidColorModel)
