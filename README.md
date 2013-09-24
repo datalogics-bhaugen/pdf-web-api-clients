@@ -23,13 +23,14 @@ This application must be in the PATH used by pdfprocess. Install it and its asso
 
 * For Linux
     * Extract the two archives (one for pdf2img, one for its resources)
-    * In ~/bin directory (e.g. /home/pdfprocess/bin), make a link to the pdf2img executable
-    * In your pdf2img directory, make links to the Resource directories
+    * In ~/bin (e.g. /home/pdfprocess/bin), make a link to the pdf2img executable
     * In ~/.profile, add the pdf2img directory to your LD_LIBRARY_PATH
+    * TODO: the web application uses the --fontlist option [...]
 * For Mac
-    * Create ~/Frameworks for the framework directories
-    * Copy the pdf2img executable to ~/bin
-    * Ignore the resources
+    * Open the disk image
+    * Drag the PDF2IMG directory to your home directory
+        * Do not use _cp_ to copy the files!
+    * In ~/bin, make a link to ~/PDF2IMG/application/pdf2img
 
 ## Build
 
