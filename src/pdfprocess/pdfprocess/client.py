@@ -1,8 +1,7 @@
 "pdfprocess client"
 
-import time
 import ThreeScalePY
-from ThreeScalePY import ThreeScaleAuthRep, ThreeScaleReport
+from ThreeScalePY import ThreeScaleAuthRep
 from errors import Auth, JSON
 
 

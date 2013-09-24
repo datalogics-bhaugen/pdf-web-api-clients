@@ -34,4 +34,3 @@ def test_pdf2img_sample_python():
     with Stdout() as stdout:
         assert_equal(subprocess.call(args, stdout=stdout), 0)
         assert_in('TODO: Application ID', str(stdout))
-
