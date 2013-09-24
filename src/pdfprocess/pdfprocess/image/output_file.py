@@ -30,4 +30,3 @@ class OutputFile(object):
         if len(names) == 1: return names[0]
         message = 'unsupported multi-page image request' if names else None
         raise UNKNOWN.copy(message)
-

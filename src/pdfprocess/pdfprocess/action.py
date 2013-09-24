@@ -57,4 +57,3 @@ class Action(object):
     def options(self): return self._options
     @property
     def request_form(self): return self._request_form
-

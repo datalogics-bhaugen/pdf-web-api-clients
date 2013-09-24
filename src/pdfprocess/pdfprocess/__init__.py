@@ -49,4 +49,3 @@ def log_traceback():
 def response(process_code, output, status_code=StatusCode.OK):
     json = flask.jsonify(processCode=int(process_code), output=output)
     return json, status_code
-

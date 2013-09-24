@@ -14,7 +14,7 @@ class ProcessCode(pdfprocess.ProcessCode):
 ERRORS = [
     Error(ProcessCode.InvalidSyntax, 'An option is missing the = sign'),
     Error(ProcessCode.InvalidSyntax,
-        'An option requiring a value has no value supplied'),
+          'An option requiring a value has no value supplied'),
     Error(ProcessCode.InvalidOutputType, 'Invalid output type'),
     Error(ProcessCode.InvalidPage, "Bad '-pages' argument"),
     Error(ProcessCode.InvalidPage, "Could not parse '-pages' option"),
@@ -22,13 +22,12 @@ ERRORS = [
     Error(ProcessCode.InvalidPage, 'is greater than last PDF page'),
     Error(ProcessCode.InvalidPage, 'last PDF page is'),
     Error(ProcessCode.RequestTooLarge, 'Insufficient memory available',
-        StatusCode.RequestEntityTooLarge),
+          StatusCode.RequestEntityTooLarge),
     Error(ProcessCode.RequestTooLarge, 'pdf2img ran out of memory',
-        StatusCode.RequestEntityTooLarge),
+          StatusCode.RequestEntityTooLarge),
     Error(ProcessCode.InvalidColorModel, 'Invalid color model'),
     Error(ProcessCode.InvalidColorModel,
-        'GIF only supports RGB and Gray images'),
+          'GIF only supports RGB and Gray images'),
     Error(ProcessCode.InvalidCompression, 'Invalid compression type'),
     Error(ProcessCode.InvalidRegion, 'Invalid PDF region type'),
     Error(ProcessCode.InvalidResolution, "'-resolution' bad value specified")]
-

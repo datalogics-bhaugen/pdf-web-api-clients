@@ -96,4 +96,3 @@ class Smoothing(Translator):
 OPTIONS =\
     ImageSize.OPTIONS + OutputForm.OPTIONS + Pages.OPTIONS +\
     Resolution.OPTIONS + Smoothing.OPTIONS
-
