@@ -8,17 +8,20 @@ ifeq ($(PLATFORM), Darwin)
 endif
 	python virtualenv.py --never-download venv
 	venv/bin/python bootstrap.py
-	@make bin/segfault
 	bin/buildout | scripts/versions > versions.cfg
 	@diff $(VENV) virtualenv.py > /dev/null || echo Upgrade virtualenv!
 	@cp $(VENV) .
+	@make qa
 
 clean:
 	rm -rf .installed.cfg bin develop-eggs parts var/log
 
 html: $(DOXYGEN)
 
-.PHONY: build clean html
+qa: bin/segfault
+	bin/flake8 --max-complexity 10 src/pdfprocess/pdfprocess
+
+.PHONY: build clean html qa
 
 bin/segfault: test/src/segfault.c
 	gcc $^ -o $@
