@@ -34,12 +34,3 @@ def test_pdf2img_sample_python():
     with Stdout() as stdout:
         assert_equal(subprocess.call(args, stdout=stdout), 0)
         assert_in('TODO: Application ID', str(stdout))
-
-def test_bad_flag_value():
-    "test case discovered during sample Perl client development"
-    args = ['scripts/bad_flag_value']
-    with Stdout() as stdout:
-        process_code = subprocess.call(args, stdout=stdout, stderr=Stdout())
-        assert_equal(process_code, ProcessCode.InvalidSyntax)
-        assert_in('invalid printPreview value: true', str(stdout))
-

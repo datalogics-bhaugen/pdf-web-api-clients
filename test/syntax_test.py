@@ -2,12 +2,13 @@
 
 from test import Result, Test
 from test_client import ImageProcessCode as ProcessCode, StatusCode
+from nose.tools import assert_in
 
 
 class SyntaxFixture(object):
     def validate(self, args, process_code=None):
-        args.append('data/four_pages.pdf')
-        Test(args, Result(process_code) if process_code else self.result)()
+        result = Result(process_code) if process_code else self.result
+        return Test(args + ['data/four_pages.pdf'], result)()
 
 class TestColorModel(SyntaxFixture):
     def test_invalid_color_model(self):
@@ -24,6 +25,9 @@ class TestInvalidSyntax(SyntaxFixture):
         self.validate(['-pdfRegion='])
     def test_invalid_flag(self):
         self.validate(['-spam'])
+    def test_invalid_flag_value(self):
+        error = 'invalid printPreview value: true'
+        assert_in(error, self.validate(['-printPreview=true']).exc_info)
     def test_invalid_option(self):
         self.validate(['-spam=spam'])
     def test_invalid_compression(self):
