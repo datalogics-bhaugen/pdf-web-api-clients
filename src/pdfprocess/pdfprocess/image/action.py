@@ -1,5 +1,6 @@
 "pdfprocess image action"
 
+import os
 import base64
 import subprocess
 import tempfile
@@ -15,6 +16,35 @@ class Action(pdfprocess.Action):
         pdfprocess.Action.__init__(self, logger, request)
         self._input_name = self.request_form.get('inputName', '<anon>')
         self._parser = ArgumentParser(self._log_request)
+    def _log_request(self, parser_options):
+        options = ' '.join(parser_options)
+        if options: options = ' ' + options
+        input_name = self.input_name
+        if ' ' in input_name: input_name = '"%s"' % input_name
+        output_form = self.output_form
+        if output_form: output_form = ' ' + output_form
+        info_args = (options, input_name, output_form, self.client)
+        self.logger.info('pdf2img%s %s%s %s' % info_args)
+    @classmethod
+    def _find_dir(cls, name, path=None):
+        "return directory on path to root, e.g. /opt/pdfprocess/Resource"
+        if not path: path = os.path.dirname(os.path.abspath(__file__))
+        parent = os.path.dirname(path)
+        if parent == path:
+            raise Error(ProcessCode.UnknownError, 'no %s directory' % name)
+        path = os.path.join(parent, name)
+        return path if os.path.isdir(path) else Action._find_dir(name, parent)
+    @property
+    def input_name(self): return self._input_name
+    @property
+    def output_form(self): return self._parser.output_form
+    @property
+    def pages(self): return self._parser.pages
+
+class Get(Action):
+    pass  # TODO
+
+class Post(Action):
     def __call__(self):
         try:
             self._parser(self.options)
@@ -34,24 +64,10 @@ class Action(pdfprocess.Action):
         with open(output_file.name, 'rb') as image_file:
             image = base64.b64encode(image_file.read())
             return pdfprocess.response(ProcessCode.OK, image)
-    def _log_request(self, parser_options):
-        options = ' '.join(parser_options)
-        if options: options = ' ' + options
-        input_name = self.input_name
-        if ' ' in input_name: input_name = '"%s"' % input_name
-        output_form = self.output_form
-        if output_form: output_form = ' ' + output_form
-        info_args = (options, input_name, output_form, self.client)
-        self.logger.info('pdf2img%s %s%s %s' % info_args)
     def _pdf2img(self):
-        with tempfile.NamedTemporaryFile() as input_file:
+        tmp_dir = Action._find_dir('tmp')
+        with tempfile.NamedTemporaryFile(dir=tmp_dir) as input_file:
             self.input.save(input_file)
             input_file.flush()
             with OutputFile(input_file.name, self.output_form) as output_file:
                 return self._get_image(input_file.name, output_file)
-    @property
-    def input_name(self): return self._input_name
-    @property
-    def output_form(self): return self._parser.output_form
-    @property
-    def pages(self): return self._parser.pages
