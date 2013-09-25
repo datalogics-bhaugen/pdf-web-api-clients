@@ -58,7 +58,7 @@ from pdfclient import Application, ImageRequest
 ## Returned by PDF2IMG.__call__
 class Response(object):
     def __init__(self, pdf2img, image_response):
-        base_filename = os.path.splitext(pdf2img.input_filename)[0]
+        base_filename = os.path.splitext(pdf2img.input)[0]
         self._image_filename = '.'.join((base_filename, pdf2img.output_form))
         self._image_response = image_response
     def __str__(self):
@@ -84,14 +84,18 @@ class PDF2IMG(Application):
     ## @param version e.g. Application.VERSION
     #  @param base_url e.g. Application.BASE_URL
     #  @param argv e.g.
-    #      ['%pdf2img.py', '-outputForm=jpg', '-printPreview', 'PDF2IMG.pdf']
+    #   ['%pdf2img.py', '-outputForm=jpg', '-printPreview', 'hello_world.pdf']
     def __call__(self, version, base_url, argv):
         self._initialize(argv)
+        input_is_url = self.input.startswith('http')
         request = ImageRequest(self, version, base_url)
-        with open(self._input_filename, 'rb') as input_file:
-            return Response(self,
-                request.post(input_file, **self.options))
+        return self._get(request) if input_is_url else self._post(request)
 
+    def _get(self, request):
+        return Response(self, request.get(self.input, **self.options))
+    def _post(self, request):
+        with open(self.input, 'rb') as input_file:
+            return Response(self, request.post(input_file, **self.options))
     def _initialize(self, argv):
         try:
             self._parse_args(argv)
@@ -101,7 +105,7 @@ class PDF2IMG(Application):
     def _parse_args(self, argv):
         self._output_form = 'tif'
         self._set_options(argv[1:-1])
-        self._input_filename = argv[-1]
+        self._input = argv[-1]
     def _set_options(self, argv):
         self._options = {}
         for arg in argv:
@@ -112,13 +116,13 @@ class PDF2IMG(Application):
             if option.lower() == 'outputform':
                 self._output_form = value
     @property
-    ## Input filename passed to __call__
-    def input_filename(self): return self._input_filename
+    ## Input URL or filename passed to #__call__
+    def input(self): return self._input
     @property
-    ## Output form passed to __call__, e.g. 'jpg'
+    ## Output form passed to #__call__
     def output_form(self): return self._output_form
     @property
-    ## Options passed to __call__ (dict)
+    ## Options (dict) passed to #__call__
     def options(self): return self._options
 
 
@@ -133,4 +137,3 @@ if __name__ == '__main__':
         print('created: %s' % response.image_filename)
     else:
         print(response)
-
