@@ -45,7 +45,7 @@ class StatusCode:
 
 class Error(Exception):
     def __init__(self, process_code, message,
-      status_code=StatusCode.BadRequest):
+                 status_code=StatusCode.BadRequest):
         Exception.__init__(self, message)
         self._process_code = process_code
         self._status_code = status_code
@@ -64,17 +64,17 @@ class Error(Exception):
 
 APDFL_ERRORS = [
     Error(ProcessCode.InvalidInput, "File does not begin with '%PDF-'",
-        StatusCode.UnsupportedMediaType),
+          StatusCode.UnsupportedMediaType),
     Error(ProcessCode.InvalidInput,
-        'The file is damaged and could not be repaired'),
+          'The file is damaged and could not be repaired'),
     Error(ProcessCode.InvalidPassword, 'This document requires authentication',
-        StatusCode.Forbidden),
+          StatusCode.Forbidden),
     Error(ProcessCode.AdeptDRM,
-        'The security plug-in required by this command is unavailable',
-        StatusCode.Forbidden)]
+          'The security plug-in required by this command is unavailable',
+          StatusCode.Forbidden)]
 
 UNKNOWN = Error(ProcessCode.UnknownError, 'Internal server error',
-    StatusCode.InternalServerError)
+                StatusCode.InternalServerError)
 
 
 class JSON:
@@ -82,6 +82,5 @@ class JSON:
     def parse(cls, json):
         try:
             return simplejson.loads(json)
-        except Exception: 
+        except Exception:
             raise Error(ProcessCode.InvalidSyntax, 'cannot parse %s' % json)
-

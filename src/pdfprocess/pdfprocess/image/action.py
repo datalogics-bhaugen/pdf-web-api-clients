@@ -55,4 +55,3 @@ class Action(pdfprocess.Action):
     def output_form(self): return self._parser.output_form
     @property
     def pages(self): return self._parser.pages
-

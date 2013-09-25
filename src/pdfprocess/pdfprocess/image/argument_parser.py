@@ -55,4 +55,3 @@ class ArgumentParser(argparse.ArgumentParser):
     def pages(self): return self._pages.option
     @property
     def pdf2img_options(self): return self._pdf2img_options
-

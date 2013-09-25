@@ -22,4 +22,3 @@ class Stdout(object):
             if index < 0: index = line.find(error_prefix.lower())
             if 0 <= index: errors.append(line[index + len(error_prefix):])
         return '\n'.join(errors)
-

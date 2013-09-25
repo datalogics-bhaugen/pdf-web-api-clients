@@ -41,4 +41,3 @@ OPTIONS = [
     Option('compression'),
     Option('password'),
     Option('pdfRegion', 'pdfregion')]
-

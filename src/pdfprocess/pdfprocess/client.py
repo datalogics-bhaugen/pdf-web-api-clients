@@ -41,4 +41,3 @@ class Client(ThreeScaleAuthRep):
         return JSON.parse(app) if is_string else app
     @property
     def exc_info(self): return self._exc_info
-

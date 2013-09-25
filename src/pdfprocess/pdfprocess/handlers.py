@@ -39,4 +39,3 @@ class SysLogHandler(BaseHandler, BaseSysLogHandler):
         BaseHandler.__init__(self)
         address = '/var/run/syslog' if system() == 'Darwin' else '/dev/log'
         BaseSysLogHandler.__init__(self, address)
-
