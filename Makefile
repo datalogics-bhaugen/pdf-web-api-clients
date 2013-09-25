@@ -19,7 +19,7 @@ clean:
 html: $(DOXYGEN)
 
 qa: bin/segfault
-	bin/flake8 --max-complexity 10 src/pdfprocess/pdfprocess
+	bin/flake8 --max-complexity 10 src/pdfprocess/pdfprocess samples/python
 
 .PHONY: build clean html qa
 
