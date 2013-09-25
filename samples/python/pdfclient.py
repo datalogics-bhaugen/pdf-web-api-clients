@@ -84,25 +84,31 @@ class Request(object):
     def __init__(self, application, request_type, version, base_url):
         self._application = {'application': str(application)}
         self._url = '%s/api/%s/actions/%s' % (base_url, version, request_type)
-        self.reset()
 
-    ## Post request
+    ## GET request
+    #  @return a requests.Response object
+    #  @param input_url request document URL
+    #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
+    def get(self, input_url, **options):
+        self._reset(options)
+        self.data['inputURL'] = input_url
+        return requests.get(self.url, data=self.data, verify=False)
+
+    ## POST request
     #  @return a requests.Response object
     #  @param input request document file object
-    #  @param options e.g. {'pages': '1', 'printPreview': True}
+    #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
     def post(self, input, **options):
+        self._reset(options)
         files = {'input': input}
         if input.name: self.data['inputName'] = input.name
-        if options: self.data['options'] = json.dumps(options)
         return \
             requests.post(self.url, data=self.data, files=files, verify=False)
-
-    ## Reset #data
-    def reset(self):
+    def _reset(self, options):
         self._data = self._application.copy()
-
+        if options: self.data['options'] = json.dumps(options)
     @property
-    ## %Request data property (dict), set by #post
+    ## %Request data property (dict), set by #get or #post
     def data(self): return self._data
     @property
     ## %Request URL property (string)
@@ -113,14 +119,16 @@ class ImageRequest(Request):
     def __init__(self, client, version, base_url):
         Request.__init__(self, client, 'image', version, base_url)
 
-    ## Post request
+    ## GET request
     #  @return an ImageResponse object
-    #  @param input request document file object
+    #  @param input_url request document URL
     #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
     #  * [colorModel](https://datalogics-cloud.3scale.net/docs#colorModel)
     #  * [compression](https://datalogics-cloud.3scale.net/docs#compression)
-    #  * [disableColorManagement](https://datalogics-cloud.3scale.net/docs#disableColorManagement)
-    #  * [disableThinLineEnhancement](https://datalogics-cloud.3scale.net/docs#disableThinLineEnhancement)
+    #  * [disableColorManagement]
+    #     (https://datalogics-cloud.3scale.net/docs#disableColorManagement)
+    #  * [disableThinLineEnhancement]
+    #     (https://datalogics-cloud.3scale.net/docs#disableThinLineEnhancement)
     #  * [imageHeight](https://datalogics-cloud.3scale.net/docs#imageHeight)
     #  * [imageWidth](https://datalogics-cloud.3scale.net/docs#imageWidth)
     #  * [OPP](https://datalogics-cloud.3scale.net/docs#OPP)
@@ -131,13 +139,20 @@ class ImageRequest(Request):
     #  * [printPreview](https://datalogics-cloud.3scale.net/docs#printPreview)
     #  * [resolution](https://datalogics-cloud.3scale.net/docs#resolution)
     #  * [smoothing](https://datalogics-cloud.3scale.net/docs#smoothing)
-    #  * [suppressAnnotations](https://datalogics-cloud.3scale.net/docs#suppressAnnotations)
+    #  * [suppressAnnotations]
+    #     (https://datalogics-cloud.3scale.net/docs#suppressAnnotations)
+    def get(self, input_url, **options):
+        return ImageResponse(Request.get(self, input_url, **options))
+
+    ## POST request
+    #  @return an ImageResponse object
+    #  @param input request document file object
+    #  @param options see #get
     def post(self, input, **options):
-        self.reset()
         return ImageResponse(Request.post(self, input, **options))
 
 
-## Returned by Request.post
+## Returned by Request.get and Request.post
 class Response(object):
     def __init__(self, request_response):
         self._status_code = request_response.status_code
@@ -170,7 +185,7 @@ class Response(object):
     def status_code(self): return self._status_code
 
 
-## Returned by ImageRequest.post
+## Returned by ImageRequest.get and ImageRequest.post
 class ImageResponse(Response):
     def _image(self):
         if sys.version_info.major < 3:
@@ -204,4 +219,3 @@ class ImageProcessCode(ProcessCode):
     InvalidCompression = 22
     InvalidRegion = 23
     InvalidResolution = 24
-
