@@ -5,11 +5,12 @@ import logging
 import traceback
 
 import flask
+import tmpdir
 
-from .action import Action
-from .errors import Auth, EnumValue, Error, ProcessCode, StatusCode, UNKNOWN
-from .handlers import FileHandler, SysLogHandler
-from .stdout import Stdout
+from action import Action
+from errors import Auth, EnumValue, Error, ProcessCode, StatusCode, UNKNOWN
+from handlers import FileHandler, SysLogHandler
+from tmpdir import RESOURCE, Stdout, TemporaryFile, TMPDIR
 
 import image
 
@@ -35,7 +36,7 @@ def image_action():
     except Error as error:
         return error_response(error)
     except Exception as exception:
-        return error_response(UNKNOWN.copy(exception.message))
+        return error_response(UNKNOWN.copy(str(exception)))
 
 def error_response(error):
     app.logger.error(error)

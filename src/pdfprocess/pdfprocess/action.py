@@ -1,10 +1,9 @@
 "pdfprocess action"
 
+import os
+
 from client import Client
 from errors import APDFL_ERRORS, Error, JSON, ProcessCode, StatusCode, UNKNOWN
-
-
-PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
 
 
 AUTH_ERRORS = [
@@ -15,14 +14,14 @@ AUTH_ERRORS = [
 
 class Action(object):
     def __init__(self, logger, request):
-        self._client = Client(logger, request.form)
-        self._input = Action.request_input(request)
+        self._client = Client(logger, request.remote_addr, request.form)
         self._options = JSON.parse(request.form.get('options', '{}'))
         self._request_form = request.form
         self._logger = logger
+        self._set_input(request)
     def authorize(self):
         return self.client.auth()
-    def authorize_error(self, auth):
+    def raise_authorize_error(self, auth):
         self.raise_error(AUTH_ERRORS[auth].copy(self.client.exc_info))
     def raise_error(self, error):
         no_password = not self._password_received()
@@ -32,6 +31,9 @@ class Action(object):
     def _password_received(self):
         for key in self.options.keys():
             if key.lower() == 'password': return True
+    def _set_input(self, request, default=None):
+        name = request.form.get('inputName', default or '<anon>')
+        self._input_name = '"%s"' % name if ' ' in name else name
     @classmethod
     def get_error(cls, stdout):
         import image
@@ -40,17 +42,12 @@ class Action(object):
             error = next((e for e in error_list if e.message in errors), None)
             if error: return error.copy(errors)
         return UNKNOWN.copy(errors)
-    @classmethod
-    def request_input(cls, request):
-        request_files = request.files.values()
-        invalid_input = ProcessCode.InvalidInput
-        if not request_files: raise Error(invalid_input, 'no input')
-        if len(request_files) > 1: raise Error(invalid_input, 'excess input')
-        return request_files[0]
     @property
     def client(self): return self._client
     @property
     def input(self): return self._input
+    @property
+    def input_name(self): return self._input_name
     @property
     def logger(self): return self._logger
     @property

@@ -1,8 +1,10 @@
 DOXYGEN = doc/html/index.html
+GIT_HOOK = .git/hooks/pre-commit
 PLATFORM = $(shell uname -s)
+SOURCE = src/pdfprocess/pdfprocess
 VENV = eggs/virtualenv-*.egg/virtualenv.py
 
-build: html
+build: $(GIT_HOOK) Resource html
 ifeq ($(PLATFORM), Darwin)
 	echo "" > versions.cfg
 endif
@@ -19,18 +21,27 @@ clean:
 html: $(DOXYGEN)
 
 qa: bin/segfault
-	bin/flake8 --max-complexity 10 src/pdfprocess/pdfprocess samples/python
+	bin/flake8 --max-complexity 10 $(SOURCE) samples/python scripts test
 
 .PHONY: build clean html qa
+
+$(GIT_HOOK):
+	cp scripts/$(@F) $(@D)
+
+Resource:
+ifeq ($(PLATFORM), Linux)
+	ln -s ../Resource .
+	ls Resource/CMap
+endif
 
 bin/segfault: test/src/segfault.c
 	gcc $^ -o $@
 
-doxygen:
-	git clone https://github.com/doxygen/doxygen.git
-	cd doxygen; ./configure; make
-
 $(DOXYGEN): doxygen doc/Doxyfile samples/* samples/python/*
 	cd doc/html; rm -rf *.css *.html *.js *.png search; cd ../..
 	doxygen/bin/doxygen doc/Doxyfile
+
+doxygen:
+	git clone https://github.com/doxygen/doxygen.git
+	cd doxygen; ./configure; make
 
