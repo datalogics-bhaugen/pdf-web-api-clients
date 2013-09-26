@@ -3,7 +3,7 @@
 import os
 import glob
 import subprocess
-from pdfprocess.stdout import Stdout
+from pdfprocess.tmpdir import Stdout
 from test_client import ProcessCode
 from nose.tools import assert_equal, assert_in
 

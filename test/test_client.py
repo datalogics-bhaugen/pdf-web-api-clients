@@ -44,4 +44,3 @@ if __name__ == '__main__':
     if not response: sys.exit(response)
     response.save_image()
     print('created: %s' % response.image_filename)
-

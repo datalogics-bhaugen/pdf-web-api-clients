@@ -13,7 +13,8 @@ from nose.tools import assert_equal, assert_in
 NOT_FOUND = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <title>404 Not Found</title>
 <h1>Not Found</h1>
-<p>The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.</p>
+<p>The requested URL was not found on the server.  \
+If you entered the URL manually please check your spelling and try again.</p>
 '''
 
 class TestNotFound(object):
@@ -29,4 +30,3 @@ class TestNotFound(object):
         assert_equal(status, '404 NOT FOUND')
         assert_equal(headers['Content-Type'], 'text/html')
         assert_equal(next(data), NOT_FOUND)
-

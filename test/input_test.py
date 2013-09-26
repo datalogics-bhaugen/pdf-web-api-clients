@@ -2,7 +2,7 @@
 
 import os
 import subprocess
-from pdfprocess.stdout import Stdout
+from pdfprocess.tmpdir import Stdout
 from test_client import ProcessCode
 from nose.tools import assert_equal, assert_in
 
@@ -30,4 +30,3 @@ def args(input):
     for file in input:
         result.extend(['--form', '%s=@%s' % (os.path.basename(file), file)])
     return result
-

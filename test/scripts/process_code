@@ -10,4 +10,3 @@ stdout = '\n'.join([line for line in fileinput.input()])
 print(stdout)
 
 sys.exit(json.loads(stdout)['processCode'])
-

@@ -59,4 +59,3 @@ class TestSpelling(MockFixture):
         self.validate(['-outputForm=jpeg'], 'jpg')
     def test_tiff(self):
         self.validate(['-outputForm=tiff'], 'tif')
-
