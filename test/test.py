@@ -1,6 +1,7 @@
 "server test classes"
 
 import os
+import sys
 import subprocess
 import test_client
 from test_client import StatusCode
@@ -56,6 +57,17 @@ class MockPDF2IMG(object):
     def temporary_name(self): return self._temporary_name
 
 
+class MockRequest(object):
+    def __init__(self, options):
+        self._options = options
+    @property
+    def files(self): return {'spam': 0}
+    @property
+    def form(self): return {'options': self._options}
+    @property
+    def remote_addr(self): return 'localhost'
+
+
 class Result(object):
     def __init__(self, process_code, status_code=StatusCode.BadRequest):
         self._process_code = process_code
@@ -86,4 +98,3 @@ class Test(object):
     @classmethod
     def pdf2img(cls, id=TEST_ID, key=TEST_KEY):
         return test_client.pdf2img(id, key)
-
