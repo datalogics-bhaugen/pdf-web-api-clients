@@ -201,4 +201,3 @@ def pre_exec(server):
 
 def when_ready(server):
     server.log.info("Server is ready. Spawning workers")
-
