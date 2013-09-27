@@ -53,7 +53,7 @@ class TestOutputType(SyntaxFixture):
     @property
     def result(self): return Result(ProcessCode.InvalidOutputType)
 
-class TestPagesInvalid(SyntaxFixture): # TODO: remove some of these?
+class TestPagesInvalid(SyntaxFixture):
     def test_invalid_pages(self):
         self.validate(['-pages=spam'])
     def test_invalid_page_range(self):
@@ -71,7 +71,7 @@ class TestPagesInvalid(SyntaxFixture): # TODO: remove some of these?
     @property
     def result(self): return Result(ProcessCode.InvalidPage)
 
-class TestPagesOK(SyntaxFixture): # TODO: remove some of these?
+class TestPagesOK(SyntaxFixture):
     def test_last_page(self):
         self.validate(['-pages=last'])
     def test_valid_page(self):
@@ -84,4 +84,3 @@ class TestPagesOK(SyntaxFixture): # TODO: remove some of these?
         self.validate(['-pages=1-2'])
     @property
     def result(self): return Result(ProcessCode.OK, StatusCode.OK)
-

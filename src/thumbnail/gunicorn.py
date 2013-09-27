@@ -20,7 +20,7 @@
 #       range.
 #
 
-bind = '127.0.0.1:5000'
+bind = '127.0.0.1:5050'
 backlog = 2048
 
 #
@@ -170,7 +170,7 @@ accesslog = '-'
 #       A string or None to choose a default of something like 'gunicorn'.
 #
 
-proc_name = 'pdfprocess'
+proc_name = 'thumbnail'
 
 #
 # Server hooks

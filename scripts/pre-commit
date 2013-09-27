@@ -1,0 +1,9 @@
+#!/bin/sh
+
+while [ ! -f Makefile ]
+do
+    cd ..
+done
+
+make qa
+

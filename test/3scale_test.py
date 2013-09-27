@@ -11,10 +11,11 @@ from nose.tools import assert_equal, assert_is_none
 
 def pdfprocess_client(app_id=PUBLIC_ID, app_key=PUBLIC_KEY):
     application = {'id': app_id, 'key': app_key}
-    return Client(MockLogger(), {'application': application})
+    return Client(MockLogger(), '127.0.0.1', {'application': application})
 
 
 def test_auth_ok():
+    "this fails if you ran test_usage_limit_exceeded recently"
     assert_equal(pdfprocess_client().auth(), Auth.OK)
 
 def test_no_application_id():
@@ -40,4 +41,3 @@ def test_usage_limit_exceeded():
         if auth == Auth.UsageLimitExceeded: return
         assert_equal(auth, Auth.OK)
     assert_is_none('usage limit exceeded')
-

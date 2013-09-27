@@ -13,6 +13,17 @@ def test_bad_version():
         max_retries = 'Max retries exceeded with url: /api/spam/actions/image'
         assert_in(max_retries, str(exception))
 
+def test_bad_url():
+    result = Result(ProcessCode.InvalidInput, StatusCode.BadRequest)
+    Test(['http://127.0.0.1/spam.pdf'], result)()
+
+def test_missing_url():
+    pass  # TODO
+
+def test_good_url():
+    result = Result(ProcessCode.OK, StatusCode.OK)
+    Test(['http://www.datalogics.com/pdf/doc/pdf2img.pdf'], result)()
+
 def test_bad_pdf():
     result = Result(ProcessCode.InvalidInput, StatusCode.UnsupportedMediaType)
     Test(['data/bad.pdf'], result)()
@@ -46,4 +57,3 @@ def test_pdf2img_crash():
     result = Result(ProcessCode.UnknownError, StatusCode.InternalServerError)
     with test.MockPDF2IMG('../bin/segfault'):
         Test(['data/bad.pdf'], result)()
-

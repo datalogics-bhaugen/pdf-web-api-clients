@@ -12,12 +12,11 @@ parserError = etree.Error
 class Element(object):
     def __init__(self, impl):
         self._impl = impl
-    def getContent(self):
+    def getContent(self):  # noqa (N802)
         try: return self._impl.text
         except AttributeError: return str(self._impl)
-    def xpathEval(self, path):
+    def xpathEval(self, path):  # noqa (N802)
         return [Element(impl) for impl in self._impl.xpath(path)]
 
-def parseDoc(xml):
+def parseDoc(xml):  # noqa (N802)
     return Element(etree.fromstring(xml))
-
