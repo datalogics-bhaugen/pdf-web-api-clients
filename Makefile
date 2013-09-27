@@ -1,7 +1,6 @@
 DOXYGEN = doc/html/index.html
 GIT_HOOK = .git/hooks/pre-commit
 PLATFORM = $(shell uname -s)
-SOURCE = src/pdfprocess/pdfprocess
 VENV = eggs/virtualenv-*.egg/virtualenv.py
 
 build: $(GIT_HOOK) Resource html
@@ -21,7 +20,7 @@ clean:
 html: $(DOXYGEN)
 
 qa: bin/segfault
-	bin/flake8 --max-complexity 10 $(SOURCE) samples/python scripts test
+	bin/flake8 --max-complexity 10 samples/python scripts src test
 
 .PHONY: build clean html qa
 
