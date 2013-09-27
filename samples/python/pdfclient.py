@@ -116,8 +116,8 @@ class Request(object):
 
 
 class ImageRequest(Request):
-    def __init__(self, client, version, base_url):
-        Request.__init__(self, client, 'image', version, base_url)
+    def __init__(self, application, version, base_url):
+        Request.__init__(self, application, 'image', version, base_url)
 
     ## GET request
     #  @return an ImageResponse object
