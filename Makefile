@@ -9,6 +9,7 @@ ifeq ($(PLATFORM), Darwin)
 endif
 	python virtualenv.py --never-download venv
 	venv/bin/python bootstrap.py
+	git describe | xargs -0 python src/pdfprocess/pdfprocess/version.py
 	bin/buildout | scripts/versions > versions.cfg
 	@diff $(VENV) virtualenv.py > /dev/null || echo Upgrade virtualenv!
 	@cp $(VENV) .
@@ -43,4 +44,3 @@ $(DOXYGEN): doxygen doc/Doxyfile samples/* samples/python/*
 doxygen:
 	git clone https://github.com/doxygen/doxygen.git
 	cd doxygen; ./configure; make
-

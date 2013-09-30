@@ -3,7 +3,7 @@
 import sys
 import logging
 import traceback
-
+import os
 import flask
 import tmpdir
 
@@ -11,6 +11,8 @@ from action import Action
 from errors import Auth, EnumValue, Error, ProcessCode, StatusCode, UNKNOWN
 from handlers import FileHandler, SysLogHandler
 from tmpdir import RESOURCE, Stdout, TemporaryFile, TMPDIR
+from stdout import Stdout
+from version import Version
 
 import image
 
@@ -23,6 +25,11 @@ def initialize():
     app.logger.addHandler(SysLogHandler())
     app.logger.addHandler(FileHandler(app.name))
     app.logger.info('%s started' % app.name)
+    data = Version().get_version_data('../apiversion.ini')
+    api_version = data.get('webapi-version')
+    app.logger.info('WEBAPIVERSION=%s' % api_version) 
+    pdf2img_version = data.get('pdf2img-version')
+    app.logger.info('PDF2IMGVERSION=%s' % pdf2img_version)
 
 @app.route('/api')
 def hello():
