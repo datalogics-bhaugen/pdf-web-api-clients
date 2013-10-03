@@ -1,4 +1,51 @@
 <?php
+# Copyright (c) 2013, Datalogics, Inc. All rights reserved.
+#
+# This agreement is between Datalogics, Inc. 101 N. Wacker Drive, Suite 1800,
+# Chicago, IL 60606 ("Datalogics") and you, an end user who downloads source
+# code examples for integrating to the Datalogics (R) PDF Web API (TM)
+# ("the Example Code"). By accepting this agreement you agree to be bound
+# by the following terms of use for the Example Code.
+#
+# LICENSE
+# -------
+# Datalogics hereby grants you a royalty-free, non-exclusive license to
+# download and use the Example Code for any lawful purpose. There is no charge
+# for use of Example Code.
+#
+# OWNERSHIP
+# ---------
+# The Example Code and any related documentation and trademarks are and shall
+# remain the sole and exclusive property of Datalogics and are protected by
+# the laws of copyright in the U.S. and other countries.
+#
+# Datalogics and Datalogics PDF Web API are trademarks of Datalogics, Inc.
+#
+# TERM
+# ----
+# This license is effective until terminated. You may terminate it at any
+# other time by destroying the Example Code.
+#
+# WARRANTY DISCLAIMER
+# -------------------
+# THE EXAMPLE CODE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
+# EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES
+# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+#
+# DATALOGICS DISCLAIM ALL OTHER WARRANTIES, CONDITIONS, UNDERTAKINGS OR
+# TERMS OF ANY KIND, EXPRESS OR IMPLIED, WRITTEN OR ORAL, BY OPERATION OF
+# LAW, ARISING BY STATUTE, COURSE OF DEALING, USAGE OF TRADE OR OTHERWISE,
+# INCLUDING, WARRANTIES OR CONDITIONS OF MERCHANTABILITY, FITNESS FOR A
+# PARTICULAR PURPOSE, SATISFACTORY QUALITY, LACK OF VIRUSES, TITLE,
+# NON-INFRINGEMENT, ACCURACY OR COMPLETENESS OF RESPONSES, RESULTS, AND/OR
+# LACK OF WORKMANLIKE EFFORT. THE PROVISIONS OF THIS SECTION SET FORTH
+# SUBLICENSEE'S SOLE REMEDY AND DATALOGICS'S SOLE LIABILITY WITH RESPECT
+# TO THE WARRANTY SET FORTH HEREIN. NO REPRESENTATION OR OTHER AFFIRMATION
+# OF FACT, INCLUDING STATEMENTS REGARDING PERFORMANCE OF THE EXAMPLE CODE,
+# WHICH IS NOT CONTAINED IN THIS AGREEMENT, SHALL BE BINDING ON DATALOGICS.
+# NEITHER DATALOGICS WARRANT AGAINST ANY BUG, ERROR, OMISSION, DEFECT,
+# DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
+
 error_reporting(E_ALL);
 class PDF2IMG {
   /**
@@ -84,6 +131,15 @@ class PDF2IMG {
   public function handle_response($response, $destination_file_name) {
     $json_decoded = json_decode($response);
     $output = base64_decode($json_decoded->output);
+    $process_code = base64_decode($json_decoded->processCode);
+    
+    if ($process_code != 0)
+    {
+        printf('ERROR: ' + $process_code + "\n")
+        printf('Error Message: ' + $output + "\n")
+        exit($process_code)
+    }
+    
     $file = fopen($destination_file_name, "wb");
     fwrite($file, $output);
     fclose($file);
@@ -119,9 +175,9 @@ class PDF2IMG {
 $source_file_name = "./test.pdf";
 $destination_file_name = "converted.jpg";
 $pdf2img = new PDF2IMG();
-$pdf2img->application_id = '84445ec0'; 
-$pdf2img->application_key = '2d3eac77bb3b9bea69a91e625b9241d2';
-$pdf2img->output_format = 'jpg';
+$pdf2img->application_id = 'TODO: Application ID'; 
+$pdf2img->application_key = 'TODO: Applicaiton Key';
+$pdf2img->output_format = 'tiff';
 $pdf2img->print_preview = FALSE;
 $pdf2img->convert($source_file_name, $destination_file_name);
 
