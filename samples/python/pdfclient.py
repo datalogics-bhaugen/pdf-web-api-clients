@@ -58,8 +58,8 @@ class Application(object):
     BASE_URL = 'https://pdfprocess.datalogics-cloud.com'
     VERSION = 0
 
-    ## @param id from [3scale](http://datalogics-cloud.3scale.net/)
-    #  @param key from [3scale](http://datalogics-cloud.3scale.net/)
+    ## @param id from [3scale](http://api.datalogics-cloud.com/)
+    #  @param key from [3scale](http://api.datalogics-cloud.com/)
     def __init__(self, id, key):
         self._id, self._key = (id, key)
     def __str__(self):
@@ -85,20 +85,20 @@ class Request(object):
         self._application = {'application': str(application)}
         self._url = '%s/api/%s/actions/%s' % (base_url, version, request_type)
 
-    ## GET request
+    ## Send GET request
     #  @return a requests.Response object
     #  @param input_url request document URL
     #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
-    def get(self, input_url, **options):
+    def get(self, input_url, options={}):
         self._reset(options)
         self.data['inputURL'] = input_url
         return requests.get(self.url, data=self.data, verify=False)
 
-    ## POST request
+    ## Send POST request
     #  @return a requests.Response object
     #  @param input request document file object
     #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
-    def post(self, input, **options):
+    def post(self, input, options={}):
         self._reset(options)
         files = {'input': input}
         if input.name: self.data['inputName'] = input.name
@@ -119,37 +119,37 @@ class ImageRequest(Request):
     def __init__(self, application, version, base_url):
         Request.__init__(self, application, 'image', version, base_url)
 
-    ## GET request
+    ## Send GET request
     #  @return an ImageResponse object
     #  @param input_url request document URL
     #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
-    #  * [colorModel](https://datalogics-cloud.3scale.net/docs#colorModel)
-    #  * [compression](https://datalogics-cloud.3scale.net/docs#compression)
+    #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel)
+    #  * [compression](https://api.datalogics-cloud.com/docs#compression)
     #  * [disableColorManagement]
-    #     (https://datalogics-cloud.3scale.net/docs#disableColorManagement)
+    #     (https://api.datalogics-cloud.com/docs#disableColorManagement)
     #  * [disableThinLineEnhancement]
-    #     (https://datalogics-cloud.3scale.net/docs#disableThinLineEnhancement)
-    #  * [imageHeight](https://datalogics-cloud.3scale.net/docs#imageHeight)
-    #  * [imageWidth](https://datalogics-cloud.3scale.net/docs#imageWidth)
-    #  * [OPP](https://datalogics-cloud.3scale.net/docs#OPP)
-    #  * [outputForm](https://datalogics-cloud.3scale.net/docs#outputForm)
-    #  * [pages](https://datalogics-cloud.3scale.net/docs#pages)
-    #  * [password](https://datalogics-cloud.3scale.net/docs#password)
-    #  * [pdfRegion](https://datalogics-cloud.3scale.net/docs#pdfRegion)
-    #  * [printPreview](https://datalogics-cloud.3scale.net/docs#printPreview)
-    #  * [resolution](https://datalogics-cloud.3scale.net/docs#resolution)
-    #  * [smoothing](https://datalogics-cloud.3scale.net/docs#smoothing)
+    #     (https://api.datalogics-cloud.com/docs#disableThinLineEnhancement)
+    #  * [imageHeight](https://api.datalogics-cloud.com/docs#imageHeight)
+    #  * [imageWidth](https://api.datalogics-cloud.com/docs#imageWidth)
+    #  * [OPP](https://api.datalogics-cloud.com/docs#OPP)
+    #  * [outputForm](https://api.datalogics-cloud.com/docs#outputForm)
+    #  * [pages](https://api.datalogics-cloud.com/docs#pages)
+    #  * [password](https://api.datalogics-cloud.com/docs#password)
+    #  * [pdfRegion](https://api.datalogics-cloud.com/docs#pdfRegion)
+    #  * [printPreview](https://api.datalogics-cloud.com/docs#printPreview)
+    #  * [resolution](https://api.datalogics-cloud.com/docs#resolution)
+    #  * [smoothing](https://api.datalogics-cloud.com/docs#smoothing)
     #  * [suppressAnnotations]
-    #     (https://datalogics-cloud.3scale.net/docs#suppressAnnotations)
-    def get(self, input_url, **options):
-        return ImageResponse(Request.get(self, input_url, **options))
+    #     (https://api.datalogics-cloud.com/docs#suppressAnnotations)
+    def get(self, input_url, options={}):
+        return ImageResponse(Request.get(self, input_url, options))
 
-    ## POST request
+    ## Send POST request
     #  @return an ImageResponse object
     #  @param input request document file object
     #  @param options see #get
-    def post(self, input, **options):
-        return ImageResponse(Request.post(self, input, **options))
+    def post(self, input, options={}):
+        return ImageResponse(Request.post(self, input, options))
 
 
 ## Returned by Request.get and Request.post

@@ -5,7 +5,8 @@ import sys
 import subprocess
 import test_client
 from test_client import StatusCode
-from nose.tools import assert_equal, assert_is_none, assert_is_not_none
+from nose.tools import assert_equal, assert_in
+from nose.tools import assert_is_none, assert_is_not_none
 
 
 BASE_URL = 'http://127.0.0.1:5000'
@@ -74,7 +75,6 @@ class Result(object):
         self._status_code = status_code
     def validate(self, response):
         assert_equal(self._process_code, response.process_code)
-        assert_equal(self._status_code, response.status_code)
         if self._process_code is None:
             assert_is_none(response.output)
             assert_is_none(response.exc_info)
@@ -84,6 +84,11 @@ class Result(object):
         else:
             assert_is_none(response.output)
             assert_is_not_none(response.exc_info)
+        not_found = StatusCode.NotFound
+        if self._status_code == not_found:
+            assert_in(self._status_code, (response.status_code, not_found))
+        else:
+            assert_equal(self._status_code, response.status_code)
         return response
 
 

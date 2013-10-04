@@ -20,7 +20,7 @@
 #       range.
 #
 
-bind = '127.0.0.1:5050'
+bind = BIND  # noqa (defined by the file that execfile's this one)
 backlog = 2048
 
 #
@@ -170,7 +170,7 @@ accesslog = '-'
 #       A string or None to choose a default of something like 'gunicorn'.
 #
 
-proc_name = 'thumbnail'
+proc_name = PROC_NAME  # noqa (defined by the file that execfile's this one)
 
 #
 # Server hooks

@@ -15,8 +15,8 @@ def pdfprocess_client(app_id=PUBLIC_ID, app_key=PUBLIC_KEY):
 
 
 def test_auth_ok():
-    "this fails if you ran test_usage_limit_exceeded recently"
-    assert_equal(pdfprocess_client().auth(), Auth.OK)
+    client = pdfprocess_client(test.TEST_ID, test.TEST_KEY)
+    assert_equal(client.auth(), Auth.OK)
 
 def test_no_application_id():
     client = pdfprocess_client('')

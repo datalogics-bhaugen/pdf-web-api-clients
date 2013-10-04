@@ -28,9 +28,12 @@ def test_pdf2img_sample_perl():
         assert_equal(process_code, ProcessCode.AuthorizationError)
         assert_in('TODO: Application ID', str(stdout))
 
-def test_pdf2img_sample_python():
+def test_pdf2img_sample_python(python3=False):
     set_python_path()
     args = ['../samples/python/pdf2img.py', 'data/bad.pdf']
+    if python3: args[0:0] = ['python3']
     with Stdout() as stdout:
         assert_equal(subprocess.call(args, stdout=stdout), 0)
         assert_in('TODO: Application ID', str(stdout))
+
+def test_pdf2img_sample_python3(): test_pdf2img_sample_python(python3=True)
