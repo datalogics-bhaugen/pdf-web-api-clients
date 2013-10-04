@@ -58,7 +58,19 @@ class Action(pdfprocess.Action):
     @property
     def pages(self): return self._parser.pages
 
-class Get(Action):
+class FromFile(Action):
+    def _save_input(self, input_file):
+        self.input.save(input_file)
+    def _set_input(self, request):
+        request_files = request.files.values()
+        if not request_files:
+            self.raise_error(Error(ProcessCode.InvalidInput, 'no input'))
+        if len(request_files) > 1:
+            self.raise_error(Error(ProcessCode.InvalidInput, 'excess input'))
+        self._input = request_files[0]
+        Action._set_input(self, request)
+
+class FromURL(Action):
     def _save_input(self, input_file):
         input_file.write(self.input)
     def _set_input(self, request):
@@ -70,15 +82,3 @@ class Get(Action):
         except Exception as exception:
             self.raise_error(Error(ProcessCode.InvalidInput, str(exception)))
         Action._set_input(self, request, os.path.basename(url))
-
-class Post(Action):
-    def _save_input(self, input_file):
-        self.input.save(input_file)
-    def _set_input(self, request):
-        request_files = request.files.values()
-        if not request_files:
-            self.raise_error(Error(ProcessCode.InvalidInput, 'no input'))
-        if len(request_files) > 1:
-            self.raise_error(Error(ProcessCode.InvalidInput, 'excess input'))
-        self._input = request_files[0]
-        Action._set_input(self, request)

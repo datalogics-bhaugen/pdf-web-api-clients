@@ -35,10 +35,11 @@ def initialize():
 def hello():
     return 'Adobe eBook and PDF technologies for developers!'
 
-@app.route('/api/0/actions/image', methods=['GET', 'POST'])
+@app.route('/api/0/actions/image', methods=['POST'])
 def image_action():
     try:
-        action = image.Get if flask.request.method == 'GET' else image.Post
+        input_url = flask.request.form.get('inputURL', None)
+        action = image.FromURL if input_url else image.FromFile
         return action(app.logger, flask.request)()
     except Error as error:
         return error_response(error)

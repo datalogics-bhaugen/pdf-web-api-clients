@@ -1,3 +1,0 @@
-GET /api/0/actions/image HTTP/1.1
-Host: pdfprocess.datalogics-cloud.com
-TODO: -printPreview jpg request for http://www.datalogics.com/pdf/doc/pdf2img.pdf

@@ -81,21 +81,22 @@ class Response(object):
 
 ## Sample pdfclient driver
 class PDF2IMG(Application):
-    ## @param version e.g. Application.VERSION
-    #  @param base_url e.g. Application.BASE_URL
-    #  @param argv e.g.
+    ## @param argv e.g.
     #   ['%pdf2img.py', '-outputForm=jpg', '-printPreview', 'hello_world.pdf']
-    def __call__(self, version, base_url, argv):
+    #  @param base_url
+    #  @param version
+    def __call__(self, argv,
+                 base_url=Application.BASE_URL, version=Application.VERSION):
         self._initialize(argv)
         input_is_url = self.input.startswith('http')
-        request = ImageRequest(self, version, base_url)
-        return self._get(request) if input_is_url else self._post(request)
+        post_method = self._post_url if input_is_url else self._post_file
+        return post_method(ImageRequest(self, base_url, version))
 
-    def _get(self, request):
-        return Response(self, request.get(self.input, self.options))
-    def _post(self, request):
+    def _post_file(self, request):
         with open(self.input, 'rb') as input_file:
-            return Response(self, request.post(input_file, self.options))
+            return Response(self, request.post_file(input_file, self.options))
+    def _post_url(self, request):
+        return Response(self, request.post_url(self.input, self.options))
     def _initialize(self, argv):
         try:
             self._parse_args(argv)
@@ -126,9 +127,9 @@ class PDF2IMG(Application):
     def options(self): return self._options
 
 
-def run(argv):
-    pdf2img = PDF2IMG('TODO: Application ID', 'TODO: Application key')
-    return pdf2img(Application.VERSION, Application.BASE_URL, argv)
+def run(argv, app_id='TODO: Application ID', app_key='TODO: Application key'):
+    pdf2img = PDF2IMG(app_id, app_key)
+    return pdf2img(argv, Application.BASE_URL, Application.VERSION)
 
 if __name__ == '__main__':
     response = run(sys.argv)
