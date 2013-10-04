@@ -7,8 +7,7 @@ from pdfclient import Application, ImageRequest
 from errors import JSON, StatusCode
 
 
-# BASE_URL = 'http://pdfprocess-test.datalogics-cloud.com'
-BASE_URL = 'http://127.0.0.1:5000'
+BASE_URL = 'http://pdfprocess-test.datalogics-cloud.com'
 VERSION = Application.VERSION
 
 JOEL_GERACI_ID = 'b0ecd1e6'
