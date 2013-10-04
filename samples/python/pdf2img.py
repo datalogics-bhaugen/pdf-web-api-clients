@@ -81,15 +81,16 @@ class Response(object):
 
 ## Sample pdfclient driver
 class PDF2IMG(Application):
-    ## @param version e.g. Application.VERSION
-    #  @param base_url e.g. Application.BASE_URL
-    #  @param argv e.g.
+    ## @param argv e.g.
     #   ['%pdf2img.py', '-outputForm=jpg', '-printPreview', 'hello_world.pdf']
-    def __call__(self, version, base_url, argv):
+    #  @param base_url
+    #  @param version
+    def __call__(self, argv,
+                 base_url=Application.BASE_URL, version=Application.VERSION):
         self._initialize(argv)
-        use_url = self.input.startswith('http')
-        request = ImageRequest(self, version, base_url)
-        return self._post_url(request) if use_url else self._post_file(request)
+        input_is_url = self.input.startswith('http')
+        post_method = self._post_url if input_is_url else self._post_file
+        return post_method(ImageRequest(self, base_url, version))
 
     def _post_file(self, request):
         with open(self.input, 'rb') as input_file:
@@ -126,9 +127,9 @@ class PDF2IMG(Application):
     def options(self): return self._options
 
 
-def run(argv):
-    pdf2img = PDF2IMG('TODO: Application ID', 'TODO: Application key')
-    return pdf2img(Application.VERSION, Application.BASE_URL, argv)
+def run(argv, app_id='TODO: Application ID', app_key='TODO: Application key'):
+    pdf2img = PDF2IMG(app_id, app_key)
+    return pdf2img(argv, Application.BASE_URL, Application.VERSION)
 
 if __name__ == '__main__':
     response = run(sys.argv)

@@ -36,8 +36,8 @@ class StatusCode:
 def pdf2img(id=TEST_ID, key=TEST_KEY):
     return PDF2IMG(id, key)
 
-def run(argv):
-    return pdf2img()(VERSION, BASE_URL, argv)
+def run(argv, base_url=BASE_URL, version=VERSION):
+    return pdf2img()(argv, base_url, version)
 
 if __name__ == '__main__':
     response = run(sys.argv)

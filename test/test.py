@@ -96,10 +96,10 @@ class Test(object):
     def __init__(self, args, result, pdf2img=None):
         self._args, self._result = (args, result)
         self._pdf2img = pdf2img if pdf2img else Test.pdf2img()
-    def __call__(self, version=VERSION, base_url=BASE_URL):
-        return self._result.validate(self.post(version, base_url))
-    def post(self, version, base_url):
-        return self._pdf2img(version, base_url, ['test'] + self._args)
+    def __call__(self, base_url=BASE_URL, version=VERSION):
+        return self._result.validate(self.post(base_url, version))
+    def post(self, base_url, version):
+        return self._pdf2img(['test'] + self._args, base_url, version)
     @classmethod
     def pdf2img(cls, id=TEST_ID, key=TEST_KEY):
         return test_client.pdf2img(id, key)

@@ -68,9 +68,9 @@ class Application(object):
     ## Request factory
     # @return a Request object
     # @param request_type e.g. 'image'
-    def make_request(self, request_type, version=VERSION, base_url=BASE_URL):
+    def make_request(self, request_type, base_url=BASE_URL, version=VERSION):
         if request_type == 'image':
-            return ImageRequest(self, version, base_url)
+            return ImageRequest(self, base_url, version)
 
     @property
     ## ID property (string)
@@ -81,7 +81,7 @@ class Application(object):
 
 
 class Request(object):
-    def __init__(self, application, request_type, version, base_url):
+    def __init__(self, application, base_url, version, request_type):
         self._application = {'application': str(application)}
         self._url = '%s/api/%s/actions/%s' % (base_url, version, request_type)
 
@@ -116,8 +116,8 @@ class Request(object):
 
 
 class ImageRequest(Request):
-    def __init__(self, application, version, base_url):
-        Request.__init__(self, application, 'image', version, base_url)
+    def __init__(self, application, base_url, version):
+        Request.__init__(self, application, base_url, version, 'image')
 
     ## Send POST request with input file
     #  @return an ImageResponse object
