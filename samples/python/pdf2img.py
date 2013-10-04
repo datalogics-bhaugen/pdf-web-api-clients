@@ -87,15 +87,15 @@ class PDF2IMG(Application):
     #   ['%pdf2img.py', '-outputForm=jpg', '-printPreview', 'hello_world.pdf']
     def __call__(self, version, base_url, argv):
         self._initialize(argv)
-        input_is_url = self.input.startswith('http')
+        use_url = self.input.startswith('http')
         request = ImageRequest(self, version, base_url)
-        return self._get(request) if input_is_url else self._post(request)
+        return self._post_url(request) if use_url else self._post_file(request)
 
-    def _get(self, request):
-        return Response(self, request.get(self.input, self.options))
-    def _post(self, request):
+    def _post_file(self, request):
         with open(self.input, 'rb') as input_file:
-            return Response(self, request.post(input_file, self.options))
+            return Response(self, request.post_file(input_file, self.options))
+    def _post_url(self, request):
+        return Response(self, request.post_url(self.input, self.options))
     def _initialize(self, argv):
         try:
             self._parse_args(argv)

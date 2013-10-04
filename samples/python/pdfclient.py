@@ -85,30 +85,30 @@ class Request(object):
         self._application = {'application': str(application)}
         self._url = '%s/api/%s/actions/%s' % (base_url, version, request_type)
 
-    ## Send GET request
+    ## Send POST request with input file
     #  @return a requests.Response object
-    #  @param input_url request document URL
+    #  @param input input document file object
     #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
-    def get(self, input_url, options={}):
-        self._reset(options)
-        self.data['inputURL'] = input_url
-        return requests.get(self.url, data=self.data, verify=False)
-
-    ## Send POST request
-    #  @return a requests.Response object
-    #  @param input request document file object
-    #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
-    def post(self, input, options={}):
+    def post_file(self, input, options={}):
         self._reset(options)
         files = {'input': input}
         if input.name: self.data['inputName'] = input.name
         return \
             requests.post(self.url, data=self.data, files=files, verify=False)
+
+    ## Send POST request with input URL
+    #  @return a requests.Response object
+    #  @param input_url input document URL
+    #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
+    def post_url(self, input_url, options={}):
+        self._reset(options)
+        self.data['inputURL'] = input_url
+        return requests.post(self.url, data=self.data, verify=False)
     def _reset(self, options):
         self._data = self._application.copy()
         if options: self.data['options'] = json.dumps(options)
     @property
-    ## %Request data property (dict), set by #get or #post
+    ## %Request data property (dict), set by #post_file or #post_url
     def data(self): return self._data
     @property
     ## %Request URL property (string)
@@ -119,9 +119,9 @@ class ImageRequest(Request):
     def __init__(self, application, version, base_url):
         Request.__init__(self, application, 'image', version, base_url)
 
-    ## Send GET request
+    ## Send POST request with input file
     #  @return an ImageResponse object
-    #  @param input_url request document URL
+    #  @param input input document file object
     #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
     #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel)
     #  * [compression](https://api.datalogics-cloud.com/docs#compression)
@@ -141,18 +141,18 @@ class ImageRequest(Request):
     #  * [smoothing](https://api.datalogics-cloud.com/docs#smoothing)
     #  * [suppressAnnotations]
     #     (https://api.datalogics-cloud.com/docs#suppressAnnotations)
-    def get(self, input_url, options={}):
-        return ImageResponse(Request.get(self, input_url, options))
+    def post_file(self, input, options={}):
+        return ImageResponse(Request.post_file(self, input, options))
 
-    ## Send POST request
+    ## Send POST request with input URL
     #  @return an ImageResponse object
-    #  @param input request document file object
-    #  @param options see #get
-    def post(self, input, options={}):
-        return ImageResponse(Request.post(self, input, options))
+    #  @param input_url input document URL
+    #  @param options see #post_file
+    def post_url(self, input_url, options={}):
+        return ImageResponse(Request.post_url(self, input_url, options))
 
 
-## Returned by Request.get and Request.post
+## Returned by Request.post_file and Request.post_url
 class Response(object):
     def __init__(self, request_response):
         self._status_code = request_response.status_code
@@ -185,7 +185,7 @@ class Response(object):
     def status_code(self): return self._status_code
 
 
-## Returned by ImageRequest.get and ImageRequest.post
+## Returned by ImageRequest.post_file and ImageRequest.post_url
 class ImageResponse(Response):
     def _image(self):
         if sys.version_info.major < 3:
