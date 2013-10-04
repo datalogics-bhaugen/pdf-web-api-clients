@@ -38,7 +38,7 @@ We use Buildout, which is a three-step process. These steps are executed by the 
 
 3. Buildout -- the buildout script uses its configuration to download packages, etc.
 
-* These packages must be installed on your system
+* For Linux, these packages must be installed
     * make
     * flex
     * bison
@@ -47,6 +47,7 @@ We use Buildout, which is a three-step process. These steps are executed by the 
     * for lxml on Ubuntu
         * libxml2-dev
         * libxslt-dev
+* For Mac, Xcode's Command Line Tools must be installed
 * Clone the web-api repository into /home/pdfprocess
     * To get the password for pdfprocess, send mail to pdfprocess@datalogics.com
     * The pass phrase for the web-api deploy key is the password in lower case
@@ -54,7 +55,8 @@ We use Buildout, which is a three-step process. These steps are executed by the 
 
 ## Run
 
-`scripts/gunicorn` runs our Flask application.
+* `scripts/gunicorn` runs our Flask application
+* `thumbnail/scripts/gunicorn` runs our thumbnail server
 
 ## Test
 
@@ -62,7 +64,6 @@ These scripts facilitate testing:
 
 * `bin/nose` runs the regression tests that validate our Flask application
 * `bin/pdfprocess` runs our Flask application with its development server (Werkzeug)
-* `samples/pdf2img.py` is a driver for our sample Python API client
 * `test/test_client.py` runs `samples/pdf2img.py` with test settings
 * `test/app_test.py` tests our Flask application directly
 

@@ -9,10 +9,10 @@ PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
 
 
 class Client(ThreeScaleAuthRep):
-    def __init__(self, logger, remote_addr, request_form):
+    def __init__(self, logger, address, request_form):
         self._logger = logger
         app_id, app_key = self._application(request_form)
-        logger.info("%s: id='%s', key='%s'" % (remote_addr, app_id, app_key))
+        logger.info("%s: id='%s', key='%s'" % (address, app_id, app_key))
         ThreeScaleAuthRep.__init__(self, PROVIDER_KEY, app_id, app_key)
         self._exc_info = None
     def __str__(self):

@@ -1,6 +1,8 @@
 DOXYGEN = doc/html/index.html
 GIT_HOOK = .git/hooks/pre-commit
+MAKE_THUMBNAIL = make --directory thumbnail
 PLATFORM = $(shell uname -s)
+QA = bin/flake8 --max-complexity 10
 VENV = eggs/virtualenv-*.egg/virtualenv.py
 
 build: $(GIT_HOOK) Resource html
@@ -9,24 +11,27 @@ ifeq ($(PLATFORM), Darwin)
 endif
 	python virtualenv.py --never-download venv
 	venv/bin/python bootstrap.py
-	git describe | xargs -0 python src/pdfprocess/pdfprocess/version.py
 	bin/buildout | scripts/versions > versions.cfg
+	git describe | xargs -0 python src/pdfprocess/version.py
 	@diff $(VENV) virtualenv.py > /dev/null || echo Upgrade virtualenv!
 	@cp $(VENV) .
+	@$(MAKE_THUMBNAIL)
 	@make qa
 
 clean:
-	rm -rf .installed.cfg bin develop-eggs parts var/log
+	rm -rf .installed.cfg $(GIT_HOOK) bin develop-eggs parts var/log
+	@$(MAKE_THUMBNAIL) clean
 
 html: $(DOXYGEN)
 
 qa: bin/segfault
-	bin/flake8 --max-complexity 10 samples/python scripts src test
+	$(QA) samples scripts src test
+	@$(MAKE_THUMBNAIL) qa
 
 .PHONY: build clean html qa
 
-$(GIT_HOOK):
-	cp scripts/$(@F) $(@D)
+$(GIT_HOOK): scripts/pre-commit
+	ln -s ../../$^ $@
 
 Resource:
 ifeq ($(PLATFORM), Linux)

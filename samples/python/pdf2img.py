@@ -92,10 +92,10 @@ class PDF2IMG(Application):
         return self._get(request) if input_is_url else self._post(request)
 
     def _get(self, request):
-        return Response(self, request.get(self.input, **self.options))
+        return Response(self, request.get(self.input, self.options))
     def _post(self, request):
         with open(self.input, 'rb') as input_file:
-            return Response(self, request.post(input_file, **self.options))
+            return Response(self, request.post(input_file, self.options))
     def _initialize(self, argv):
         try:
             self._parse_args(argv)

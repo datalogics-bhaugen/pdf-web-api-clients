@@ -11,7 +11,6 @@ from action import Action
 from errors import Auth, EnumValue, Error, ProcessCode, StatusCode, UNKNOWN
 from handlers import FileHandler, SysLogHandler
 from tmpdir import RESOURCE, Stdout, TemporaryFile, TMPDIR
-from stdout import Stdout
 from version import Version
 
 import image
@@ -19,6 +18,7 @@ import image
 
 app = flask.Flask(__name__)
 
+# TODO: log version info earlier
 @app.before_first_request
 def initialize():
     app.logger.setLevel(logging.DEBUG)
@@ -27,7 +27,7 @@ def initialize():
     app.logger.info('%s started' % app.name)
     data = Version().get_version_data('../apiversion.ini')
     api_version = data.get('webapi-version')
-    app.logger.info('WEBAPIVERSION=%s' % api_version) 
+    app.logger.info('WEBAPIVERSION=%s' % api_version)
     pdf2img_version = data.get('pdf2img-version')
     app.logger.info('PDF2IMGVERSION=%s' % pdf2img_version)
 

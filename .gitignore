@@ -19,6 +19,8 @@
 
 *.egg-info
 
+AdobeFnt*
+Resource
 bin
 develop-eggs
 doxygen

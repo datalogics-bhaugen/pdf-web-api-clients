@@ -10,12 +10,15 @@ def test_bad_version():
     result = Result(None, StatusCode.NotFound)
     try: Test(['data/bad.pdf'], result)('spam', test.BASE_URL)
     except Exception as exception:
-        max_retries = 'Max retries exceeded with url: /api/spam/actions/image'
-        assert_in(max_retries, str(exception))
+        assert_in(max_retry_error('/api/spam/actions/image'), str(exception))
 
 def test_bad_url():
     result = Result(ProcessCode.InvalidInput, StatusCode.BadRequest)
-    Test(['http://127.0.0.1/spam.pdf'], result)()
+    try: Test(['http://127.0.0.1/spam.pdf'], result)()
+    except Exception as exception:
+        assert_in(max_retry_error('/spam.pdf'), str(exception))
+
+def max_retry_error(url): return 'Max retries exceeded with url: %s' % url
 
 def test_missing_url():
     pass  # TODO
