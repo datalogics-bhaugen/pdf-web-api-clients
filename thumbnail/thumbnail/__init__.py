@@ -31,11 +31,11 @@ app = flask.Flask(__name__)
 def action():
     try:
         application = Application(JOEL_GERACI_ID, JOEL_GERACI_KEY)
-        request = ImageRequest(application, VERSION, BASE_URL)
+        request = ImageRequest(application, BASE_URL, VERSION)
         input_url = flask.request.form.get('inputURL')
         options = thumbnail_options(flask.request.form)
         if IMAGE_WIDTH in options or IMAGE_HEIGHT in options:
-            return response(request.get(input_url, options))
+            return response(request.post_url(input_url, options))
         return smaller_thumbnail(request, input_url, options)
     except Exception as exception:
         return str(exception), StatusCode.UnknownServerError
@@ -49,8 +49,8 @@ def smaller_thumbnail(request, input_url, options):
     portrait_options, landscape_options = (options, options.copy())
     portrait_options[str(IMAGE_HEIGHT)] = MAX_THUMBNAIL_DIMENSION
     landscape_options[str(IMAGE_WIDTH)] = MAX_THUMBNAIL_DIMENSION
-    portrait_response = request.get(input_url, portrait_options)
-    landscape_response = request.get(input_url, landscape_options)
+    portrait_response = request.post_url(input_url, portrait_options)
+    landscape_response = request.post_url(input_url, landscape_options)
     if landscape_response.process_code: return response(portrait_response)
     if portrait_response.process_code: return response(landscape_response)
     return response(smaller_response(portrait_response, landscape_response))
