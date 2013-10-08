@@ -29,7 +29,6 @@ class MockLogger:
     @property
     def log(self): return self._log
 
-
 class MockPDF2IMG(object):
     def __init__(self, mock, pdf2img='pdf2img'):
         self._set_pdf2img(pdf2img)
@@ -57,7 +56,6 @@ class MockPDF2IMG(object):
     @property
     def temporary_name(self): return self._temporary_name
 
-
 class MockRequest(object):
     def __init__(self, options):
         self._options = options
@@ -67,7 +65,6 @@ class MockRequest(object):
     def form(self): return {'options': self._options}
     @property
     def remote_addr(self): return 'localhost'
-
 
 class Result(object):
     def __init__(self, process_code, status_code=StatusCode.BadRequest):
@@ -90,7 +87,6 @@ class Result(object):
         else:
             assert_equal(self._status_code, response.status_code)
         return response
-
 
 class Test(object):
     def __init__(self, args, result, pdf2img=None):

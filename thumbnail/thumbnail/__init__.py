@@ -3,12 +3,12 @@
 import flask
 import requests
 
-from pdfclient import Application, ImageRequest
+import handlers
 from errors import JSON, StatusCode
+from pdfclient import Application, ImageRequest
 
 
-BASE_URL = 'http://pdfprocess-test.datalogics-cloud.com'
-VERSION = Application.VERSION
+BASE_URL = 'http://127.0.0.1:5000'  # TODO: use public DNS entry
 
 JOEL_GERACI_ID = 'b0ecd1e6'
 JOEL_GERACI_KEY = '5024e1e9c089abd46b419cc17222b86b'
@@ -26,23 +26,28 @@ IMAGE_HEIGHT = Option('imageHeight')
 OUTPUT_FORM = Option('outputForm')
 
 app = flask.Flask(__name__)
+handlers.start(app.logger, app.name)
 
 @app.route('/', methods=['GET'])
 def action():
     try:
+        input_url, options = request_data(flask.request.form)
         application = Application(JOEL_GERACI_ID, JOEL_GERACI_KEY)
-        request = ImageRequest(application, BASE_URL, VERSION)
-        input_url = flask.request.form.get('inputURL')
-        options = thumbnail_options(flask.request.form)
+        request = ImageRequest(application, BASE_URL, Application.VERSION)
+        if OUTPUT_FORM not in options.keys(): options[str(OUTPUT_FORM)] = 'png'
         if IMAGE_WIDTH in options or IMAGE_HEIGHT in options:
             return response(request.post_url(input_url, options))
         return smaller_thumbnail(request, input_url, options)
     except Exception as exception:
-        return str(exception), StatusCode.UnknownServerError
+        error = str(exception)
+        app.logger.exception(error)
+        return error, StatusCode.InternalServerError
 
-def thumbnail_options(request_form):
-    result = JSON.parse(request_form.get('options', '{}'))
-    if OUTPUT_FORM not in result.keys(): result[str(OUTPUT_FORM)] = 'png'
+def request_data(request_form):
+    input_url = request_form.get('inputURL')
+    options = request_form.get('options', '{}')
+    result = (input_url, JSON.parse(options))
+    app.logger.info('%s: options = %s' % result)
     return result
 
 def smaller_thumbnail(request, input_url, options):
@@ -56,8 +61,11 @@ def smaller_thumbnail(request, input_url, options):
     return response(smaller_response(portrait_response, landscape_response))
 
 def smaller_response(response1, response2):
-    output1, output2 = (response1.output, response2.output)
+    output1, output2 = (response1['output'], response2['output'])
     return response2 if len(output2) < len(output1) else response1
 
 def response(request_response):
-    return request_response.json(), request_response.status_code
+    process_code = int(request_response['processCode'])
+    status_code = request_response.status_code
+    output = request_response['output']
+    return flask.jsonify(processCode=process_code, output=output), status_code

@@ -12,6 +12,7 @@ endif
 	python virtualenv.py --never-download venv
 	venv/bin/python bootstrap.py
 	bin/buildout | scripts/versions > versions.cfg
+	mkdir -p var/log; touch var/log/pdfprocess.log
 	# git describe | xargs -0 python src/pdfprocess/version.py
 	@diff $(VENV) virtualenv.py > /dev/null || echo Upgrade virtualenv!
 	@cp $(VENV) .

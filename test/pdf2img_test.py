@@ -2,6 +2,7 @@
 
 import os
 import glob
+import platform
 import subprocess
 from pdfprocess.tmpdir import Stdout
 from test_client import ProcessCode
@@ -36,4 +37,6 @@ def test_pdf2img_sample_python(python3=False):
         assert_equal(subprocess.call(args, stdout=stdout), 0)
         assert_in('TODO: Application ID', str(stdout))
 
-def test_pdf2img_sample_python3(): test_pdf2img_sample_python(python3=True)
+if platform.system() == 'Darwin':
+    def test_pdf2img_sample_python3():
+        test_pdf2img_sample_python(python3=True)
