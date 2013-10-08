@@ -3,16 +3,16 @@ GIT_HOOK = .git/hooks/pre-commit
 MAKE_THUMBNAIL = make --directory thumbnail
 PLATFORM = $(shell uname -s)
 QA = bin/flake8 --max-complexity 10
+VAR_LOG = var/log
 VENV = eggs/virtualenv-*.egg/virtualenv.py
 
-build: $(GIT_HOOK) Resource html
+build: $(GIT_HOOK) Resource directories log html
 ifeq ($(PLATFORM), Darwin)
 	echo "" > versions.cfg
 endif
 	python virtualenv.py --never-download venv
 	venv/bin/python bootstrap.py
 	bin/buildout | scripts/versions > versions.cfg
-	mkdir -p var/log; touch var/log/pdfprocess.log
 	# git describe | xargs -0 python src/pdfprocess/version.py
 	@diff $(VENV) virtualenv.py > /dev/null || echo Upgrade virtualenv!
 	@cp $(VENV) .
@@ -23,13 +23,27 @@ clean:
 	rm -rf .installed.cfg $(GIT_HOOK) bin develop-eggs parts var/log
 	@$(MAKE_THUMBNAIL) clean
 
-html: $(DOXYGEN)
+directories: eggs tmp
+
+log: $(VAR_LOG)
+	touch $^/pdfprocess.log
 
 qa: bin/segfault
 	$(QA) samples scripts src test
 	@$(MAKE_THUMBNAIL) qa
 
-.PHONY: build clean html qa
+html: $(DOXYGEN)
+
+.PHONY: build clean directories log qa html
+
+eggs:
+	mkdir -p $@
+
+tmp:
+	mkdir -p $@
+
+$(VAR_LOG):
+	mkdir -p $@
 
 $(GIT_HOOK): scripts/pre-commit
 	ln -s ../../$^ $@
