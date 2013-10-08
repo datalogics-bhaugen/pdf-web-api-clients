@@ -47,7 +47,8 @@
 # DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
 
 error_reporting(E_ALL);
-class PDF2IMG {
+class PDF2IMG 
+{
     /**
      * @var string
      */
@@ -66,18 +67,42 @@ class PDF2IMG {
     /**
      * @var string
      */
-    var $output_format = 'tiff';
+    var $source_file_name = "./test.pdf";
 
     /**
      * @var string
      */
-    var $print_preview = TRUE;
+    var $destination_file_name = "converted.jpg";
+
+    /**
+     * @var string
+     */
+    var $output_format = 'tif';
+
+    /**
+     * @var string
+     */
+    var $print_preview = FALSE;
+
+    /**
+     * @var Array
+     */
+    var $options;
   
     /**  
      * @param string     $version Version Number 
      */
-    public function __construct($version = 0) {
-        $this->parse_arguments($argv);
+    public function __construct($args, $version = 0) 
+    {
+        try
+        {
+            $this->parse_arguments($args);
+        }
+        catch (Exception $e)
+        {
+            echo $e->getMessage(), "\n";
+            exit(); 
+        }
         $this->base_url = "https://pdfprocess.datalogics-cloud.com/api/"
                            .$version
                            ."/actions/image";
@@ -86,28 +111,32 @@ class PDF2IMG {
     /** Set Application ID
      * @param string     $application_id
      */
-    public function application_id($application_id) {
+    public function application_id($application_id) 
+    {
         $this->application_id = $application_id;
     }
 
     /** Set Application Key
      * @param string     $application_key
      */
-    public function application_key($application_key) {
+    public function application_key($application_key) 
+    {
         $this->application_key = $application_key; 
     }
 
     /** Set output file format
      * @param string     $output_format  (jpg, tiff)
      */
-    public function output_format($output_format = "jpg") {
+    public function output_format($output_format = "jpg") 
+    {
         $this->output_format = $output_format;
     } 
  
     /** Set print preview
      * @param bool     $print_preview (true, false)
      */
-    public function print_preview($print_preview = TRUE) {
+    public function print_preview($print_preview = TRUE) 
+    {
        $this->print_preview = $print_preview;
     }
   
@@ -116,60 +145,114 @@ class PDF2IMG {
      * @param string     $source_file_name Input file name
      * @param string     $destination_file_name Output file name
      */
-    public function convert($source_file_name, $destination_file_name) {
+    public function convert() 
+    {
         $ch = curl_init($this->base_url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $this->prepare_request($source_file_name));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, 
+                       $this->prepare_request($this->source_file_name));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);  
         curl_setopt($ch, CURLOPT_VERBOSE, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, 
+                       array('Content-Type: multipart/form-data'));
         $response = curl_exec($ch);
         curl_close($ch);
-        $this->handle_response($response, $destination_file_name);
+        $this->handle_response($response);
     }
+
     /** Handle server response
      * @param JSONObject     $response Server Response 
      * @param string         $destination_file_name output file name
      */
-    public function handle_response($response, $destination_file_name) {
+    public function handle_response($response) 
+    {
         $json_decoded = json_decode($response);
         $output = base64_decode($json_decoded->output);
         $process_code = base64_decode($json_decoded->processCode);
     
         if ($process_code != 0)
         {
-            printf('ERROR: '.$process_code."\n")
-            printf('Error Message: '.$output."\n")
-            exit($process_code)
+            printf('ERROR: '.$process_code."\n");
+            printf('Error Message: '.$output."\n");
+            exit($process_code);
         }
     
-        $file = fopen($destination_file_name, "wb");
+        $file = fopen($this->destination_file_name, "wb");
         fwrite($file, $output);
         fclose($file);
     }
-    private function parse_arguments($arguments) {
-    
+
+    private function parse_arguments($args) 
+    {
+        $scriptName = $args[0];
+        $options = array();
+        $lastElement = end($args);
+        foreach ($args as $key => $index)
+        {
+            if ($scriptName === $index)
+            {
+                continue;  //script name
+            }
+
+            if (strpos($index, '-') === 0) //option
+            {
+                if ($index === $lastElement)
+                {
+                    throw new Exception('Usage: ' .$scriptName. ' [options] inputFile');
+                }
+                
+                $index = ltrim($index, '-');
+
+                if (strpos($index, '=') !== false)
+                {
+                    list($key, $value) = explode('=', $index);
+                    $options[$key] = $value;
+                }
+                else
+                {
+                    $options[$index] = TRUE;
+                }
+            }
+            else
+            {
+                if ($index === $lastElement)
+                {
+                    $this->source_file_name = $index;
+                    list($this->destination_file_name, $type) 
+                        = explode('.', $index);
+                    if (array_key_exists('outputForm', $options))
+                    {
+                        $this->destination_file_name
+                            .= '.'.$options[outputForm]; 
+                    }
+                    else
+                    {
+                        $this->destination_file_name
+                            .= '.'.$this->output_format;
+                    }
+                }
+                else
+                {
+                    throw new Exception('Usage: ' .$scriptName. ' [options] inputFile');
+                }
+            }
+        }
+        $this->options = $options;
     }
-    private function prepare_request($file_name) {
+
+    private function prepare_request($file_name) 
+    {
         $fields = array(
           'application' => $this->prepare_application_json(), 
           'inputName' => basename($file_name),
-          'options' => $this->prepare_options_json(),
+          'options' => $this->options,
           'input' => "@$file_name"
         );
         return $fields;
     }
-
-    private function prepare_options_json() {
-        $options = array();
-        $options['outputForm'] = $this->output_format;
-        if ($this->print_preview) {
-            $options['printPreview'] = TRUE;
-        }
-        return json_encode($options);
-    }
   
-    private function prepare_application_json() {
+    private function prepare_application_json() 
+    {
         $application = array('id' => $this->application_id,
                              'key' => $this->application_key);
         return json_encode($application);
@@ -177,13 +260,8 @@ class PDF2IMG {
 }
 
 // Driver code
-$source_file_name = "./test.pdf";
-$destination_file_name = "converted.jpg";
-$pdf2img = new PDF2IMG();
+$pdf2img = new PDF2IMG($argv);
 $pdf2img->application_id = 'TODO: Application ID'; 
 $pdf2img->application_key = 'TODO: Applicaiton Key';
-$pdf2img->output_format = 'tiff';
-$pdf2img->print_preview = FALSE;
-$pdf2img->convert($source_file_name, $destination_file_name);
-
+$pdf2img->convert();
 ?>
