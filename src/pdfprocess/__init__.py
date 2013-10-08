@@ -1,15 +1,16 @@
 "pdfprocess application"
 
+import os
 import sys
 import logging
 import traceback
-import os
+
 import flask
+import handlers
 import tmpdir
 
 from action import Action
 from errors import Auth, EnumValue, Error, ProcessCode, StatusCode, UNKNOWN
-from handlers import FileHandler, SysLogHandler
 from tmpdir import RESOURCE, Stdout, TemporaryFile, TMPDIR
 from version import Version
 
@@ -17,14 +18,11 @@ import image
 
 
 app = flask.Flask(__name__)
+handlers.start(app.logger, app.name)
 
 # TODO: log version info earlier
 @app.before_first_request
 def initialize():
-    app.logger.setLevel(logging.DEBUG)
-    app.logger.addHandler(SysLogHandler())
-    app.logger.addHandler(FileHandler(app.name))
-    app.logger.info('%s started' % app.name)
     data = Version().get_version_data('../apiversion.ini')
     api_version = data.get('webapi-version')
     app.logger.info('WEBAPIVERSION=%s' % api_version)
