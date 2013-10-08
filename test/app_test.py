@@ -1,10 +1,6 @@
 "pdfprocess regression tests"
 
 import os
-
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-execfile(os.path.join(root_dir, 'scripts', 'configure_logger.py'))
-
 import flask
 import pdfprocess
 from flask.testing import FlaskClient
