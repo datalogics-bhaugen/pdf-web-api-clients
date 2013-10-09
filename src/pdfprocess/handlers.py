@@ -43,8 +43,11 @@ class SysLogHandler(BaseHandler, BaseSysLogHandler):
         address = '/var/run/syslog' if system() == 'Darwin' else '/dev/log'
         BaseSysLogHandler.__init__(self, address)
 
-def start(logger, logger_name, log_level=logging.DEBUG):
+def start(logger, server_name, version=None, log_level=logging.DEBUG):
     logger.setLevel(log_level)
     logger.addHandler(SysLogHandler())
-    logger.addHandler(FileHandler(logger_name))
-    logger.info('%s started' % logger_name)
+    logger.addHandler(FileHandler(server_name))
+    if version:
+        logger.info('%s (%s) started' % (server_name, version))
+    else:
+        logger.info('%s started' % server_name)

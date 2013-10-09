@@ -1,9 +1,9 @@
 # Gunicorn configuration file.
 
 import os
+import thumbnail.tmpdir
 
 BIND = '127.0.0.1:5050'
 PROC_NAME = 'thumbnail'
 
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-execfile(os.path.join(root_dir, 'src', 'gunicorn.py'))
+execfile(os.path.join(thumbnail.tmpdir.ROOT_DIR, 'src', 'gunicorn.py'))

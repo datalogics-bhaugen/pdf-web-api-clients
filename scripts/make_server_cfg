@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo [versions]
+echo pdf2img = `pdf2img | grep PDF2IMG | cut -f2- -d ' '`
+echo server = `git describe --tags 2> /dev/null || git describe --all`
+

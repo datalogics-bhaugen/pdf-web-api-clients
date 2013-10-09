@@ -1,8 +1,14 @@
 "thumbnail regression tests"
 
 import subprocess
-from tmpdir import Stdout
 from nose.tools import assert_equal
+
+import os
+import sys
+
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path[0:0] = [os.path.join(parent_dir, 'thumbnail')]
+from tmpdir import Stdout
 
 def test_thumbnail():
     thumbnail_url = '127.0.0.1:5050'

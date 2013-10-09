@@ -21,6 +21,8 @@
 
 AdobeFnt*
 Resource
+server.cfg
+
 bin
 develop-eggs
 doxygen
