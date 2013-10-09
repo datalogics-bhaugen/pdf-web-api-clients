@@ -1,17 +1,18 @@
 "server regression tests, 3scale"
 
 import uuid
+import mock
 import test
 
 from pdfprocess.errors import Auth
 from pdfprocess.client import Client
-from test import MockLogger, PUBLIC_ID, PUBLIC_KEY
+from test import PUBLIC_ID, PUBLIC_KEY
 from nose.tools import assert_equal, assert_is_none
 
 
 def pdfprocess_client(app_id=PUBLIC_ID, app_key=PUBLIC_KEY):
     application = {'id': app_id, 'key': app_key}
-    return Client(MockLogger(), '127.0.0.1', {'application': application})
+    return Client(mock.Logger(), '127.0.0.1', {'application': application})
 
 
 def test_auth_ok():
