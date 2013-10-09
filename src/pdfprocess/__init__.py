@@ -36,9 +36,7 @@ def hello():
 @app.route('/api/0/actions/image', methods=['POST'])
 def image_action():
     try:
-        input_url = flask.request.form.get('inputURL', None)
-        action = image.FromURL if input_url else image.FromFile
-        return action(app.logger, flask.request)()
+        return image.Action.from_request(app.logger, flask.request)()
     except Error as error:
         return error_response(error)
     except Exception as exception:
