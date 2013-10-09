@@ -16,13 +16,15 @@ def _find_dir(dir_name, path=None):
     return path if os.path.isdir(path) else _find_dir(dir_name, parent_dir)
 
 RESOURCE = _find_dir('Resource') if platform.system() == 'Linux' else None
-TMPDIR = _find_dir('tmp')
-os.environ['TMPDIR'] = TMPDIR  # for APDFL
+TMP_DIR = _find_dir('tmp')
+VAR_DIR = _find_dir('var')
+
+os.environ['TMPDIR'] = TMP_DIR  # for APDFL
 
 
 class TemporaryFile(object):
     def __init__(self):
-        self._file = tempfile.NamedTemporaryFile(dir=TMPDIR)
+        self._file = tempfile.NamedTemporaryFile(dir=TMP_DIR)
     def __enter__(self):
         return self
     def __exit__(self, type, value, traceback):

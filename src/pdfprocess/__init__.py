@@ -11,7 +11,7 @@ import tmpdir
 
 from action import Action
 from errors import Auth, EnumValue, Error, ProcessCode, StatusCode, UNKNOWN
-from tmpdir import RESOURCE, Stdout, TemporaryFile, TMPDIR
+from tmpdir import RESOURCE, Stdout, TemporaryFile
 from version import Version
 
 import image
