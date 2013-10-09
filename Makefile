@@ -36,13 +36,7 @@ html: $(DOXYGEN)
 
 .PHONY: build clean directories log qa html
 
-eggs:
-	mkdir -p $@
-
-tmp:
-	mkdir -p $@
-
-$(VAR_LOG):
+eggs tmp $(VAR_LOG):
 	mkdir -p $@
 
 $(GIT_HOOK): scripts/pre-commit
