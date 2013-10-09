@@ -70,7 +70,8 @@ class FromFile(Action):
         if not request_files:
             self.raise_error(Error(ProcessCode.InvalidInput, 'no input'))
         if len(request_files) > 1:
-            self.raise_error(Error(ProcessCode.InvalidInput, 'excess input'))
+            error = 'excess input: %d files' % len(request_files)
+            self.raise_error(Error(ProcessCode.InvalidInput, error))
         self._input = request_files[0]
         Action._set_input(self, request)
 
@@ -78,14 +79,12 @@ class FromURL(Action):
     def _save_input(self, input_file):
         input_file.write(self.input)
     def _set_input(self, request):
-        request_files = request.files.values()
-        if request_files:
-            self.raise_error(Error(ProcessCode.InvalidInput, 'excess input'))
-        url = request.form.get('inputURL', None)
-        if not url:
-            self.raise_error(Error(ProcessCode.InvalidInput, 'no input'))
+        if request.files.values():
+            error = 'excess input: request file and inputURL'
+            self.raise_error(Error(ProcessCode.InvalidInput, error))
+        input_url = request.form.get('inputURL')
         try:
-            self._input = requests.get(url).content
+            self._input = requests.get(input_url).content
         except Exception as exception:
             self.raise_error(Error(ProcessCode.InvalidInput, str(exception)))
-        Action._set_input(self, request, os.path.basename(url))
+        Action._set_input(self, request, os.path.basename(input_url))
