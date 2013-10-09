@@ -58,8 +58,8 @@ class Application(object):
     BASE_URL = 'https://pdfprocess.datalogics-cloud.com'
     VERSION = 0
 
-    ## @param id from [3scale](http://api.datalogics-cloud.com/)
-    #  @param key from [3scale](http://api.datalogics-cloud.com/)
+    ## @param id from our [developer portal](http://api.datalogics-cloud.com/)
+    #  @param key from our [developer portal](http://api.datalogics-cloud.com/)
     def __init__(self, id, key):
         self._id, self._key = (id, key)
     def __str__(self):
