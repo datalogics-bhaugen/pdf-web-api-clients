@@ -23,13 +23,13 @@ or look at our [example](#example).
 
 ### Request
 
-A request is a POST method with parameters encoded as form data:
+A request is a POST method with form data:
 
-* The [application](https://api.datalogics-cloud.com/docs#application) parameter is a JSON object identifying your application, e.g. {"id": yourID, "key": yourKey}
-* _Optional:_ Use the [inputURL](https://api.datalogics-cloud.com/docs#inputURL) parameter to have the server upload the input document
+* [application](https://api.datalogics-cloud.com/docs#application) is a JSON object identifying your application, e.g. {"id": yourID, "key": yourKey}
+* _Optional:_ Use [inputURL](https://api.datalogics-cloud.com/docs#inputURL) to have the server upload the input document
 * _Optional:_ If there is no inputURL, put the input document in the request body (Content-Type: application/pdf)
-* _Optional:_ If the [inputName](https://api.datalogics-cloud.com/docs#inputName) parameter is supplied, the server uses it when logging the request
-* _Optional:_ Any request options are encoded as JSON in the [options](https://api.datalogics-cloud.com/docs#options) parameter
+* _Optional:_ If [inputName](https://api.datalogics-cloud.com/docs#inputName) is supplied, the server uses it when logging the request
+* _Optional:_ Any request options are encoded as JSON in the [options](https://api.datalogics-cloud.com/docs#options) value
 
 <a name="example"/>
 #### Example
