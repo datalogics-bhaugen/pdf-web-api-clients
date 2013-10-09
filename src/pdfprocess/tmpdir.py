@@ -32,6 +32,9 @@ class TemporaryFile(object):
         self._file.close()
     def __getattr__(self, name):
         return getattr(self._file, name)
+    def write(self, str):
+        self._file.write(str)
+        self._file.flush()
 
 class Stdout(TemporaryFile):
     "for capturing stdout"

@@ -44,7 +44,6 @@ class Action(pdfprocess.Action):
     def _pdf2img(self):
         with pdfprocess.TemporaryFile() as input_file:
             self._save_input(input_file)
-            input_file.flush()
             with OutputFile(input_file.name, self.output_form) as output_file:
                 return self._get_image(input_file.name, output_file)
     @classmethod
