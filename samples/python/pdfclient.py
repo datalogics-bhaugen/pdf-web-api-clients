@@ -87,12 +87,13 @@ class Request(object):
 
     ## Send POST request with input file
     #  @return a requests.Response object
-    #  @param input input document file object
+    #  @param input_file input document file object
     #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
-    def post_file(self, input, options={}):
+    def post_file(self, input_file, options={}):
+        input_file.seek(0)
         self._reset(options)
-        files = {'input': input}
-        if input.name: self.data['inputName'] = input.name
+        files = {'input': input_file}
+        if input_file.name: self.data['inputName'] = input_file.name
         return \
             requests.post(self.url, data=self.data, files=files, verify=False)
 
@@ -121,7 +122,7 @@ class ImageRequest(Request):
 
     ## Send POST request with input file
     #  @return an ImageResponse object
-    #  @param input input document file object
+    #  @param input_file input document file object
     #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
     #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel)
     #  * [compression](https://api.datalogics-cloud.com/docs#compression)
@@ -141,8 +142,8 @@ class ImageRequest(Request):
     #  * [smoothing](https://api.datalogics-cloud.com/docs#smoothing)
     #  * [suppressAnnotations]
     #     (https://api.datalogics-cloud.com/docs#suppressAnnotations)
-    def post_file(self, input, options={}):
-        return ImageResponse(Request.post_file(self, input, options))
+    def post_file(self, input_file, options={}):
+        return ImageResponse(Request.post_file(self, input_file, options))
 
     ## Send POST request with input URL
     #  @return an ImageResponse object
