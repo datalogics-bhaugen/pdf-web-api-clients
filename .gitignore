@@ -24,6 +24,8 @@ Resource
 bin
 develop-eggs
 doxygen
+eggs
 parts
+tmp
 var
 venv

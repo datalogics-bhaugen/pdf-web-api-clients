@@ -1,14 +1,15 @@
 "server regression tests, options"
 
+import mock
 import test
 from test_client import ProcessCode, StatusCode
 from nose.tools import assert_in, assert_not_in
 
 
-class MockFixture(object):
+class TestFixture(object):
     @classmethod
     def setup_class(cls):
-        cls.mock = test.MockPDF2IMG('scripts/options_test')
+        cls.mock = mock.PDF2IMG('scripts/options_test')
     @classmethod
     def teardown_class(cls):
         cls.mock = None
@@ -20,7 +21,7 @@ class MockFixture(object):
         if expected: assert_in(expected, output)
         if unexpected: assert_not_in(unexpected, output)
 
-class TestAliases(MockFixture):
+class TestAliases(TestFixture):
     def test_asprinted(self):
         self.validate(['-printPreview'], '-asprinted')
     def test_noannot(self):
@@ -36,7 +37,7 @@ class TestAliases(MockFixture):
     def test_width_and_height(self):
         self.validate(['-imageWidth=1', '-imageHeight=1'], '-pixelcount=1x1')
 
-class TestDefaults(MockFixture):
+class TestDefaults(TestFixture):
     def test_multipage(self):
         self.validate([], '-multipage')
     def test_output_form(self):
@@ -50,7 +51,7 @@ class TestDefaults(MockFixture):
     def test_smoothing_text(self):
         self.validate(['-smoothing=text'], '-smoothing=text')
 
-class TestSpelling(MockFixture):
+class TestSpelling(TestFixture):
     def test_lower_case(self):
         self.validate(['-opp'], '-OPP')
     def test_upper_case(self):

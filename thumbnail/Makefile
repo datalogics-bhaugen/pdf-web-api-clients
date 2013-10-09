@@ -1,11 +1,17 @@
-build:
+build: eggs log
 	../bin/buildout -c buildout.cfg
-	touch ../var/log/thumbnail.log
 
 clean:
 	rm -rf .installed.cfg bin develop-eggs parts
 
+log:
+	touch ../var/log/thumbnail.log
+
 qa:
 	../bin/flake8 scripts test thumbnail
 
-.PHONY: build clean qa
+.PHONY: build clean log qa
+
+eggs:
+	mkdir -p eggs
+

@@ -1,5 +1,6 @@
 "server regression tests"
 
+import mock
 import test
 from test import Result, Test
 from test_client import ImageProcessCode as ProcessCode, StatusCode
@@ -13,7 +14,8 @@ def test_bad_version():
         assert_in(max_retry_error('/api/spam/actions/image'), str(exception))
 
 def test_bad_url():
-    result = Result(ProcessCode.InvalidInput, StatusCode.BadRequest)
+    errors = (StatusCode.BadRequest, StatusCode.UnsupportedMediaType)
+    result = Result(ProcessCode.InvalidInput, errors)
     try: Test(['http://127.0.0.1/spam.pdf'], result)()
     except Exception as exception:
         assert_in(max_retry_error('/spam.pdf'), str(exception))
@@ -53,10 +55,10 @@ def test_out_of_memory(): _memory_error('scripts/out_of_memory')
 def _memory_error(mock_script):
     request_entity_too_large = StatusCode.RequestEntityTooLarge
     result = Result(ProcessCode.RequestTooLarge, request_entity_too_large)
-    with test.MockPDF2IMG(mock_script):
+    with mock.PDF2IMG(mock_script):
         Test(['data/bad.pdf'], result)()
 
 def test_pdf2img_crash():
     result = Result(ProcessCode.UnknownError, StatusCode.InternalServerError)
-    with test.MockPDF2IMG('../bin/segfault'):
+    with mock.PDF2IMG('../bin/segfault'):
         Test(['data/bad.pdf'], result)()

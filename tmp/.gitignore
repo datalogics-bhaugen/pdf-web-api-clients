@@ -1,4 +1,0 @@
-# ignore everything ...
-*
-# except this file, which ensures that the directory exists.
-!.gitignore

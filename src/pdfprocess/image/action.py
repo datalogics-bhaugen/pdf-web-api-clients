@@ -48,6 +48,10 @@ class Action(pdfprocess.Action):
             with OutputFile(input_file.name, self.output_form) as output_file:
                 return self._get_image(input_file.name, output_file)
     @classmethod
+    def from_request(cls, logger, request):
+        action = FromURL if request.form.get('inputURL', None) else FromFile
+        return action(logger, request)
+    @classmethod
     def _options(cls):
         if not pdfprocess.RESOURCE: return []
         resources = ('CMap', 'Font', 'Unicode')
@@ -74,6 +78,9 @@ class FromURL(Action):
     def _save_input(self, input_file):
         input_file.write(self.input)
     def _set_input(self, request):
+        request_files = request.files.values()
+        if request_files:
+            self.raise_error(Error(ProcessCode.InvalidInput, 'excess input'))
         url = request.form.get('inputURL', None)
         if not url:
             self.raise_error(Error(ProcessCode.InvalidInput, 'no input'))
