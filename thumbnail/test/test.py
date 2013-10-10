@@ -14,11 +14,9 @@ from tmpdir import Stdout
 BASE_URL = '127.0.0.1:5050'
 INPUT_URL = 'inputURL=%s' % 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
 
+def test_form_data_url(): curl_request(['--form', INPUT_URL, BASE_URL])
+def test_query_string_url(): curl_request(['%s?%s' % (BASE_URL, INPUT_URL)])
 
-def test_form_data_url():
-    input = ['curl', '--request', 'GET', '--form', INPUT_URL, BASE_URL]
-    assert_equal(subprocess.call(input, stdout=Stdout(), stderr=Stdout()), 0)
-
-def test_query_string_url():
-    input = ['curl', '--request', 'GET', '%s?%s' % (BASE_URL, INPUT_URL)]
+def curl_request(input):
+    input = ['curl', '--request', 'GET'] + input
     assert_equal(subprocess.call(input, stdout=Stdout(), stderr=Stdout()), 0)
