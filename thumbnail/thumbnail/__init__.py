@@ -34,7 +34,7 @@ def action():
     try:
         input_url, options = request_data(flask.request.form)
         application = Application(JOEL_GERACI_ID, JOEL_GERACI_KEY)
-        request = ImageRequest(application, BASE_URL, Application.VERSION)
+        request = ImageRequest(application, BASE_URL, 'render/pages')
         if OUTPUT_FORM not in options.keys(): options[str(OUTPUT_FORM)] = 'png'
         if IMAGE_WIDTH in options or IMAGE_HEIGHT in options:
             return response(request.post_url(input_url, options))

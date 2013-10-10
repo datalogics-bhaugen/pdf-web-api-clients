@@ -84,13 +84,11 @@ class PDF2IMG(Application):
     ## @param argv e.g.
     #   ['%pdf2img.py', '-outputForm=jpg', '-printPreview', 'hello_world.pdf']
     #  @param base_url
-    #  @param version
-    def __call__(self, argv,
-                 base_url=Application.BASE_URL, version=Application.VERSION):
+    def __call__(self, argv, base_url=Application.BASE_URL):
         self._initialize(argv)
         input_is_url = self.input.startswith('http')
         post_method = self._post_url if input_is_url else self._post_file
-        return post_method(ImageRequest(self, base_url, version))
+        return post_method(ImageRequest(self, base_url, 'render/pages'))
 
     def _post_file(self, request):
         with open(self.input, 'rb') as input_file:
@@ -128,8 +126,7 @@ class PDF2IMG(Application):
 
 
 def run(argv, app_id='TODO: Application ID', app_key='TODO: Application key'):
-    pdf2img = PDF2IMG(app_id, app_key)
-    return pdf2img(argv, Application.BASE_URL, Application.VERSION)
+    return PDF2IMG(app_id, app_key)(argv, Application.BASE_URL)
 
 if __name__ == '__main__':
     response = run(sys.argv)

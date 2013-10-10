@@ -27,6 +27,9 @@ def hello():
     return 'Adobe eBook and PDF technologies for developers!'
 
 @app.route('/api/0/actions/image', methods=['POST'])
+def temp_image_action(): return image_action()  # TODO: remove (obsolete URL)
+
+@app.route('/api/actions/render/pages', methods=['POST'])
 def image_action():
     try:
         return image.Action.from_request(app.logger, flask.request)()

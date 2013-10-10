@@ -56,7 +56,6 @@ import simplejson as json
 
 class Application(object):
     BASE_URL = 'https://pdfprocess.datalogics-cloud.com'
-    VERSION = 0
 
     ## @param id from our [developer portal](http://api.datalogics-cloud.com/)
     #  @param key from our [developer portal](http://api.datalogics-cloud.com/)
@@ -67,10 +66,10 @@ class Application(object):
 
     ## Request factory
     # @return a Request object
-    # @param request_type e.g. 'image'
-    def make_request(self, request_type, base_url=BASE_URL, version=VERSION):
-        if request_type == 'image':
-            return ImageRequest(self, base_url, version)
+    # @param request_type e.g. 'render/pages'
+    def make_request(self, request_type, base_url=BASE_URL):
+        if request_type == 'render/pages':
+            return ImageRequest(self, base_url, request_type)
 
     @property
     ## ID property (string)
@@ -81,9 +80,9 @@ class Application(object):
 
 
 class Request(object):
-    def __init__(self, application, base_url, version, request_type):
+    def __init__(self, application, base_url, request_type):
         self._application = {'application': str(application)}
-        self._url = '%s/api/%s/actions/%s' % (base_url, version, request_type)
+        self._url = '%s/api/actions/%s' % (base_url, request_type)
 
     ## Send POST request with input file
     #  @return a requests.Response object
@@ -117,9 +116,6 @@ class Request(object):
 
 
 class ImageRequest(Request):
-    def __init__(self, application, base_url, version):
-        Request.__init__(self, application, base_url, version, 'image')
-
     ## Send POST request with input file
     #  @return an ImageResponse object
     #  @param input_file input document file object
