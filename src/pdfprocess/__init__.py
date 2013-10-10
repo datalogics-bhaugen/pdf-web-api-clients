@@ -22,13 +22,6 @@ configuration = Configuration()
 handlers.start(app.logger, app.name, configuration.server_version)
 app.logger.info('pdf2img: %s' % configuration.pdf2img_version)
 
-@app.route('/api')
-def hello():
-    return 'Adobe eBook and PDF technologies for developers!'
-
-@app.route('/api/0/actions/image', methods=['POST'])
-def temp_image_action(): return image_action()  # TODO: remove (obsolete URL)
-
 @app.route('/api/actions/render/pages', methods=['POST'])
 def image_action():
     try:
