@@ -17,6 +17,8 @@ INPUT_URL = 'inputURL=%s' % 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
 def test_form_data_url(): curl_request(['--form', INPUT_URL, BASE_URL])
 def test_query_string_url(): curl_request(['%s?%s' % (BASE_URL, INPUT_URL)])
 
-def curl_request(input):
-    input = ['curl', '--request', 'GET'] + input
+# TODO: add test that creates image file
+
+def curl_request(request_input):
+    input = ['curl', '--request', 'GET'] + request_input
     assert_equal(subprocess.call(input, stdout=Stdout(), stderr=Stdout()), 0)
