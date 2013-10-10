@@ -11,7 +11,7 @@ To use this service, first get an application ID and key from our
 [developer portal](http://api.datalogics-cloud.com/).
 Then, you may address image service requests to this URL:
 
-    https://pdfprocess.datalogics-cloud.com/api/0/actions/image
+    https://pdfprocess.datalogics-cloud.com/api/actions/render/pages
 
 Each application ID has a usage limit, currently 10 requests per minute.
 

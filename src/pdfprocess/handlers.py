@@ -2,6 +2,8 @@ import os
 import sys
 import time
 import logging
+
+import tmpdir
 from platform import system
 from logging.handlers import SysLogHandler as BaseSysLogHandler
 from logging.handlers import TimedRotatingFileHandler as BaseFileHandler
@@ -32,9 +34,7 @@ class FileHandler(BaseHandler, BaseFileHandler):
         "rotate daily by default"
         BaseHandler.__init__(self)
         logging.Formatter.converter = time.gmtime
-        src_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        log_dir = os.path.join(os.path.dirname(src_dir), 'var', 'log')
-        log_path = os.path.join(log_dir, '%s.log' % log_name)
+        log_path = os.path.join(tmpdir.VAR_DIR, 'log', '%s.log' % log_name)
         BaseFileHandler.__init__(self, log_path, when=when, interval=interval)
 
 class SysLogHandler(BaseHandler, BaseSysLogHandler):
@@ -43,8 +43,11 @@ class SysLogHandler(BaseHandler, BaseSysLogHandler):
         address = '/var/run/syslog' if system() == 'Darwin' else '/dev/log'
         BaseSysLogHandler.__init__(self, address)
 
-def start(logger, logger_name, log_level=logging.DEBUG):
+def start(logger, server_name, version=None, log_level=logging.DEBUG):
     logger.setLevel(log_level)
     logger.addHandler(SysLogHandler())
-    logger.addHandler(FileHandler(logger_name))
-    logger.info('%s started' % logger_name)
+    logger.addHandler(FileHandler(server_name))
+    if version:
+        logger.info('%s (%s) started' % (server_name, version))
+    else:
+        logger.info('%s started' % server_name)

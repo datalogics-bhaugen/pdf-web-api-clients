@@ -31,8 +31,8 @@ class Action(object):
     def _password_received(self):
         for key in self.options.keys():
             if key.lower() == 'password': return True
-    def _set_input(self, request, default=None):
-        name = request.form.get('inputName', default or '<anon>')
+    def _set_input(self, request, input_name=None):
+        name = request.form.get('inputName', input_name or '<anon>')
         self._input_name = '"%s"' % name if ' ' in name else name
     @classmethod
     def get_error(cls, stdout):

@@ -7,7 +7,6 @@ from nose.tools import assert_is_none, assert_is_not_none
 
 
 BASE_URL = 'http://127.0.0.1:5000'
-VERSION = test_client.VERSION
 
 PUBLIC_ID = 'c953bc0d'
 PUBLIC_KEY = 'c7a7c21fb25c384127879ded5ed3b0a4'
@@ -41,10 +40,10 @@ class Test(object):
     def __init__(self, args, result, pdf2img=None):
         self._args, self._result = (args, result)
         self._pdf2img = pdf2img if pdf2img else Test.pdf2img()
-    def __call__(self, base_url=BASE_URL, version=VERSION):
-        return self._result.validate(self.post(base_url, version))
-    def post(self, base_url, version):
-        return self._pdf2img(['test'] + self._args, base_url, version)
+    def __call__(self, base_url=BASE_URL):
+        return self._result.validate(self.post(base_url))
+    def post(self, base_url):
+        return self._pdf2img(['test'] + self._args, base_url)
     @classmethod
     def pdf2img(cls, id=TEST_ID, key=TEST_KEY):
         return test_client.pdf2img(id, key)

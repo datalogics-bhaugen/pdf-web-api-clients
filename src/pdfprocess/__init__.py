@@ -10,30 +10,26 @@ import handlers
 import tmpdir
 
 from action import Action
+from configuration import Configuration
 from errors import Auth, EnumValue, Error, ProcessCode, StatusCode, UNKNOWN
-from tmpdir import RESOURCE, Stdout, TemporaryFile, TMPDIR
-from version import Version
+from tmpdir import RESOURCE, Stdout, TemporaryFile
 
 import image
 
 
 app = flask.Flask(__name__)
-handlers.start(app.logger, app.name)
-
-# TODO: log version info earlier
-@app.before_first_request
-def initialize():
-    data = Version().get_version_data('../apiversion.ini')
-    api_version = data.get('webapi-version')
-    app.logger.info('WEBAPIVERSION=%s' % api_version)
-    pdf2img_version = data.get('pdf2img-version')
-    app.logger.info('PDF2IMGVERSION=%s' % pdf2img_version)
+configuration = Configuration()
+handlers.start(app.logger, app.name, configuration.server_version)
+app.logger.info('pdf2img: %s' % configuration.pdf2img_version)
 
 @app.route('/api')
 def hello():
     return 'Adobe eBook and PDF technologies for developers!'
 
 @app.route('/api/0/actions/image', methods=['POST'])
+def temp_image_action(): return image_action()  # TODO: remove (obsolete URL)
+
+@app.route('/api/actions/render/pages', methods=['POST'])
 def image_action():
     try:
         return image.Action.from_request(app.logger, flask.request)()

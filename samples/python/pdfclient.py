@@ -56,10 +56,9 @@ import simplejson as json
 
 class Application(object):
     BASE_URL = 'https://pdfprocess.datalogics-cloud.com'
-    VERSION = 0
 
-    ## @param id from [3scale](http://api.datalogics-cloud.com/)
-    #  @param key from [3scale](http://api.datalogics-cloud.com/)
+    ## @param id from our [developer portal](http://api.datalogics-cloud.com/)
+    #  @param key from our [developer portal](http://api.datalogics-cloud.com/)
     def __init__(self, id, key):
         self._id, self._key = (id, key)
     def __str__(self):
@@ -67,10 +66,10 @@ class Application(object):
 
     ## Request factory
     # @return a Request object
-    # @param request_type e.g. 'image'
-    def make_request(self, request_type, base_url=BASE_URL, version=VERSION):
-        if request_type == 'image':
-            return ImageRequest(self, base_url, version)
+    # @param request_type e.g. 'render/pages'
+    def make_request(self, request_type, base_url=BASE_URL):
+        if request_type == 'render/pages':
+            return ImageRequest(self, base_url, request_type)
 
     @property
     ## ID property (string)
@@ -81,18 +80,19 @@ class Application(object):
 
 
 class Request(object):
-    def __init__(self, application, base_url, version, request_type):
+    def __init__(self, application, base_url, request_type):
         self._application = {'application': str(application)}
-        self._url = '%s/api/%s/actions/%s' % (base_url, version, request_type)
+        self._url = '%s/api/actions/%s' % (base_url, request_type)
 
     ## Send POST request with input file
     #  @return a requests.Response object
-    #  @param input input document file object
+    #  @param input_file input document file object
     #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
-    def post_file(self, input, options={}):
+    def post_file(self, input_file, options={}):
+        input_file.seek(0)
         self._reset(options)
-        files = {'input': input}
-        if input.name: self.data['inputName'] = input.name
+        files = {'input': input_file}
+        if input_file.name: self.data['inputName'] = input_file.name
         return \
             requests.post(self.url, data=self.data, files=files, verify=False)
 
@@ -116,12 +116,9 @@ class Request(object):
 
 
 class ImageRequest(Request):
-    def __init__(self, application, base_url, version):
-        Request.__init__(self, application, base_url, version, 'image')
-
     ## Send POST request with input file
     #  @return an ImageResponse object
-    #  @param input input document file object
+    #  @param input_file input document file object
     #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
     #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel)
     #  * [compression](https://api.datalogics-cloud.com/docs#compression)
@@ -141,8 +138,8 @@ class ImageRequest(Request):
     #  * [smoothing](https://api.datalogics-cloud.com/docs#smoothing)
     #  * [suppressAnnotations]
     #     (https://api.datalogics-cloud.com/docs#suppressAnnotations)
-    def post_file(self, input, options={}):
-        return ImageResponse(Request.post_file(self, input, options))
+    def post_file(self, input_file, options={}):
+        return ImageResponse(Request.post_file(self, input_file, options))
 
     ## Send POST request with input URL
     #  @return an ImageResponse object

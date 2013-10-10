@@ -17,11 +17,9 @@ from pdfclient import Application, ImageProcessCode, ProcessCode
 
 
 BASE_URL = 'https://pdfprocess-test.datalogics-cloud.com'
-VERSION = Application.VERSION
 
 TEST_ID = '84445ec0'
 TEST_KEY = '2d3eac77bb3b9bea69a91e625b9241d2'
-
 
 class StatusCode:
     OK = 200
@@ -33,11 +31,8 @@ class StatusCode:
     TooManyRequests = 429
     InternalServerError = 500
 
-def pdf2img(id=TEST_ID, key=TEST_KEY):
-    return PDF2IMG(id, key)
-
-def run(argv, base_url=BASE_URL, version=VERSION):
-    return pdf2img()(argv, base_url, version)
+def pdf2img(id=TEST_ID, key=TEST_KEY): return PDF2IMG(id, key)
+def run(argv, base_url=BASE_URL): return pdf2img()(argv, base_url)
 
 if __name__ == '__main__':
     response = run(sys.argv)

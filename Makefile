@@ -12,8 +12,8 @@ ifeq ($(PLATFORM), Darwin)
 endif
 	python virtualenv.py --never-download venv
 	venv/bin/python bootstrap.py
-	bin/buildout | scripts/versions > versions.cfg
-	# git describe | xargs -0 python src/pdfprocess/version.py
+	scripts/make_server_cfg > server.cfg
+	bin/buildout | scripts/make_versions_cfg > versions.cfg
 	@diff $(VENV) virtualenv.py > /dev/null || echo Upgrade virtualenv!
 	@cp $(VENV) .
 	@$(MAKE_THUMBNAIL)
@@ -36,13 +36,7 @@ html: $(DOXYGEN)
 
 .PHONY: build clean directories log qa html
 
-eggs:
-	mkdir -p $@
-
-tmp:
-	mkdir -p $@
-
-$(VAR_LOG):
+eggs tmp $(VAR_LOG):
 	mkdir -p $@
 
 $(GIT_HOOK): scripts/pre-commit

@@ -3,6 +3,7 @@
 import flask
 import requests
 
+import tmpdir
 import handlers
 from errors import JSON, StatusCode
 from pdfclient import Application, ImageRequest
@@ -33,11 +34,13 @@ def action():
     try:
         input_url, options = request_data(flask.request.form)
         application = Application(JOEL_GERACI_ID, JOEL_GERACI_KEY)
-        request = ImageRequest(application, BASE_URL, Application.VERSION)
+        request = ImageRequest(application, BASE_URL, 'render/pages')
         if OUTPUT_FORM not in options.keys(): options[str(OUTPUT_FORM)] = 'png'
         if IMAGE_WIDTH in options or IMAGE_HEIGHT in options:
             return response(request.post_url(input_url, options))
-        return smaller_thumbnail(request, input_url, options)
+        with tmpdir.TemporaryFile() as input_file:
+            input_file.write(requests.get(input_url).content)
+            return smaller_thumbnail(request, input_file, options)
     except Exception as exception:
         error = str(exception)
         app.logger.exception(error)
@@ -50,12 +53,12 @@ def request_data(request_form):
     app.logger.info('%s: options = %s' % result)
     return result
 
-def smaller_thumbnail(request, input_url, options):
+def smaller_thumbnail(request, input_file, options):
     portrait_options, landscape_options = (options, options.copy())
     portrait_options[str(IMAGE_HEIGHT)] = MAX_THUMBNAIL_DIMENSION
     landscape_options[str(IMAGE_WIDTH)] = MAX_THUMBNAIL_DIMENSION
-    portrait_response = request.post_url(input_url, portrait_options)
-    landscape_response = request.post_url(input_url, landscape_options)
+    portrait_response = request.post_file(input_file, portrait_options)
+    landscape_response = request.post_file(input_file, landscape_options)
     if landscape_response.process_code: return response(portrait_response)
     if portrait_response.process_code: return response(landscape_response)
     return response(smaller_response(portrait_response, landscape_response))

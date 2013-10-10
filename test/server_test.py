@@ -7,12 +7,6 @@ from test_client import ImageProcessCode as ProcessCode, StatusCode
 from nose.tools import assert_in
 
 
-def test_bad_version():
-    result = Result(None, StatusCode.NotFound)
-    try: Test(['data/bad.pdf'], result)(test.BASE_URL, 'spam')
-    except Exception as exception:
-        assert_in(max_retry_error('/api/spam/actions/image'), str(exception))
-
 def test_bad_url():
     errors = (StatusCode.BadRequest, StatusCode.UnsupportedMediaType)
     result = Result(ProcessCode.InvalidInput, errors)
