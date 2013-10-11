@@ -38,7 +38,7 @@ class Result(object):
 
 class Test(object):
     def __init__(self, args, result, pdf2img=None):
-        self._args, self._result = (args, result)
+        self._args, self._result = args, result
         self._pdf2img = pdf2img or Test.pdf2img()
     def __call__(self, base_url=BASE_URL):
         return self._result.validate(self.post(base_url))

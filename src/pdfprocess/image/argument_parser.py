@@ -34,7 +34,7 @@ class ArgumentParser(argparse.ArgumentParser):
             if option.startswith(option_prefix):
                 return option[len(option_prefix):]
     def _set_options(self, options):
-        self._options, self._pdf2img_options = ([], [])
+        self._options, self._pdf2img_options = [], []
         for key, value in options.iteritems():
             if key in OPTIONS:
                 option = OPTIONS[OPTIONS.index(key)]

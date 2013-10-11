@@ -57,7 +57,7 @@ def request_data(request):
     return result
 
 def smaller_thumbnail(request, input_file, options):
-    portrait_options, landscape_options = (options, options.copy())
+    portrait_options, landscape_options = options, options.copy()
     portrait_options[str(IMAGE_HEIGHT)] = MAX_THUMBNAIL_DIMENSION
     landscape_options[str(IMAGE_WIDTH)] = MAX_THUMBNAIL_DIMENSION
     portrait_response = request.post_file(input_file, portrait_options)
@@ -67,7 +67,7 @@ def smaller_thumbnail(request, input_file, options):
     return response(smaller_response(portrait_response, landscape_response))
 
 def smaller_response(response1, response2):
-    output1, output2 = (response1['output'], response2['output'])
+    output1, output2 = response1['output'], response2['output']
     return response2 if len(output2) < len(output1) else response1
 
 def response(request_response):

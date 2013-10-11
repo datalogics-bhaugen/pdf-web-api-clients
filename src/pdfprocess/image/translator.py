@@ -6,7 +6,7 @@ from options import Option
 
 class Translator(object):
     def __init__(self, name):
-        self._name, self._option = (name, None)
+        self._name, self._option = name, None
     def __call__(self, options, *args):
         for key, value in options.iteritems():
             if key in type(self).OPTIONS: self.set_option(value)
@@ -61,7 +61,7 @@ class Pages(Translator):
     def __init__(self):
         Translator.__init__(self, 'pages')
     def validate(self, *args):
-        multipage_options, multipage_request = ([], self.multipage_request())
+        multipage_options, multipage_request = [], self.multipage_request()
         if args[0] == 'tif':
             if multipage_request: multipage_options = ['-multipage']
         elif self.option is None:

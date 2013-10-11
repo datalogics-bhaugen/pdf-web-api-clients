@@ -60,7 +60,7 @@ class Application(object):
     ## @param id from our [developer portal](http://api.datalogics-cloud.com/)
     #  @param key from our [developer portal](http://api.datalogics-cloud.com/)
     def __init__(self, id, key):
-        self._id, self._key = (id, key)
+        self._id, self._key = id, key
     def __str__(self):
         return json.dumps({'id': self.id, 'key': self.key})
 
