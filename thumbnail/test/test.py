@@ -1,24 +1,23 @@
-"thumbnail regression tests"
-
-import subprocess
-from nose.tools import assert_equal
+"thumbnail test client"
 
 import os
 import sys
+import glob
 
-parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path[0:0] = [os.path.join(parent_dir, 'thumbnail')]
-from tmpdir import Stdout
+test_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(os.path.dirname(test_dir))
+json_dir = glob.glob(os.path.join(root_dir, 'eggs', 'simplejson-*.egg'))[0]
+requests_dir = glob.glob(os.path.join(root_dir, 'eggs', 'requests-*.egg'))[0]
+samples_dir = os.path.join(root_dir, 'samples', 'python')
+sys.path[0:0] = [json_dir, requests_dir, samples_dir]
+
+import requests
+from pdfclient import ImageResponse
 
 
-BASE_URL = '127.0.0.1:5050'
-INPUT_URL = 'inputURL=%s' % 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
+BASE_URL = 'http://127.0.0.1:5050'
+INPUT_URL = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
+INPUT = {'inputURL': INPUT_URL}
 
-def test_form_data_url(): curl_request(['--form', INPUT_URL, BASE_URL])
-def test_query_string_url(): curl_request(['%s?%s' % (BASE_URL, INPUT_URL)])
-
-# TODO: add test that creates image file
-
-def curl_request(request_input):
-    input = ['curl', '--request', 'GET'] + request_input
-    assert_equal(subprocess.call(input, stdout=Stdout(), stderr=Stdout()), 0)
+def run(base_url=BASE_URL, data=None, params=None):
+    return ImageResponse(requests.get(base_url, data=data, params=params))
