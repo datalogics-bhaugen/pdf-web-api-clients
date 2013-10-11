@@ -26,6 +26,7 @@ class Option(object):
 IMAGE_WIDTH = Option('imageWidth')
 IMAGE_HEIGHT = Option('imageHeight')
 OUTPUT_FORM = Option('outputForm')
+PAGES = Option('pages')
 
 app = flask.Flask(__name__)
 handlers.start(app.logger, app.name)
@@ -37,6 +38,7 @@ def action():
         application = Application(JOEL_GERACI_ID, JOEL_GERACI_KEY)
         request = ImageRequest(application, BASE_URL, 'render/pages')
         if OUTPUT_FORM not in options.keys(): options[str(OUTPUT_FORM)] = 'png'
+        if PAGES not in options.keys(): options[str(PAGES)] = '1'
         if IMAGE_WIDTH in options or IMAGE_HEIGHT in options:
             return response(request.post_url(input_url, options))
         with tmpdir.TemporaryFile() as input_file:
