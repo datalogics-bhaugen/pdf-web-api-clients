@@ -67,7 +67,7 @@ my $content = [
     'inputName' => $input_file,
     'options' => encode_json($options)];
 
-my $url = 'https://pdfprocess.datalogics-cloud.com/api/0/actions/image';
+my $url = 'https://pdfprocess.datalogics-cloud.com/api/actions/render/pages';
 my $request = POST($url, Content_Type => 'form-data', Content => $content);
 
 my $user_agent = LWP::UserAgent->new(ssl_opts => {verify_hostname => 0});

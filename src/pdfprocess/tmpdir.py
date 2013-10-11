@@ -9,7 +9,7 @@ from errors import UNKNOWN
 
 def _find_dir(dir_name, path=None):
     "return directory on path to root, e.g. /opt/pdfprocess/web-api/tmp"
-    if not path: path = os.path.dirname(os.path.abspath(__file__))
+    path = path or os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(path)
     if parent_dir == path: raise UNKNOWN.copy('no %s directory' % dir_name)
     path = os.path.join(parent_dir, dir_name)

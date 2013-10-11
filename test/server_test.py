@@ -16,9 +16,6 @@ def test_bad_url():
 
 def max_retry_error(url): return 'Max retries exceeded with url: %s' % url
 
-def test_missing_url():
-    pass  # TODO
-
 def test_good_url():
     result = Result(ProcessCode.OK, StatusCode.OK)
     Test(['http://www.datalogics.com/pdf/doc/pdf2img.pdf'], result)()

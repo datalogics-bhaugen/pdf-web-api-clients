@@ -5,7 +5,7 @@ class Option(object):
     FORMAT = '-%s=%s'
     def __init__(self, name, pdf2img_name=None):
         self._name = name
-        self._pdf2img_name = pdf2img_name if pdf2img_name else name
+        self._pdf2img_name = pdf2img_name or name
     def __str__(self):
         return self._pdf2img_name
     def __eq__(self, other):

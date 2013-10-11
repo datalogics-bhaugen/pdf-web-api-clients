@@ -14,6 +14,7 @@ BASE_URL = 'http://127.0.0.1:5000'  # TODO: use public DNS entry
 JOEL_GERACI_ID = 'b0ecd1e6'
 JOEL_GERACI_KEY = '5024e1e9c089abd46b419cc17222b86b'
 
+INPUT_NAME = 'inputURL'
 MAX_THUMBNAIL_DIMENSION = 150
 
 class Option(object):
@@ -32,7 +33,7 @@ handlers.start(app.logger, app.name)
 @app.route('/', methods=['GET'])
 def action():
     try:
-        input_url, options = request_data(flask.request.form)
+        input_url, options = request_data(flask.request)
         application = Application(JOEL_GERACI_ID, JOEL_GERACI_KEY)
         request = ImageRequest(application, BASE_URL, 'render/pages')
         if OUTPUT_FORM not in options.keys(): options[str(OUTPUT_FORM)] = 'png'
@@ -46,10 +47,10 @@ def action():
         app.logger.exception(error)
         return error, StatusCode.InternalServerError
 
-def request_data(request_form):
-    input_url = request_form.get('inputURL')
-    options = request_form.get('options', '{}')
-    result = (input_url, JSON.parse(options))
+def request_data(request):
+    form = request.form
+    input_url = form.get(INPUT_NAME, None) or request.args.get(INPUT_NAME)
+    result = (input_url, JSON.parse(form.get('options', '{}')))
     app.logger.info('%s: options = %s' % result)
     return result
 
