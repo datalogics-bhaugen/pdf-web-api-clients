@@ -5,7 +5,7 @@ internet developer community that currently provides:
 * Rendering of PDF files using the Adobe PDF Library and Datalogics PDF2IMG
 technologies
 
-## Application Key
+### Application Key
 
 To use this service, first get an application ID and key from our
 [developer portal](http://api.datalogics-cloud.com/).
@@ -15,13 +15,13 @@ Then, you may address image service requests to this URL:
 
 Each application ID has a usage limit, currently 10 requests per minute.
 
-## Service Interface
+### Service Interface
 
 This is a summary of the interface. For a detailed description, please visit our
 <a href="https://api.datalogics-cloud.com/docs">developer portal</a>
 or look at our [example](#example).
 
-### Request
+#### Request
 
 A request is a POST method with form data:
 
@@ -32,18 +32,18 @@ A request is a POST method with form data:
 * _Optional:_ Any request options are encoded as JSON in the [options](https://api.datalogics-cloud.com/docs#options) value
 
 <a name="example"/>
-#### Example
+#### Request Example
 
 This [example request](examples/POST.txt) is for the first page of a _hello world_ document in JPEG format. It was sent by our sample Python client.
 
-### Response
+#### Response
 
 The message body of the HTTP response is a JSON object:
 
 * [processCode](https://api.datalogics-cloud.com/docs#processCode) is 0 if the request was successful, or a nonzero code identifying the error
 * [output](https://api.datalogics-cloud.com/docs#output) contains base64-encoded data if the request was successful, or information about the error
 
-## Sample Clients
+### Sample Clients
 
 To facilitate using this service, we supply two sample clients:
 
@@ -58,7 +58,7 @@ To facilitate using this service, we supply two sample clients:
     * [Requests](http://docs.python-requests.org/en/latest/): HTTP for Humans
     * [simplejson](http://simplejson.readthedocs.org/en/latest/): JSON encoder and decoder
 
-## Resources
+### Resources
 
 * [PDF2IMG](http://www.datalogics.com/products/pdf2img/index.asp)
 
