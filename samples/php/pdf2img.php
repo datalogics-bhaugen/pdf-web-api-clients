@@ -1,6 +1,8 @@
 <?php
 # Copyright (c) 2013, Datalogics, Inc. All rights reserved.
 #
+# Sample pdfclient driver
+#
 # This agreement is between Datalogics, Inc. 101 N. Wacker Drive, Suite 1800,
 # Chicago, IL 60606 ("Datalogics") and you, an end user who downloads source
 # code examples for integrating to the Datalogics (R) PDF Web API (TM)
@@ -46,6 +48,8 @@
 # NEITHER DATALOGICS WARRANT AGAINST ANY BUG, ERROR, OMISSION, DEFECT,
 # DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
 
+include 'phpclient.php';
+
 error_reporting(E_ALL);
 class PDF2IMG 
 {
@@ -57,27 +61,27 @@ class PDF2IMG
     /** 
      * @var string
      */
-    var $application_id;
+    var $application_id = 'TODO: Add application_id';
 
     /**
      * @var string
      */
-    var $application_key;
+    var $application_key = 'TODO: Add application_key';
 
     /**
      * @var string
      */
-    var $source_file_name = "./test.pdf";
+    var $source_file_name;
 
     /**
      * @var string
      */
-    var $destination_file_name = "converted.jpg";
+    var $destination_file_name;
 
     /**
      * @var string
      */
-    var $output_format = 'tif';
+    var $output_format = 'jpg';
 
     /**
      * @var string
@@ -92,97 +96,13 @@ class PDF2IMG
     /**  
      * @param string     $version Version Number 
      */
-    public function __construct($args, $version = 0) 
-    {
-        try
-        {
-            $this->parse_arguments($args);
-        }
-        catch (Exception $e)
-        {
-            echo $e->getMessage(), "\n";
-            exit(); 
-        }
+    public function __construct() 
+    { 
         $this->base_url = "https://pdfprocess.datalogics-cloud.com/api/"
-                           .$version
-                           ."/actions/image";
+                            ."actions/render/pages";
     }  
-
-    /** Set Application ID
-     * @param string     $application_id
-     */
-    public function application_id($application_id) 
-    {
-        $this->application_id = $application_id;
-    }
-
-    /** Set Application Key
-     * @param string     $application_key
-     */
-    public function application_key($application_key) 
-    {
-        $this->application_key = $application_key; 
-    }
-
-    /** Set output file format
-     * @param string     $output_format  (jpg, tiff)
-     */
-    public function output_format($output_format = "jpg") 
-    {
-        $this->output_format = $output_format;
-    } 
- 
-    /** Set print preview
-     * @param bool     $print_preview (true, false)
-     */
-    public function print_preview($print_preview = TRUE) 
-    {
-       $this->print_preview = $print_preview;
-    }
   
-
-    /** Call server to convert file
-     * @param string     $source_file_name Input file name
-     * @param string     $destination_file_name Output file name
-     */
-    public function convert() 
-    {
-        $ch = curl_init($this->base_url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, 
-                       $this->prepare_request($this->source_file_name));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);  
-        curl_setopt($ch, CURLOPT_VERBOSE, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, 
-                       array('Content-Type: multipart/form-data'));
-        $response = curl_exec($ch);
-        curl_close($ch);
-        $this->handle_response($response);
-    }
-
-    /** Handle server response
-     * @param JSONObject     $response Server Response 
-     * @param string         $destination_file_name output file name
-     */
-    public function handle_response($response) 
-    {
-        $json_decoded = json_decode($response);
-        $output = base64_decode($json_decoded->output);
-        $process_code = base64_decode($json_decoded->processCode);
-    
-        if ($process_code != 0)
-        {
-            printf('ERROR: '.$process_code."\n");
-            printf('Error Message: '.$output."\n");
-            exit($process_code);
-        }
-    
-        $file = fopen($this->destination_file_name, "wb");
-        fwrite($file, $output);
-        fclose($file);
-    }
-
-    private function parse_arguments($args) 
+    public function parse_arguments($args) 
     {
         $scriptName = $args[0];
         $options = array();
@@ -233,35 +153,35 @@ class PDF2IMG
                 }
                 else
                 {
-                    throw new Exception('Usage: ' .$scriptName. ' [options] inputFile');
+                    throw new Exception('Usage: ' .$scriptName
+                                        . ' [options] inputFile');
                 }
             }
         }
         $this->options = $options;
     }
 
-    private function prepare_request($file_name) 
-    {
-        $fields = array(
-          'application' => $this->prepare_application_json(), 
-          'inputName' => basename($file_name),
-          'options' => $this->options,
-          'input' => "@$file_name"
-        );
-        return $fields;
-    }
-  
-    private function prepare_application_json() 
-    {
-        $application = array('id' => $this->application_id,
-                             'key' => $this->application_key);
-        return json_encode($application);
-    }
 }
 
 // Driver code
-$pdf2img = new PDF2IMG($argv);
-$pdf2img->application_id = 'TODO: Application ID'; 
-$pdf2img->application_key = 'TODO: Applicaiton Key';
-$pdf2img->convert();
+$pdf2img = new PDF2IMG();
+$requester = new Request();
+$responder = new Response();
+
+try
+{
+    $pdf2img->parse_arguments($argv);
+}
+catch (Exception $e)
+{
+    echo $e->getMessage(), "\n";
+    exit();
+}
+
+$prepared = $requester->prepare_request($pdf2img->source_file_name,
+                                        $pdf2img->options,
+                                        $pdf2img->application_id,
+                                        $pdf2img->application_key);
+$response = $requester->make_request($pdf2img->base_url, $prepared);
+$responder->handle_response($response, $pdf2img->destination_file_name);
 ?>
