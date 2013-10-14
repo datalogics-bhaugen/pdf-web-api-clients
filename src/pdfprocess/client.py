@@ -24,6 +24,7 @@ class Client(ThreeScaleAuthRep):
             usage_limit = 'usage limit' in self.exc_info
             return Auth.UsageLimitExceeded if usage_limit else Auth.Invalid
         except ThreeScalePY.ThreeScaleException as exc:
+            self._exc_info = str(exc)
             self._logger.error(exc)
             return Auth.Invalid
     def _application(self, request_form):
