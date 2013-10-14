@@ -3,8 +3,8 @@
 import flask
 import requests
 
+import logger
 import tmpdir
-import handlers
 from errors import JSON, StatusCode
 from pdfclient import Application, ImageRequest
 
@@ -29,7 +29,7 @@ OUTPUT_FORM = Option('outputForm')
 PAGES = Option('pages')
 
 app = flask.Flask(__name__)
-handlers.start(app.logger, app.name)
+logger.start(app.logger, app.name)
 
 @app.route('/', methods=['GET'])
 def action():

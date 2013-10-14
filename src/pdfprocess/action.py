@@ -13,11 +13,10 @@ AUTH_ERRORS = [
 
 
 class Action(object):
-    def __init__(self, logger, request):
-        self._client = Client(logger, request.remote_addr, request.form)
+    def __init__(self, request):
+        self._client = Client(request.remote_addr, request.form)
         self._options = JSON.parse(request.form.get('options', '{}'))
         self._request_form = request.form
-        self._logger = logger
         self._set_input(request)
     def authorize(self):
         return self.client.auth()
@@ -48,8 +47,6 @@ class Action(object):
     def input(self): return self._input
     @property
     def input_name(self): return self._input_name
-    @property
-    def logger(self): return self._logger
     @property
     def options(self): return self._options
     @property

@@ -6,14 +6,14 @@ import subprocess
 
 import requests
 import pdfprocess
-from pdfprocess import Auth, Error, ProcessCode, UNKNOWN
+from pdfprocess import Auth, Error, ProcessCode, UNKNOWN, logger
 from argument_parser import ArgumentParser
 from output_file import OutputFile
 
 
 class Action(pdfprocess.Action):
-    def __init__(self, logger, request):
-        pdfprocess.Action.__init__(self, logger, request)
+    def __init__(self, request):
+        pdfprocess.Action.__init__(self, request)
         self._parser = ArgumentParser(self._log_request)
     def __call__(self):
         try:
@@ -40,16 +40,16 @@ class Action(pdfprocess.Action):
         output_form = self.output_form
         if output_form: output_form = ' ' + output_form
         info_args = (options, self.input_name, output_form, self.client)
-        self.logger.info('pdf2img%s %s%s %s' % info_args)
+        logger.info('pdf2img%s %s%s %s' % info_args)
     def _pdf2img(self):
         with pdfprocess.TemporaryFile() as input_file:
             self._save_input(input_file)
             with OutputFile(input_file.name, self.output_form) as output_file:
                 return self._get_image(input_file.name, output_file)
     @classmethod
-    def from_request(cls, logger, request):
+    def from_request(cls, request):
         action = FromURL if request.form.get('inputURL', None) else FromFile
-        return action(logger, request)
+        return action(request)
     @classmethod
     def _options(cls):
         if not pdfprocess.RESOURCE: return []

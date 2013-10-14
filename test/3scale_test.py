@@ -40,7 +40,7 @@ def test_usage_limit_exceeded():
 
 def pdfprocess_client(app_id=PUBLIC_ID, app_key=PUBLIC_KEY):
     application = {'id': app_id, 'key': app_key}
-    return Client(mock.Logger(), '127.0.0.1', {'application': application})
+    return Client('127.0.0.1', {'application': application})
 
 def auth_invalid(client, error):
     assert_equal(client.auth(), Auth.Invalid)

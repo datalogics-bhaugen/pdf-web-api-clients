@@ -1,6 +1,7 @@
 "pdfprocess client"
 
 import ThreeScalePY
+import logger
 from ThreeScalePY import ThreeScaleAuthRep
 from errors import Auth, JSON
 
@@ -9,8 +10,7 @@ PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
 
 
 class Client(ThreeScaleAuthRep):
-    def __init__(self, logger, address, request_form):
-        self._logger = logger
+    def __init__(self, address, request_form):
         app_id, app_key = self._application(request_form)
         logger.info("%s: id='%s', key='%s'" % (address, app_id, app_key))
         ThreeScaleAuthRep.__init__(self, PROVIDER_KEY, app_id, app_key)
@@ -25,7 +25,7 @@ class Client(ThreeScaleAuthRep):
             return Auth.UsageLimitExceeded if usage_limit else Auth.Invalid
         except ThreeScalePY.ThreeScaleException as exc:
             self._exc_info = str(exc)
-            self._logger.error(exc)
+            logger.error(exc)
             return Auth.Invalid
     def _application(self, request_form):
         application = self._decode_application(request_form)
