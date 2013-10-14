@@ -67,7 +67,8 @@ class FromFile(Action):
     def _set_input(self, request):
         request_files = request.files.values()
         if not request_files:
-            self.raise_error(Error(ProcessCode.InvalidInput, 'no input'))
+            error = 'no inputURL or request file'
+            self.raise_error(Error(ProcessCode.InvalidInput, error))
         if len(request_files) > 1:
             error = 'excess input: %d files' % len(request_files)
             self.raise_error(Error(ProcessCode.InvalidInput, error))
@@ -79,7 +80,7 @@ class FromURL(Action):
         input_file.write(self.input)
     def _set_input(self, request):
         if request.files.values():
-            error = 'excess input: request file and inputURL'
+            error = 'excess input: inputURL and request file'
             self.raise_error(Error(ProcessCode.InvalidInput, error))
         input_url = request.form.get('inputURL')
         try:
