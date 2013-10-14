@@ -1,4 +1,4 @@
-"pdfprocess image action options"
+"pdfprocess pdf2img action options"
 
 
 class Option(object):

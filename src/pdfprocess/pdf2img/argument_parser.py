@@ -1,4 +1,4 @@
-"pdfprocess image action arguments"
+"pdfprocess pdf2img action arguments"
 
 import argparse
 import translator
@@ -8,7 +8,7 @@ from translator import ImageSize, OutputForm, Pages, Resolution, Smoothing
 
 class ArgumentParser(argparse.ArgumentParser):
     def __init__(self, request_logger):
-        argparse.ArgumentParser.__init__(self, 'actions/image')
+        argparse.ArgumentParser.__init__(self, 'actions/render/pages')
         self._request_logger = request_logger
         self._image_size = ImageSize()
         self._output_form = OutputForm()

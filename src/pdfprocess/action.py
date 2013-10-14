@@ -35,9 +35,9 @@ class Action(object):
         self._input_name = '"%s"' % name if ' ' in name else name
     @classmethod
     def get_error(cls, stdout):
-        import image
+        import pdf2img
         errors = stdout.errors()
-        for error_list in (APDFL_ERRORS, image.ERRORS):
+        for error_list in (APDFL_ERRORS, pdf2img.ERRORS):
             error = next((e for e in error_list if e.message in errors), None)
             if error: return error.copy(errors)
         return UNKNOWN.copy(errors)

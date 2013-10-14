@@ -1,4 +1,4 @@
-"pdfprocess image action"
+"pdfprocess pdf2img action"
 
 import os
 import base64

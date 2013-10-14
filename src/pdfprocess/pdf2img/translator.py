@@ -1,4 +1,4 @@
-"pdfprocess image action option translator"
+"pdfprocess pdf2img action option translator"
 
 from errors import Error, ProcessCode
 from options import Option
