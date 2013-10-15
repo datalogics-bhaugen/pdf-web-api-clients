@@ -3,8 +3,8 @@
 import flask
 import requests
 
+import logger
 import tmpdir
-import handlers
 from errors import JSON, StatusCode
 from pdfclient import Application, ImageRequest
 
@@ -26,9 +26,10 @@ class Option(object):
 IMAGE_WIDTH = Option('imageWidth')
 IMAGE_HEIGHT = Option('imageHeight')
 OUTPUT_FORM = Option('outputForm')
+PAGES = Option('pages')
 
 app = flask.Flask(__name__)
-handlers.start(app.logger, app.name)
+logger.start(app.logger, app.name)
 
 @app.route('/', methods=['GET'])
 def action():
@@ -37,7 +38,8 @@ def action():
         application = Application(JOEL_GERACI_ID, JOEL_GERACI_KEY)
         request = ImageRequest(application, BASE_URL, 'render/pages')
         if OUTPUT_FORM not in options.keys(): options[str(OUTPUT_FORM)] = 'png'
-        if IMAGE_WIDTH in options or IMAGE_HEIGHT in options:
+        if PAGES not in options.keys(): options[str(PAGES)] = '1'
+        if IMAGE_WIDTH in options.keys() or IMAGE_HEIGHT in options.keys():
             return response(request.post_url(input_url, options))
         with tmpdir.TemporaryFile() as input_file:
             input_file.write(requests.get(input_url).content)
@@ -55,7 +57,7 @@ def request_data(request):
     return result
 
 def smaller_thumbnail(request, input_file, options):
-    portrait_options, landscape_options = (options, options.copy())
+    portrait_options, landscape_options = options, options.copy()
     portrait_options[str(IMAGE_HEIGHT)] = MAX_THUMBNAIL_DIMENSION
     landscape_options[str(IMAGE_WIDTH)] = MAX_THUMBNAIL_DIMENSION
     portrait_response = request.post_file(input_file, portrait_options)
@@ -65,7 +67,7 @@ def smaller_thumbnail(request, input_file, options):
     return response(smaller_response(portrait_response, landscape_response))
 
 def smaller_response(response1, response2):
-    output1, output2 = (response1['output'], response2['output'])
+    output1, output2 = response1['output'], response2['output']
     return response2 if len(output2) < len(output1) else response1
 
 def response(request_response):

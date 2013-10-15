@@ -7,5 +7,4 @@ root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 gunicorn = os.path.join(root_dir, 'bin', 'gunicorn')
 configuration = os.path.join(root_dir, 'src', 'pdfprocess', 'gunicorn.py')
 
-args = [gunicorn, '-c', configuration, 'pdfprocess:app']
-subprocess.call(args)
+subprocess.call([gunicorn, '-c', configuration, 'pdfprocess:app'])

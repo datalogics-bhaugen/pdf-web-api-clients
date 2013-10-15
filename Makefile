@@ -1,14 +1,16 @@
 DOXYGEN = doc/html/index.html
+ERASE = printf '' >
 GIT_HOOK = .git/hooks/pre-commit
+LOG_FILE = $(VAR_LOG)/pdfprocess.log
 MAKE_THUMBNAIL = make --directory thumbnail
 PLATFORM = $(shell uname -s)
 QA = bin/flake8 --max-complexity 10
 VAR_LOG = var/log
 VENV = eggs/virtualenv-*.egg/virtualenv.py
 
-build: $(GIT_HOOK) Resource directories log html
+build: $(GIT_HOOK) $(LOG_FILE) Resource eggs tmp html
 ifeq ($(PLATFORM), Darwin)
-	echo "" > versions.cfg
+	$(ERASE) versions.cfg
 endif
 	python virtualenv.py --never-download venv
 	venv/bin/python bootstrap.py
@@ -20,13 +22,9 @@ endif
 	@make qa
 
 clean:
-	rm -rf .installed.cfg $(GIT_HOOK) bin develop-eggs parts var/log
+	rm -rf .installed.cfg $(GIT_HOOK) bin develop-eggs parts
+	$(ERASE) $(LOG_FILE)
 	@$(MAKE_THUMBNAIL) clean
-
-directories: eggs tmp
-
-log: $(VAR_LOG)
-	touch $^/pdfprocess.log
 
 qa: bin/segfault
 	$(QA) samples scripts src test
@@ -34,13 +32,16 @@ qa: bin/segfault
 
 html: $(DOXYGEN)
 
-.PHONY: build clean directories log qa html
+.PHONY: build clean qa html
 
 eggs tmp $(VAR_LOG):
 	mkdir -p $@
 
 $(GIT_HOOK): scripts/pre-commit
 	ln -s ../../$^ $@
+
+$(LOG_FILE): $(VAR_LOG)
+	touch $@
 
 Resource:
 ifeq ($(PLATFORM), Linux)

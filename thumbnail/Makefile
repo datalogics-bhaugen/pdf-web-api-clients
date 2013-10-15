@@ -1,17 +1,20 @@
-build: eggs log
+LOG_FILE = ../var/log/thumbnail.log
+
+build: eggs $(LOG_FILE)
 	../bin/buildout -c buildout.cfg
 
 clean:
-	rm -rf .installed.cfg bin develop-eggs parts
-
-log:
-	touch ../var/log/thumbnail.log
+	@rm -rf .installed.cfg bin develop-eggs parts
+	@printf '' > $(LOG_FILE)
 
 qa:
 	../bin/flake8 scripts test thumbnail
 
-.PHONY: build clean log qa
+.PHONY: build clean qa
 
 eggs:
-	mkdir -p eggs
+	mkdir -p $@
+
+$(LOG_FILE):
+	touch $@
 

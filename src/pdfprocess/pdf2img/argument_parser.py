@@ -1,4 +1,4 @@
-"pdfprocess image action arguments"
+"pdfprocess pdf2img action arguments"
 
 import argparse
 import translator
@@ -8,7 +8,7 @@ from translator import ImageSize, OutputForm, Pages, Resolution, Smoothing
 
 class ArgumentParser(argparse.ArgumentParser):
     def __init__(self, request_logger):
-        argparse.ArgumentParser.__init__(self, 'actions/image')
+        argparse.ArgumentParser.__init__(self, 'actions/render/pages')
         self._request_logger = request_logger
         self._image_size = ImageSize()
         self._output_form = OutputForm()
@@ -34,7 +34,7 @@ class ArgumentParser(argparse.ArgumentParser):
             if option.startswith(option_prefix):
                 return option[len(option_prefix):]
     def _set_options(self, options):
-        self._options, self._pdf2img_options = ([], [])
+        self._options, self._pdf2img_options = [], []
         for key, value in options.iteritems():
             if key in OPTIONS:
                 option = OPTIONS[OPTIONS.index(key)]

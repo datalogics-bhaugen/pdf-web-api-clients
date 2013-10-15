@@ -9,6 +9,8 @@ from logging.handlers import SysLogHandler as BaseSysLogHandler
 from logging.handlers import TimedRotatingFileHandler as BaseFileHandler
 
 
+LOGGER = logging.getLogger()
+
 class BaseHandler(object):
     "format depends on level"
     def __init__(self):
@@ -43,11 +45,21 @@ class SysLogHandler(BaseHandler, BaseSysLogHandler):
         address = '/var/run/syslog' if system() == 'Darwin' else '/dev/log'
         BaseSysLogHandler.__init__(self, address)
 
-def start(logger, server_name, version=None, log_level=logging.DEBUG):
-    logger.setLevel(log_level)
-    logger.addHandler(SysLogHandler())
-    logger.addHandler(FileHandler(server_name))
+
+def debug(msg, *args, **kwargs): LOGGER.debug(msg, *args, **kwargs)
+def info(msg, *args, **kwargs): LOGGER.info(msg, *args, **kwargs)
+def warning(msg, *args, **kwargs): LOGGER.warning(msg, *args, **kwargs)
+def error(msg, *args, **kwargs): LOGGER.error(msg, *args, **kwargs)
+def critical(msg, *args, **kwargs): LOGGER.critical(msg, *args, **kwargs)
+def log(lvl, msg, *args, **kwargs): LOGGER.log(lvl, msg, *args, **kwargs)
+
+def start(app_logger, server_name, version=None, log_level=logging.DEBUG):
+    global LOGGER
+    LOGGER = app_logger
+    LOGGER.setLevel(log_level)
+    LOGGER.addHandler(SysLogHandler())
+    LOGGER.addHandler(FileHandler(server_name))
     if version:
-        logger.info('%s (%s) started' % (server_name, version))
+        info('%s (%s) started' % (server_name, version))
     else:
-        logger.info('%s started' % server_name)
+        info('%s started' % server_name)

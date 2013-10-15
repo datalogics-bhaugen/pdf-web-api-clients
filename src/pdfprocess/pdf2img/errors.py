@@ -1,4 +1,4 @@
-"pdfprocess image action errors"
+"pdfprocess pdf2img action errors"
 
 import pdfprocess
 from pdfprocess import EnumValue, Error, StatusCode

@@ -6,7 +6,7 @@ import logging
 import traceback
 
 import flask
-import handlers
+import logger
 import tmpdir
 
 from action import Action
@@ -14,31 +14,31 @@ from configuration import Configuration
 from errors import Auth, EnumValue, Error, ProcessCode, StatusCode, UNKNOWN
 from tmpdir import RESOURCE, Stdout, TemporaryFile
 
-import image
+import pdf2img
 
 
 app = flask.Flask(__name__)
 configuration = Configuration()
-handlers.start(app.logger, app.name, configuration.server_version)
-app.logger.info('pdf2img: %s' % configuration.pdf2img_version)
+logger.start(app.logger, app.name, configuration.server_version)
+logger.info('pdf2img: %s' % configuration.pdf2img_version)
 
 @app.route('/api/actions/render/pages', methods=['POST'])
-def image_action():
+def pdf2img_action():
     try:
-        return image.Action.from_request(app.logger, flask.request)()
+        return pdf2img.Action.from_request(flask.request)()
     except Error as error:
         return error_response(error)
     except Exception as exception:
         return error_response(UNKNOWN.copy(str(exception)))
 
 def error_response(error):
-    app.logger.error(error)
+    logger.error(error)
     if error.process_code == ProcessCode.UnknownError: log_traceback()
     return response(error.process_code, error.message, error.status_code)
 
 def log_traceback():
     for entry in traceback.format_tb(sys.exc_info()[2]):
-        app.logger.error(entry.rstrip())
+        logger.error(entry.rstrip())
         if '/eggs/' in entry: return
 
 def response(process_code, output, status_code=StatusCode.OK):
