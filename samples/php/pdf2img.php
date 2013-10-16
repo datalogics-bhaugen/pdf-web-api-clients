@@ -61,12 +61,12 @@ class PDF2IMG
     /** 
      * @var string
      */
-    var $application_id = 'TODO: Add application_id';
+    var $application_id = 'TODO: Add Application ID';
 
     /**
      * @var string
      */
-    var $application_key = 'TODO: Add application_key';
+    var $application_key = 'TODO: Add Application Key';
 
     /**
      * @var string
@@ -81,7 +81,7 @@ class PDF2IMG
     /**
      * @var string
      */
-    var $output_format = 'jpg';
+    var $output_format = 'tif';
 
     /**
      * @var string
@@ -106,6 +106,7 @@ class PDF2IMG
     {
         $scriptName = $args[0];
         $options = array();
+        $options['outputForm'] = $this->output_format;
         $lastElement = end($args);
         foreach ($args as $key => $index)
         {
@@ -158,7 +159,7 @@ class PDF2IMG
                 }
             }
         }
-        $this->options = $options;
+        $this->options = json_encode($options);
     }
 
 }
