@@ -6,23 +6,22 @@ import os
 import sys
 
 import test
-import pdf2img
+import pdfprocess
 
-
-class MockPDF2IMG:
-    input, output_form = os.path.basename(test.INPUT_URL), 'png'
 
 def base_url():
     environment = (os.getenv('DLENV') or '').lower()
     environment_suffix = '' if environment == 'prod' else ('-%s' % environment)
     return 'http://thumbnail%s.datalogics-cloud.com' % environment_suffix
 
-def pdf2img_response():
-    image_response = test.run(base_url(), params=test.INPUT)
-    return pdf2img.Response(MockPDF2IMG(), image_response)
+def pdfprocess_response():
+    input_name = os.path.basename(test.INPUT_URL)
+    output_filename = '%s.png' % os.path.splitext(input_name)[0]
+    client_response = test.run(base_url(), params=test.INPUT)
+    return pdfprocess.Response(client_response, output_filename)
 
 if __name__ == '__main__':
-    response = pdf2img_response()
+    response = pdfprocess_response()
     if not response: sys.exit(response)
-    response.save_image()
-    print('created: %s' % response.image_filename)
+    response.save_output()
+    print('created: %s' % response.output_filename)

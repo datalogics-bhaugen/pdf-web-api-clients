@@ -1,4 +1,4 @@
-"pdfprocess pdf2img action arguments"
+"web_api pdf2img action arguments"
 
 import argparse
 import translator

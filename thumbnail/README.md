@@ -15,6 +15,7 @@ This thumbnail server translates GET requests to POST requests as follows:
 ## Run
 
 * `scripts/gunicorn` runs this server
+* `test/monitor.py` is used by Scout to monitor this server
 
 ## Test
 
@@ -22,5 +23,5 @@ These scripts facilitate testing:
 
 * `bin/nose` runs the regression tests that validate this Flask application
 * `bin/thumbnail` runs this Flask application with its development server (Werkzeug)
-* `test/test.py` tests this server
+* `test/thumbnail_test.py` tests this server
 

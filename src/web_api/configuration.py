@@ -1,4 +1,4 @@
-"pdfprocess configuration"
+"web_api configuration"
 
 import os
 import ConfigParser

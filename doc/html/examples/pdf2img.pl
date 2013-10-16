@@ -1,1 +1,0 @@
-../../../samples/perl/pdf2img.pl

@@ -1,14 +1,14 @@
-"pdfprocess pdf2img action errors"
+"web_api pdf2img action errors"
 
-import pdfprocess
-from pdfprocess import EnumValue, Error, StatusCode
+import web_api
+from web_api import EnumValue, Error, StatusCode
 
 
-class ProcessCode(pdfprocess.ProcessCode):
-    InvalidColorModel = EnumValue('InvalidColorModel', 21)
-    InvalidCompression = EnumValue('InvalidCompression', 22)
-    InvalidRegion = EnumValue('InvalidRegion', 23)
-    InvalidResolution = EnumValue('InvalidResolution', 24)
+class ProcessCode(web_api.ProcessCode):
+    InvalidColorModel = EnumValue('InvalidColorModel', 31)
+    InvalidCompression = EnumValue('InvalidCompression', 32)
+    InvalidRegion = EnumValue('InvalidRegion', 33)
+    InvalidResolution = EnumValue('InvalidResolution', 34)
 
 
 ERRORS = [

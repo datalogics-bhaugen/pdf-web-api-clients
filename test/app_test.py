@@ -1,8 +1,8 @@
-"pdfprocess regression tests"
+"web_api regression tests"
 
 import os
 import flask
-import pdfprocess
+import web_api
 from flask.testing import FlaskClient
 from nose.tools import assert_equal, assert_in
 
@@ -18,8 +18,8 @@ class TestNotFound(object):
         flask.abort(404)
 
     def setup(self):
-        pdfprocess.app.add_url_rule('/404', 'NOT FOUND', self.abort)
-        self._app = FlaskClient(pdfprocess.app)
+        web_api.app.add_url_rule('/404', 'NOT FOUND', self.abort)
+        self._app = FlaskClient(web_api.app)
 
     def test_not_found_error(self):
         data, status, headers = self._app.get('/404')

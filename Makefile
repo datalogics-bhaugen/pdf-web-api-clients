@@ -1,7 +1,7 @@
 DOXYGEN = doc/html/index.html
 ERASE = printf '' >
 GIT_HOOK = .git/hooks/pre-commit
-LOG_FILE = $(VAR_LOG)/pdfprocess.log
+LOG_FILE = $(VAR_LOG)/web_api.log
 MAKE_THUMBNAIL = make --directory thumbnail
 PLATFORM = $(shell uname -s)
 QA = bin/flake8 --max-complexity 10

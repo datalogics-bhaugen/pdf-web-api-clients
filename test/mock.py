@@ -5,17 +5,7 @@ import sys
 import subprocess
 
 
-class Logger:
-    def __init__(self):
-        self._log = []
-    def __getattr__(self, name):
-        if name.startswith('_'): raise AttributeError(name)
-        def log(value): self._log.append((name, value))
-        return log
-    @property
-    def log(self): return self._log
-
-class PDF2IMG(object):
+class Client(object):
     def __init__(self, mock, pdf2img='pdf2img'):
         self._set_pdf2img(pdf2img)
         if not self.pdf2img: sys.exit('no %s in PATH' % pdf2img)

@@ -8,7 +8,7 @@ and deletes the image files created by pdf2img.
 
 import os
 import glob
-from pdfprocess import UNKNOWN
+from web_api import UNKNOWN
 
 
 class OutputFile(object):

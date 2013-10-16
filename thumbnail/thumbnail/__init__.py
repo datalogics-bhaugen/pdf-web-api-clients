@@ -6,7 +6,7 @@ import requests
 import logger
 import tmpdir
 from errors import JSON, StatusCode
-from pdfclient import Application, ImageRequest
+from pdfclient import Application
 
 
 BASE_URL = 'http://127.0.0.1:5000'  # TODO: use public DNS entry
@@ -36,11 +36,11 @@ def action():
     try:
         input_url, options = request_data(flask.request)
         application = Application(JOEL_GERACI_ID, JOEL_GERACI_KEY)
-        request = ImageRequest(application, BASE_URL, 'render/pages')
+        request = application.make_request('render/pages', BASE_URL)
         if OUTPUT_FORM not in options.keys(): options[str(OUTPUT_FORM)] = 'png'
         if PAGES not in options.keys(): options[str(PAGES)] = '1'
         if IMAGE_WIDTH in options.keys() or IMAGE_HEIGHT in options.keys():
-            return response(request.post_url(input_url, options))
+            return response(request(input_url, options))
         with tmpdir.TemporaryFile() as input_file:
             input_file.write(requests.get(input_url).content)
             return smaller_thumbnail(request, input_file, options)
@@ -60,8 +60,8 @@ def smaller_thumbnail(request, input_file, options):
     portrait_options, landscape_options = options, options.copy()
     portrait_options[str(IMAGE_HEIGHT)] = MAX_THUMBNAIL_DIMENSION
     landscape_options[str(IMAGE_WIDTH)] = MAX_THUMBNAIL_DIMENSION
-    portrait_response = request.post_file(input_file, portrait_options)
-    landscape_response = request.post_file(input_file, landscape_options)
+    portrait_response = request(input_file, portrait_options)
+    landscape_response = request(input_file, landscape_options)
     if landscape_response.process_code: return response(portrait_response)
     if portrait_response.process_code: return response(landscape_response)
     return response(smaller_response(portrait_response, landscape_response))

@@ -3,7 +3,7 @@
 import mock
 import test
 from test import Result, Test
-from test_client import ImageProcessCode as ProcessCode, StatusCode
+from test_client import RenderPagesProcessCode as ProcessCode, StatusCode
 from nose.tools import assert_in
 
 
@@ -34,7 +34,7 @@ def test_missing_password():
 
 def test_invalid_password():
     result = Result(ProcessCode.InvalidPassword, StatusCode.Forbidden)
-    Test(['-password=spam', 'data/protected.pdf'], result)()
+    Test(['data/protected.pdf', 'password=spam'], result)()
 
 def test_adept_drm():
     result = Result(ProcessCode.AdeptDRM, StatusCode.Forbidden)
@@ -46,10 +46,10 @@ def test_out_of_memory(): _memory_error('scripts/out_of_memory')
 def _memory_error(mock_script):
     request_entity_too_large = StatusCode.RequestEntityTooLarge
     result = Result(ProcessCode.RequestTooLarge, request_entity_too_large)
-    with mock.PDF2IMG(mock_script):
+    with mock.Client(mock_script):
         Test(['data/bad.pdf'], result)()
 
 def test_pdf2img_crash():
     result = Result(ProcessCode.UnknownError, StatusCode.InternalServerError)
-    with mock.PDF2IMG('../bin/segfault'):
+    with mock.Client('../bin/segfault'):
         Test(['data/bad.pdf'], result)()
