@@ -2,7 +2,7 @@
 
 import os
 import subprocess
-from pdfprocess.tmpdir import Stdout
+from web_api.tmpdir import Stdout
 from test_client import ProcessCode
 from nose.tools import assert_equal, assert_in
 

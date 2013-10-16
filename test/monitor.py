@@ -15,5 +15,5 @@ def base_url():
 if __name__ == '__main__':
     response = test_client.run([sys.argv[1]], base_url())
     if not response: sys.exit(response)
-    response.save_image()
-    print('created: %s' % response.image_filename)
+    response.save_output()
+    print('created: %s' % response.output_filename)

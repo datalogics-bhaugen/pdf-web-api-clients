@@ -1,4 +1,4 @@
-"pdfprocess action"
+"web_api action"
 
 import os
 
@@ -23,13 +23,10 @@ class Action(object):
     def raise_authorize_error(self, auth):
         self.raise_error(AUTH_ERRORS[auth].copy(self.client.exc_info))
     def raise_error(self, error):
-        no_password = not self._password_received()
-        if error.process_code == ProcessCode.InvalidPassword and no_password:
+        invalid_password = ProcessCode.InvalidPassword
+        if error.process_code == invalid_password and not self.password:
             error.process_code = ProcessCode.MissingPassword
         raise error
-    def _password_received(self):
-        for key in self.options.keys():
-            if key.lower() == 'password': return True
     def _set_input(self, request, input_name=None):
         name = request.form.get('inputName', input_name or '<anon>')
         self._input_name = '"%s"' % name if ' ' in name else name
@@ -49,5 +46,7 @@ class Action(object):
     def input_name(self): return self._input_name
     @property
     def options(self): return self._options
+    @property
+    def password(self): return self.request_form.get('password', None)
     @property
     def request_form(self): return self._request_form

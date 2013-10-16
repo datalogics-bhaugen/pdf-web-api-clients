@@ -1,4 +1,4 @@
-"pdfprocess error definitions"
+"web_api error definitions"
 
 import simplejson
 

@@ -2,6 +2,7 @@ LOG_FILE = ../var/log/thumbnail.log
 
 build: eggs $(LOG_FILE)
 	../bin/buildout -c buildout.cfg
+	@make qa
 
 clean:
 	@rm -rf .installed.cfg bin develop-eggs parts

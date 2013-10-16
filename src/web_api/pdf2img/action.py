@@ -1,19 +1,19 @@
-"pdfprocess pdf2img action"
+"web_api pdf2img action"
 
 import os
 import base64
 import subprocess
 
 import requests
-import pdfprocess
-from pdfprocess import Auth, Error, ProcessCode, UNKNOWN, logger
+import web_api
+from web_api import Auth, Error, ProcessCode, UNKNOWN, logger
 from argument_parser import ArgumentParser
 from output_file import OutputFile
 
 
-class Action(pdfprocess.Action):
+class Action(web_api.Action):
     def __init__(self, request):
-        pdfprocess.Action.__init__(self, request)
+        web_api.Action.__init__(self, request)
         self._parser = ArgumentParser(self._log_request)
     def __call__(self):
         try:
@@ -26,14 +26,15 @@ class Action(pdfprocess.Action):
         if auth != Auth.OK: self.raise_authorize_error(auth)
         return self._pdf2img()
     def _get_image(self, input_name, output_file):
-        with pdfprocess.Stdout() as stdout:
+        with web_api.Stdout() as stdout:
             options = Action._options() + self._parser.pdf2img_options
+            if self.password: options += ['-password=%s' % self.password]
             args = ['pdf2img'] + options + [input_name, self.output_form]
             if subprocess.call(args, stdout=stdout):
                 self.raise_error(Action.get_error(stdout))
         with open(output_file.name, 'rb') as image_file:
             image = base64.b64encode(image_file.read())
-            return pdfprocess.response(ProcessCode.OK, image)
+            return web_api.response(ProcessCode.OK, image)
     def _log_request(self, parser_options):
         options = ' '.join(parser_options)
         if options: options = ' ' + options
@@ -42,7 +43,7 @@ class Action(pdfprocess.Action):
         info_args = (options, self.input_name, output_form, self.client)
         logger.info('pdf2img%s %s%s %s' % info_args)
     def _pdf2img(self):
-        with pdfprocess.TemporaryFile() as input_file:
+        with web_api.TemporaryFile() as input_file:
             self._save_input(input_file)
             with OutputFile(input_file.name, self.output_form) as output_file:
                 return self._get_image(input_file.name, output_file)
@@ -52,9 +53,9 @@ class Action(pdfprocess.Action):
         return action(request)
     @classmethod
     def _options(cls):
-        if not pdfprocess.RESOURCE: return []
+        if not web_api.RESOURCE: return []
         resources = ('CMap', 'Font', 'Unicode')
-        resources = [os.path.join(pdfprocess.RESOURCE, r) for r in resources]
+        resources = [os.path.join(web_api.RESOURCE, r) for r in resources]
         return ['-fontlist="%s"' % ';'.join(resources)]
     @property
     def output_form(self): return self._parser.output_form

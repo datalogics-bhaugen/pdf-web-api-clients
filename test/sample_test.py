@@ -1,10 +1,10 @@
-"pdf2img regression tests"
+"web_api regression tests"
 
 import os
 import glob
 import platform
 import subprocess
-from pdfprocess.tmpdir import Stdout
+from web_api.tmpdir import Stdout
 from test_client import ProcessCode
 from nose.tools import assert_equal, assert_in
 
@@ -22,21 +22,21 @@ def test_pdf2img_application():
         assert_equal(subprocess.call(args, stdout=stdout), 0)
         assert_in('PDF2IMG', str(stdout))
 
-def test_pdf2img_sample_perl():
-    args = ['../samples/perl/pdf2img.pl', 'data/bad.pdf']
+def test_pdfprocess_sample_perl():
+    args = ['../samples/perl/pdfprocess.pl', 'render/pages', 'data/bad.pdf']
     with Stdout() as stdout:
         process_code = subprocess.call(args, stdout=stdout)
         assert_equal(process_code, ProcessCode.AuthorizationError)
         assert_in('TODO: Application ID', str(stdout))
 
-def test_pdf2img_sample_python(python3=False):
+def test_pdfprocess_sample_python(python3=False):
     set_python_path()
-    args = ['../samples/python/pdf2img.py', 'data/bad.pdf']
+    args = ['../samples/python/pdfprocess.py', 'render/pages', 'data/bad.pdf']
     if python3: args[0:0] = ['python3']
     with Stdout() as stdout:
         assert_equal(subprocess.call(args, stdout=stdout), 0)
         assert_in('TODO: Application ID', str(stdout))
 
 if platform.system() == 'Darwin':
-    def test_pdf2img_sample_python3():
-        test_pdf2img_sample_python(python3=True)
+    def test_pdfprocess_sample_python3():
+        test_pdfprocess_sample_python(python3=True)

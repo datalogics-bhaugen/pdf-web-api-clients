@@ -2,4 +2,4 @@
 
 import setuptools
 
-setuptools.setup(name='pdfprocess', package_dir={'': '.'})
+setuptools.setup(name='web_api', package_dir={'': '.'})

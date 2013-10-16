@@ -3,8 +3,8 @@
 "Sample pdfprocess client module"
 
 # This agreement is between Datalogics, Inc. 101 N. Wacker Drive, Suite 1800,
-# Chicago, IL 60606 ("Datalogics") and you, an end user who downloads source
-# code examples for integrating to the Datalogics (R) PDF Web API (TM)
+# Chicago, IL 60606 ("Datalogics") and you, an end user who downloads
+# source code examples for integrating to the Datalogics (R) PDF WebAPI (TM)
 # ("the Example Code"). By accepting this agreement you agree to be bound
 # by the following terms of use for the Example Code.
 #
@@ -20,7 +20,7 @@
 # remain the sole and exclusive property of Datalogics and are protected by
 # the laws of copyright in the U.S. and other countries.
 #
-# Datalogics and Datalogics PDF Web API are trademarks of Datalogics, Inc.
+# Datalogics and Datalogics PDF WebAPI are trademarks of Datalogics, Inc.
 #
 # TERM
 # ----
@@ -47,8 +47,8 @@
 # NEITHER DATALOGICS WARRANT AGAINST ANY BUG, ERROR, OMISSION, DEFECT,
 # DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
 
-import base64
 import sys
+import base64
 
 import requests
 import simplejson as json
@@ -68,9 +68,12 @@ class Application(object):
     # @return a Request object
     # @param request_type e.g. 'render/pages'
     def make_request(self, request_type, base_url=BASE_URL):
-        if request_type == 'render/pages':
-            return ImageRequest(self, base_url, request_type)
+        return Application._request_class(request_type)(self, base_url)
 
+    @classmethod
+    def _request_class(cls, request_type):
+        classes = (FlattenForm, RenderPages)
+        return next(cls for cls in classes if cls.REQUEST_TYPE == request_type)
     @property
     ## ID property (string)
     def id(self): return self._id
@@ -80,45 +83,48 @@ class Application(object):
 
 
 class Request(object):
-    def __init__(self, application, base_url, request_type):
-        self._application = {'application': str(application)}
-        self._url = '%s/api/actions/%s' % (base_url, request_type)
+    def __init__(self, application, base_url):
+        self._data = {'application': str(application)}
+        self._url = '%s/api/actions/%s' % (base_url, self.REQUEST_TYPE)
 
-    ## Send POST request with input file
+    ## Send request
     #  @return a requests.Response object
-    #  @param input_file input document file object
-    #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
-    def post_file(self, input_file, options={}):
-        input_file.seek(0)
-        self._reset(options)
-        files = {'input': input_file}
-        if input_file.name: self.data['inputName'] = input_file.name
-        return \
-            requests.post(self.url, data=self.data, files=files, verify=False)
+    #  @param input input document URL or file object
+    #  @param input_name input name for service log
+    #  @param password document password
+    #  @param options other request options
+    def __call__(self, input, input_name=None, password=None, options={}):
+        data, files = self._data.copy(), None
+        if password: data['password'] = password
+        if options: data['options'] = options
+        string_types = (str, unicode) if sys.version_info.major < 3 else (str,)
+        if type(input) in string_types:
+            data['inputURL'] = input
+        else:
+            input.seek(0)
+            files = {'input': input}
+            data['inputName'] = input.name
+        if input_name: data['inputName'] = input_name
+        request_response =\
+            requests.post(self.url, verify=False, data=data, files=files)
+        return Response(request_response)
 
-    ## Send POST request with input URL
-    #  @return a requests.Response object
-    #  @param input_url input document URL
-    #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
-    def post_url(self, input_url, options={}):
-        self._reset(options)
-        self.data['inputURL'] = input_url
-        return requests.post(self.url, data=self.data, verify=False)
-    def _reset(self, options):
-        self._data = self._application.copy()
-        if options: self.data['options'] = json.dumps(options)
-    @property
-    ## %Request data property (dict), set by #post_file or #post_url
-    def data(self): return self._data
     @property
     ## %Request URL property (string)
     def url(self): return self._url
 
 
-class ImageRequest(Request):
-    ## Send POST request with input file
-    #  @return an ImageResponse object
-    #  @param input_file input document file object
+class FlattenForm(Request):
+    REQUEST_TYPE = 'flatten/form'
+
+
+class RenderPages(Request):
+    REQUEST_TYPE = 'render/pages'
+    ## Send request
+    #  @return a requests.Response object
+    #  @param input input document URL or file object
+    #  @param input_name input name for service log
+    #  @param password document password
     #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
     #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel)
     #  * [compression](https://api.datalogics-cloud.com/docs#compression)
@@ -138,18 +144,12 @@ class ImageRequest(Request):
     #  * [smoothing](https://api.datalogics-cloud.com/docs#smoothing)
     #  * [suppressAnnotations]
     #     (https://api.datalogics-cloud.com/docs#suppressAnnotations)
-    def post_file(self, input_file, options={}):
-        return ImageResponse(Request.post_file(self, input_file, options))
-
-    ## Send POST request with input URL
-    #  @return an ImageResponse object
-    #  @param input_url input document URL
-    #  @param options see #post_file
-    def post_url(self, input_url, options={}):
-        return ImageResponse(Request.post_url(self, input_url, options))
+    def __call__(self, input, input_name=None, password=None, options={}):
+        return Request.__call__(self, input=input, input_name=input_name,
+                                password=password, options=options)
 
 
-## Returned by Request.post_file and Request.post_url
+## Returned by Request.__call__
 class Response(object):
     def __init__(self, request_response):
         self._status_code = request_response.status_code
@@ -168,9 +168,14 @@ class Response(object):
         if 'processCode' in self._json: return int(self['processCode'])
 
     @property
-    ## Base64-encoded data (string) if request was successful, otherwise None
+    ## Document or image data (bytes) if request was successful, otherwise None
     def output(self):
-        if 'output' in self._json and self: return self['output']
+        if 'output' not in self._json or not self:
+            return None
+        elif sys.version_info.major < 3:
+            return self['output'].decode('base64')
+        else:
+            return base64.b64decode(self['output'])
 
     @property
     ## None if successful, otherwise information (string) about process_code
@@ -180,19 +185,6 @@ class Response(object):
     @property
     ## HTTP status code (int)
     def status_code(self): return self._status_code
-
-
-## Returned by ImageRequest.post_file and ImageRequest.post_url
-class ImageResponse(Response):
-    def _image(self):
-        if sys.version_info.major < 3:
-            return self['output'].decode('base64')
-        else:
-            return base64.b64decode(self['output'])
-    @property
-    ## Image data (bytes) if request was successful, otherwise None
-    def output(self):
-        if self: return self._image()
 
 
 ## Values returned by Response.process_code
@@ -210,9 +202,13 @@ class ProcessCode:
     UsageLimitExceeded = 10
     UnknownError = 20
 
-## Values returned by ImageResponse.process_code
-class ImageProcessCode(ProcessCode):
-    InvalidColorModel = 21
-    InvalidCompression = 22
-    InvalidRegion = 23
-    InvalidResolution = 24
+## Response.process_code values for FlattenForm requests
+class FlattenFormProcessCode(ProcessCode):
+    NoAnnotations = 21
+
+## Response.process_code values for RenderPages requests
+class RenderPagesProcessCode(ProcessCode):
+    InvalidColorModel = 31
+    InvalidCompression = 32
+    InvalidRegion = 33
+    InvalidResolution = 34

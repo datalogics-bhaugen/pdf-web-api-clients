@@ -55,7 +55,8 @@ We use Buildout, which is a three-step process. These steps are executed by the 
 
 ## Run
 
-* `scripts/gunicorn` runs this Flask application
+* `scripts/gunicorn` runs this server
+* `test/monitor.py` is used by Scout to monitor this server
 * `thumbnail/scripts/gunicorn` runs the thumbnail server
 
 ## Test
@@ -64,8 +65,8 @@ These scripts facilitate testing:
 
 * `bin/nose` runs the regression tests that validate this Flask application
 * `bin/pdfprocess` runs this Flask application with its development server (Werkzeug)
-* `test/test_client.py` runs `samples/pdf2img.py` with test settings
 * `test/app_test.py` tests this Flask application directly
+* `test/test_client.py` runs `samples/pdf2img.py` with test settings
 
 ## Logging
 

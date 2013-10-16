@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"pdf2img test client"
+"pdfprocess test client"
 
 import glob
 import os
@@ -12,8 +12,8 @@ requests_dir = glob.glob(os.path.join(root_dir, 'eggs', 'requests-*.egg'))[0]
 samples_dir = os.path.join(root_dir, 'samples', 'python')
 sys.path[0:0] = [json_dir, requests_dir, samples_dir]
 
-from pdf2img import PDF2IMG
-from pdfclient import Application, ImageProcessCode, ProcessCode
+from pdfclient import Application, ProcessCode, RenderPagesProcessCode
+from pdfprocess import Client
 
 
 BASE_URL = 'https://pdfprocess-test.datalogics-cloud.com'
@@ -31,8 +31,8 @@ class StatusCode:
     TooManyRequests = 429
     InternalServerError = 500
 
-def pdf2img(id=TEST_ID, key=TEST_KEY): return PDF2IMG(id, key)
-def run(argv, base_url=BASE_URL): return pdf2img()(argv, base_url)
+def client(id=TEST_ID, key=TEST_KEY): return Client(id, key)
+def run(argv, base_url=BASE_URL): return client()(argv, base_url)
 
 if __name__ == '__main__':
     response = run(sys.argv)

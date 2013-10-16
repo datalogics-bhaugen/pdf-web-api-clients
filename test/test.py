@@ -37,13 +37,13 @@ class Result(object):
         return response
 
 class Test(object):
-    def __init__(self, args, result, pdf2img=None):
+    def __init__(self, args, result, client=None):
         self._args, self._result = args, result
-        self._pdf2img = pdf2img or Test.pdf2img()
+        self._client = client or Test.client()
     def __call__(self, base_url=BASE_URL):
         return self._result.validate(self.post(base_url))
     def post(self, base_url):
-        return self._pdf2img(['test'] + self._args, base_url)
+        return self._client(['test', 'render/pages'] + self._args, base_url)
     @classmethod
-    def pdf2img(cls, id=TEST_ID, key=TEST_KEY):
-        return test_client.pdf2img(id, key)
+    def client(cls, id=TEST_ID, key=TEST_KEY):
+        return test_client.client(id, key)

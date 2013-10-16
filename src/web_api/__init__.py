@@ -1,4 +1,4 @@
-"pdfprocess application"
+"web_api application"
 
 import os
 import sys

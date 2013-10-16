@@ -1,5 +1,8 @@
-"pdfprocess pdf2img action option translator"
+"web_api pdf2img action option translator"
 
+import simplejson as json
+
+from web_api import logger
 from errors import Error, ProcessCode
 from options import Option
 
