@@ -116,10 +116,16 @@ class Request(object):
 
 class FlattenForm(Request):
     REQUEST_TYPE = 'flatten/form'
+    @property
+    ## Output filename extension property (string)
+    def output_form(self): return 'pdf'
 
 
 class RenderPages(Request):
     REQUEST_TYPE = 'render/pages'
+    @property
+    ## Output filename extension property (string)
+    def output_form(self): return self._output_form
     ## Send request
     #  @return a requests.Response object
     #  @param input input document URL or file object
@@ -145,6 +151,7 @@ class RenderPages(Request):
     #  * [suppressAnnotations]
     #     (https://api.datalogics-cloud.com/docs#suppressAnnotations)
     def __call__(self, input, input_name=None, password=None, options={}):
+        self._output_form = options.get('outputForm', 'tif')
         return Request.__call__(self, input=input, input_name=input_name,
                                 password=password, options=options)
 
@@ -203,11 +210,11 @@ class ProcessCode:
     UnknownError = 20
 
 ## Response.process_code values for FlattenForm requests
-class FlattenFormProcessCode(ProcessCode):
+class FlattenFormCode(ProcessCode):
     NoAnnotations = 21
 
 ## Response.process_code values for RenderPages requests
-class RenderPagesProcessCode(ProcessCode):
+class RenderPagesCode(ProcessCode):
     InvalidColorModel = 31
     InvalidCompression = 32
     InvalidRegion = 33

@@ -2,7 +2,7 @@
 
 import simplejson as json
 from test import Result, Test
-from test_client import RenderPagesProcessCode as ProcessCode, StatusCode
+from test_client import RenderPagesCode as ProcessCode, StatusCode
 from nose.tools import assert_in
 
 
