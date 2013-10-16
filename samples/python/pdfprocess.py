@@ -84,6 +84,7 @@ class Client(Application):
             option, value = arg.split('=')
             if option not in OPTIONS:
                 raise Exception('invalid option: %s' % option)
+            if option == 'options': value = json.loads(value)
             result[option] = value
         return result
     def _send_file(self, input, args):
