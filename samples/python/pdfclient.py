@@ -96,7 +96,7 @@ class Request(object):
     def __call__(self, input, input_name=None, password=None, options={}):
         data, files = self._data.copy(), None
         if password: data['password'] = password
-        if options: data['options'] = options
+        if options: data['options'] = json.dumps(options)
         string_types = (str, unicode) if sys.version_info.major < 3 else (str,)
         if type(input) in string_types:
             data['inputURL'] = input

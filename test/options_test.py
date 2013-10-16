@@ -16,10 +16,10 @@ class TestFixture(object):
         cls.mock = None
     @classmethod
     def validate(cls, options, expected, unexpected=None):
-        options = 'options=%s' % json.dumps(options)
-        args = ['data/four_pages.pdf', options]
+        args = ['data/four_pages.pdf', 'options=%s' % json.dumps(options)]
         ok = test.Result(ProcessCode.OK, StatusCode.OK)
-        output = test.Test(args, ok)().output.rstrip().split(' ')
+        test_response = test.Test(args, ok)()
+        output = test_response.output.rstrip().split(' ')
         if expected: assert_in(expected, output)
         if unexpected: assert_not_in(unexpected, output)
 
