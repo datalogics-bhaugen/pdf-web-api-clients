@@ -66,7 +66,7 @@ These scripts facilitate testing:
 * `bin/nose` runs the regression tests that validate this Flask application
 * `bin/pdfprocess` runs this Flask application with its development server (Werkzeug)
 * `test/app_test.py` tests this Flask application directly
-* `test/test_client.py` runs `samples/pdf2img.py` with test settings
+* `test/test_client.py` runs `samples/pdfprocess.py` with test settings
 
 ## Logging
 
