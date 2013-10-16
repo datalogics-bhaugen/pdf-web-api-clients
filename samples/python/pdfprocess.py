@@ -66,38 +66,36 @@ class Client(Application):
     ## @param argv e.g.['%pdfprocess.py', 'render/pages', 'hello_world.pdf']
     #  @param base_url
     def __call__(self, argv, base_url=Application.BASE_URL):
-        args = self._initialize(argv)
-        request, input = self.make_request(argv[1], base_url), argv[2]
-        input_is_url = input.lower().startswith('http')
-        output_filename = self._output_filename(args, input)
-        send_method = self._send_url if input_is_url else self._send_file
-        return send_method(request, input, args, output_filename)
+        args, input = self._initialize(argv), argv[2]
+        self._request = self.make_request(argv[1], base_url)
+        self._input_name = args.get('inputName', os.path.basename(input))
+        url_input = input.lower().startswith('http')
+        send_method = self._send_url if url_input else self._send_file
+        return Response(send_method(input, args), self.output_filename)
 
     def _initialize(self, argv):
         try:
             return self._parse_args(argv)
         except Exception:
             sys.exit(USAGE % argv[0])
-    def _output_filename(self, args, input):
-        input_name = args.get('inputName', os.path.basename(input))
-        if 'options' in args:
-            options = json.loads(args['options'])
-            if 'outputForm' in options:
-                output_form = options['outputForm']
-                return '%s.%s' % (os.path.splitext(input_name)[0], output_form)
-        return input_name
     def _parse_args(self, argv):
         result = {}
         for arg in argv[3:]:
             option, value = arg.split('=')
-            if option not in OPTIONS: raise Exception('invalid option')
+            if option not in OPTIONS:
+                raise Exception('invalid option: %s' % option)
             result[option] = value
         return result
-    def _send_file(self, request, input, options, output_filename):
+    def _send_file(self, input, args):
         with open(input, 'rb') as input_file:
-            return Response(request(input_file, **options), output_filename)
-    def _send_url(self, request, input, options, output_filename):
-        return Response(request(input, **options), output_filename)
+            return self._request(input_file, **args)
+    def _send_url(self, input, args):
+        return self._request(input, **args)
+    @property
+    ## Output filename
+    def output_filename(self):
+        input_name = os.path.splitext(self._input_name)[0]
+        return '%s.%s' % (input_name, self._request.output_form)
 
 
 ## Returned by Client.__call__

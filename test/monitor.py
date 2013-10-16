@@ -13,7 +13,8 @@ def base_url():
     return 'https://pdfprocess%s.datalogics-cloud.com' % environment_suffix
 
 if __name__ == '__main__':
-    response = test_client.run([sys.argv[1]], base_url())
+    sys.argv[1:1] = ['render/pages']
+    response = test_client.run(sys.argv, base_url())
     if not response: sys.exit(response)
     response.save_output()
     print('created: %s' % response.output_filename)

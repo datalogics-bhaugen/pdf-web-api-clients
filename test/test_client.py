@@ -12,7 +12,7 @@ requests_dir = glob.glob(os.path.join(root_dir, 'eggs', 'requests-*.egg'))[0]
 samples_dir = os.path.join(root_dir, 'samples', 'python')
 sys.path[0:0] = [json_dir, requests_dir, samples_dir]
 
-from pdfclient import Application, ProcessCode, RenderPagesProcessCode
+from pdfclient import Application, ProcessCode, RenderPagesCode
 from pdfprocess import Client
 
 
