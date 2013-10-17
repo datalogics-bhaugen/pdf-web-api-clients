@@ -3,11 +3,6 @@
 import simplejson
 
 
-class Auth:
-    "for internal use only"
-    OK, UsageLimitExceeded, Invalid = range(3)
-
-
 class EnumValue(object):
     def __init__(self, name, value):
         self._name, self._value = (name, value)

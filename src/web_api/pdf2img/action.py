@@ -6,7 +6,7 @@ import subprocess
 
 import requests
 import web_api
-from web_api import Auth, Error, ProcessCode, UNKNOWN, logger
+from web_api import Error, ProcessCode, UNKNOWN, logger
 from argument_parser import ArgumentParser
 from output_file import OutputFile
 
@@ -22,8 +22,7 @@ class Action(web_api.Action):
             self.raise_error(error)
         except Exception as exc:
             self.raise_error(Error(ProcessCode.InvalidSyntax, exc.message))
-        auth = self.authorize()
-        if auth != Auth.OK: self.raise_authorize_error(auth)
+        self.client.authorize()
         return self._pdf2img()
     def _get_image(self, input_name, output_file):
         with web_api.Stdout() as stdout:

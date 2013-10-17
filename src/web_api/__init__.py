@@ -11,7 +11,7 @@ import tmpdir
 
 from action import Action
 from configuration import Configuration
-from errors import Auth, EnumValue, Error, ProcessCode, StatusCode, UNKNOWN
+from errors import EnumValue, Error, ProcessCode, StatusCode, UNKNOWN
 from tmpdir import RESOURCE, Stdout, TemporaryFile
 
 import pdf2img
