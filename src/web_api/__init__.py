@@ -17,10 +17,10 @@ from tmpdir import RESOURCE, Stdout, TemporaryFile
 import pdf2img
 
 
-app = flask.Flask(__name__)
+app = flask.Flask('pdfprocess')
 configuration = Configuration()
 logger.start(app.logger, app.name, configuration.server_version)
-logger.info('pdf2img: %s' % configuration.pdf2img_version)
+logger.info('versions: %s' % configuration.filename)
 
 @app.route('/api/actions/render/pages', methods=['POST'])
 def pdf2img_action():
