@@ -12,10 +12,7 @@ class ProcessCode(web_api.ProcessCode):
 
 
 ERRORS = [
-    Error(ProcessCode.InvalidSyntax, 'An option is missing the = sign'),
-    Error(ProcessCode.InvalidSyntax,
-          'An option requiring a value has no value supplied'),
-    Error(ProcessCode.InvalidOutputType, 'Invalid output type'),
+    Error(ProcessCode.InvalidOutputFormat, 'Invalid output type'),
     Error(ProcessCode.InvalidPage, "Bad '-pages' argument"),
     Error(ProcessCode.InvalidPage, "Could not parse '-pages' option"),
     Error(ProcessCode.InvalidPage, 'is greater than End page'),

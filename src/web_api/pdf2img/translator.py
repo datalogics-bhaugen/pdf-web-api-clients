@@ -56,7 +56,7 @@ class OutputForm(Translator):
         output_forms = ('gif', 'jpg', 'png', 'tif')
         if self.option not in output_forms:
             message = 'outputForm must be one of ' + str(output_forms)
-            raise Error(ProcessCode.InvalidOutputType, message)
+            raise Error(ProcessCode.InvalidOutputFormat, message)
         return self.options
 
 class Pages(Translator):
@@ -71,7 +71,7 @@ class Pages(Translator):
             self._option = '1'
         elif multipage_request:
             message = 'Use TIFF format for multi-page image requests'
-            raise Error(ProcessCode.InvalidOutputType, message)
+            raise Error(ProcessCode.InvalidOutputFormat, message)
         return self.options + multipage_options
     def multipage_request(self):
         return self.option is None or '-' in self.option or ',' in self.option

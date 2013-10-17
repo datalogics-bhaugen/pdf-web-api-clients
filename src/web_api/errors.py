@@ -20,7 +20,7 @@ class ProcessCode(object):
     InvalidPassword = EnumValue('InvalidPassword', 4)
     MissingPassword = EnumValue('MissingPassword', 5)
     AdeptDRM = EnumValue('AdeptDRM', 6)
-    InvalidOutputType = EnumValue('InvalidOutputType', 7)
+    InvalidOutputFormat = EnumValue('InvalidOutputFormat', 7)
     InvalidPage = EnumValue('InvalidPage', 8)
     RequestTooLarge = EnumValue('RequestTooLarge', 9)
     UsageLimitExceeded = EnumValue('UsageLimitExceeded', 10)

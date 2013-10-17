@@ -203,7 +203,7 @@ class ProcessCode:
     InvalidPassword = 4
     MissingPassword = 5
     AdeptDRM = 6
-    InvalidOutputType = 7
+    InvalidOutputFormat = 7
     InvalidPage = 8
     RequestTooLarge = 9
     UsageLimitExceeded = 10

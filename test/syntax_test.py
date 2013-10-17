@@ -37,7 +37,7 @@ class TestInvalidSyntax(SyntaxFixture):
     @property
     def result(self): return Result(ProcessCode.InvalidSyntax)
 
-class TestOutputType(SyntaxFixture):
+class TestOutputFormat(SyntaxFixture):
     def test_invalid(self):
         self.validate({'outputForm': 'spam'})
     def test_unsupported(self):
@@ -45,7 +45,7 @@ class TestOutputType(SyntaxFixture):
     def test_unsupported_multipage(self):
         self.validate({'outputForm': 'jpg', 'pages': '1-2'})
     @property
-    def result(self): return Result(ProcessCode.InvalidOutputType)
+    def result(self): return Result(ProcessCode.InvalidOutputFormat)
 
 class TestPagesInvalid(SyntaxFixture):
     def test_invalid_pages(self):
