@@ -96,10 +96,10 @@ class Client(Application):
     ## Output filename
     def output_filename(self):
         input_name = os.path.splitext(self._input_name)[0]
-        return '%s.%s' % (input_name, self._request.output_form)
+        return '%s.%s' % (input_name, self._request.output_format)
 
 
-## Returned by Client.__call__
+## #pdfclient.Response wrapper
 class Response(object):
     def __init__(self, response, output_filename):
         self._response, self._output_filename = response, output_filename

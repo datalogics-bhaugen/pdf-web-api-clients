@@ -2,8 +2,9 @@
 
 import ThreeScalePY
 import logger
+
 from ThreeScalePY import ThreeScaleAuthRep
-from errors import Auth, JSON
+from errors import Error, JSON, ProcessCode, StatusCode, UNKNOWN
 
 
 PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
@@ -14,19 +15,19 @@ class Client(ThreeScaleAuthRep):
         app_id, app_key = self._application(request_form)
         logger.info("%s: id='%s', key='%s'" % (address, app_id, app_key))
         ThreeScaleAuthRep.__init__(self, PROVIDER_KEY, app_id, app_key)
-        self._exc_info = None
     def __str__(self):
         return "(id='%s', key='*%s')" % (self.app_id, self.app_key[-7:])
-    def auth(self):
+    def authorize(self):
         try:
-            if self.authrep(): return Auth.OK
-            self._exc_info = self.build_response().get_reason()
-            usage_limit = 'usage limit' in self.exc_info
-            return Auth.UsageLimitExceeded if usage_limit else Auth.Invalid
-        except ThreeScalePY.ThreeScaleException as exc:
-            self._exc_info = str(exc)
-            logger.error(exc)
-            return Auth.Invalid
+            if self.authrep(): return
+            error = self.build_response().get_reason()
+            if 'usage limit' in error.lower():
+                limit_exceeded = ProcessCode.UsageLimitExceeded
+                raise Error(limit_exceeded, error, StatusCode.TooManyRequests)
+        except ThreeScalePY.ThreeScaleException as exception:
+            error = str(exception)
+        authorization_error = ProcessCode.AuthorizationError
+        raise Error(authorization_error, error, StatusCode.Forbidden)
     def _application(self, request_form):
         application = self._decode_application(request_form)
         if application:
@@ -39,5 +40,3 @@ class Client(ThreeScaleAuthRep):
     def _decode_application(self, request_form):
         app = request_form.get('application', None)
         return JSON.parse(app) if type(app) in (str, unicode) else app
-    @property
-    def exc_info(self): return self._exc_info

@@ -53,13 +53,13 @@ def error(msg, *args, **kwargs): LOGGER.error(msg, *args, **kwargs)
 def critical(msg, *args, **kwargs): LOGGER.critical(msg, *args, **kwargs)
 def log(lvl, msg, *args, **kwargs): LOGGER.log(lvl, msg, *args, **kwargs)
 
-def start(app_logger, server_name, version=None, log_level=logging.DEBUG):
+def start(app_logger, name, version=None, log_level=logging.DEBUG):
     global LOGGER
     LOGGER = app_logger
     LOGGER.setLevel(log_level)
     LOGGER.addHandler(SysLogHandler())
-    LOGGER.addHandler(FileHandler(server_name))
+    LOGGER.addHandler(FileHandler(name))
     if version:
-        info('%s (%s) started' % (server_name, version))
+        info('%s (%s) started' % (name, version))
     else:
-        info('%s started' % server_name)
+        info('%s started' % name)

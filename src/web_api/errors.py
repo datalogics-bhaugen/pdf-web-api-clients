@@ -3,11 +3,6 @@
 import simplejson
 
 
-class Auth:
-    "for internal use only"
-    OK, UsageLimitExceeded, Invalid = range(3)
-
-
 class EnumValue(object):
     def __init__(self, name, value):
         self._name, self._value = (name, value)
@@ -25,7 +20,7 @@ class ProcessCode(object):
     InvalidPassword = EnumValue('InvalidPassword', 4)
     MissingPassword = EnumValue('MissingPassword', 5)
     AdeptDRM = EnumValue('AdeptDRM', 6)
-    InvalidOutputType = EnumValue('InvalidOutputType', 7)
+    InvalidOutputFormat = EnumValue('InvalidOutputFormat', 7)
     InvalidPage = EnumValue('InvalidPage', 8)
     RequestTooLarge = EnumValue('RequestTooLarge', 9)
     UsageLimitExceeded = EnumValue('UsageLimitExceeded', 10)

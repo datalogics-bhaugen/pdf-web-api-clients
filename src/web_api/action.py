@@ -6,22 +6,12 @@ from client import Client
 from errors import APDFL_ERRORS, Error, JSON, ProcessCode, StatusCode, UNKNOWN
 
 
-AUTH_ERRORS = [
-    None,  # Auth.OK
-    Error(ProcessCode.UsageLimitExceeded, None, StatusCode.TooManyRequests),
-    Error(ProcessCode.AuthorizationError, None, StatusCode.Forbidden)]
-
-
 class Action(object):
     def __init__(self, request):
         self._client = Client(request.remote_addr, request.form)
         self._options = JSON.parse(request.form.get('options', '{}'))
         self._request_form = request.form
         self._set_input(request)
-    def authorize(self):
-        return self.client.auth()
-    def raise_authorize_error(self, auth):
-        self.raise_error(AUTH_ERRORS[auth].copy(self.client.exc_info))
     def raise_error(self, error):
         invalid_password = ProcessCode.InvalidPassword
         if error.process_code == invalid_password and not self.password:
