@@ -699,7 +699,6 @@ FILE_PATTERNS          = *.c \
                          *.idl \
                          *.odl \
                          *.cs \
-                         *.php \
                          *.php3 \
                          *.pl \
                          *.inc \
