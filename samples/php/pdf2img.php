@@ -4,8 +4,8 @@
 # Sample pdfclient driver
 #
 # This agreement is between Datalogics, Inc. 101 N. Wacker Drive, Suite 1800,
-# Chicago, IL 60606 ("Datalogics") and you, an end user who downloads source
-# code examples for integrating to the Datalogics (R) PDF WebAPI (TM)
+# Chicago, IL 60606 ("Datalogics") and you, an end user who downloads
+# source code examples for integrating to the Datalogics (R) PDF WebAPI (TM)
 # ("the Example Code"). By accepting this agreement you agree to be bound
 # by the following terms of use for the Example Code.
 #
