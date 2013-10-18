@@ -28,7 +28,7 @@ class Action(web_api.Action):
         with web_api.Stdout() as stdout:
             options = Action._options() + self._parser.pdf2img_options
             if self.password: options += ['-password=%s' % self.password]
-            args = ['pdf2img'] + options + [input_name, self.output_form]
+            args = ['pdf2img'] + options + [input_name, self.output_format]
             if subprocess.call(args, stdout=stdout):
                 self.raise_error(Action.get_error(stdout))
         with open(output_file.name, 'rb') as image_file:
@@ -37,15 +37,15 @@ class Action(web_api.Action):
     def _log_request(self, parser_options):
         options = ' '.join(parser_options)
         if options: options = ' ' + options
-        output_form = self.output_form
-        if output_form: output_form = ' ' + output_form
-        info_args = (options, self.input_name, output_form, self.client)
+        output_format = self.output_format
+        if output_format: output_format = ' ' + output_format
+        info_args = (options, self.input_name, output_format, self.client)
         logger.info('pdf2img%s %s%s %s' % info_args)
     def _pdf2img(self):
         with web_api.TemporaryFile() as input_file:
             self._save_input(input_file)
-            with OutputFile(input_file.name, self.output_form) as output_file:
-                return self._get_image(input_file.name, output_file)
+            with OutputFile(input_file.name, self.output_format) as output:
+                return self._get_image(input_file.name, output)
     @classmethod
     def from_request(cls, request):
         action = FromURL if request.form.get('inputURL', None) else FromFile
@@ -57,7 +57,7 @@ class Action(web_api.Action):
         resources = [os.path.join(web_api.RESOURCE, r) for r in resources]
         return ['-fontlist="%s"' % ';'.join(resources)]
     @property
-    def output_form(self): return self._parser.output_form
+    def output_format(self): return self._parser.output_format
     @property
     def pages(self): return self._parser.pages
 

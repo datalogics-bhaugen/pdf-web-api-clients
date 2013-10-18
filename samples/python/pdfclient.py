@@ -62,6 +62,7 @@ class Application(object):
     #  @param key from our [developer portal](http://api.datalogics-cloud.com/)
     def __init__(self, id, key):
         self._id, self._key = id, key
+
     def __str__(self):
         return json.dumps({'id': self.id, 'key': self.key})
 
@@ -92,7 +93,7 @@ class Application(object):
 class Request(object):
     def __init__(self, application, base_url):
         self._data = {'application': str(application)}
-        self._url = '%s/api/actions/%s' % (base_url, self.REQUEST_TYPE)
+        self._url = '{}/api/actions/{}'.format(base_url, self.REQUEST_TYPE)
 
     ## Send request
     #  @return a Response object
@@ -128,7 +129,7 @@ class Response(object):
         try: self._json = request_response.json()
         except ValueError: self._json = {}
     def __str__(self):
-        return '%s: %s' % (self.process_code, self.output or self.exc_info)
+        return '{}: {}'.format(self.process_code, self.output or self.exc_info)
     def __bool__(self):
         return self.process_code == 0
     __nonzero__ = __bool__
@@ -203,7 +204,7 @@ class RenderPages(Request):
     #  @param input input document URL or file object
     #  @param input_name input name for service log
     #  @param password document password
-    #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
+    #  @param options e.g. {'outputFormat': 'jpg', 'printPreview': True}
     #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel)
     #  * [compression](https://api.datalogics-cloud.com/docs#compression)
     #  * [disableColorManagement]
@@ -213,7 +214,7 @@ class RenderPages(Request):
     #  * [imageHeight](https://api.datalogics-cloud.com/docs#imageHeight)
     #  * [imageWidth](https://api.datalogics-cloud.com/docs#imageWidth)
     #  * [OPP](https://api.datalogics-cloud.com/docs#OPP)
-    #  * [outputForm](https://api.datalogics-cloud.com/docs#outputForm)
+    #  * [outputFormat](https://api.datalogics-cloud.com/docs#outputFormat)
     #  * [pages](https://api.datalogics-cloud.com/docs#pages)
     #  * [password](https://api.datalogics-cloud.com/docs#password)
     #  * [pdfRegion](https://api.datalogics-cloud.com/docs#pdfRegion)
@@ -223,6 +224,6 @@ class RenderPages(Request):
     #  * [suppressAnnotations]
     #     (https://api.datalogics-cloud.com/docs#suppressAnnotations)
     def __call__(self, input, input_name=None, password=None, options={}):
-        self._output_format = options.get('outputForm', 'tif')
+        self._output_format = options.get('outputFormat', 'png')
         return Request.__call__(self, input=input, input_name=input_name,
                                 password=password, options=options)

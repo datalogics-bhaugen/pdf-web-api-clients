@@ -58,7 +58,7 @@ my $application_id = 'TODO: Application ID';
 my $application_key = 'TODO: Application key';
 
 my $application = {'id' => $application_id, 'key' => $application_key};
-my $options = {'outputForm' => 'jpg', 'printPreview' => JSON::true};
+my $options = {'outputFormat' => 'jpg', 'printPreview' => JSON::true};
 my $input_file = $ARGV[$#ARGV];
 
 my $content = [

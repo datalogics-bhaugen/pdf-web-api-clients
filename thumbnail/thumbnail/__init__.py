@@ -37,8 +37,6 @@ def action():
         input_url, options = request_data(flask.request)
         application = Application(JOEL_GERACI_ID, JOEL_GERACI_KEY)
         request = application.make_request('render/pages', BASE_URL)
-        if OUTPUT_FORM not in options.keys(): options[str(OUTPUT_FORM)] = 'png'
-        if PAGES not in options.keys(): options[str(PAGES)] = '1'
         if IMAGE_WIDTH in options.keys() or IMAGE_HEIGHT in options.keys():
             return response(request(input_url, options=options))
         with tmpdir.TemporaryFile() as input_file:
