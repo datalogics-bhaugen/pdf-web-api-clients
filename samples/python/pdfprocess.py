@@ -58,7 +58,7 @@ from pdfclient import Application
 
 OPTIONS = ('inputName', 'password', 'options')
 USAGE = '''usage:\
- %s requestType input [inputName=name] [password=pwd] [options=json]'''
+ {} requestType input [inputName=name] [password=pwd] [options=json]'''
 
 
 ## Sample pdfclient driver
@@ -77,13 +77,13 @@ class Client(Application):
         try:
             return self._parse_args(argv)
         except Exception:
-            sys.exit(USAGE % argv[0])
+            sys.exit(USAGE.format(argv[0]))
     def _parse_args(self, argv):
         result = {}
         for arg in argv[3:]:
             option, value = arg.split('=')
             if option not in OPTIONS:
-                raise Exception('invalid option: %s' % option)
+                raise Exception('invalid option: {}'.format(option))
             if option == 'options': value = json.loads(value)
             result[option] = value
         return result
@@ -96,7 +96,7 @@ class Client(Application):
     ## Output filename
     def output_filename(self):
         input_name = os.path.splitext(self._input_name)[0]
-        return '%s.%s' % (input_name, self._request.output_format)
+        return '{}.{}'.format(input_name, self._request.output_format)
 
 
 ## #pdfclient.Response wrapper
@@ -128,6 +128,6 @@ if __name__ == '__main__':
     response = run(sys.argv)
     if response:
         response.save_output()
-        print('created: %s' % response.output_filename)
+        print('created: {}'.format(response.output_filename))
     else:
         print(response)

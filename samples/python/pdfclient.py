@@ -92,7 +92,7 @@ class Application(object):
 class Request(object):
     def __init__(self, application, base_url):
         self._data = {'application': str(application)}
-        self._url = '%s/api/actions/%s' % (base_url, self.REQUEST_TYPE)
+        self._url = '{}/api/actions/{}'.format(base_url, self.REQUEST_TYPE)
 
     ## Send request
     #  @return a Response object
@@ -128,7 +128,7 @@ class Response(object):
         try: self._json = request_response.json()
         except ValueError: self._json = {}
     def __str__(self):
-        return '%s: %s' % (self.process_code, self.output or self.exc_info)
+        return '{}: {}'.format(self.process_code, self.output or self.exc_info)
     def __bool__(self):
         return self.process_code == 0
     __nonzero__ = __bool__
