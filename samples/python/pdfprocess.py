@@ -110,7 +110,7 @@ class Response(object):
     __nonzero__ = __bool__
     def __getattr__(self, key):
         return getattr(self._response, key)
-    ## Create #output_filename
+    ## Save output in file named #output_filename
     def save_output(self):
         with open(self.output_filename, 'wb') as output:
             output.write(self.output)
