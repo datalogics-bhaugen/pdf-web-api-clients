@@ -32,5 +32,6 @@ def validate_input(input, process_code, error=None):
 def args(input):
     result = ['scripts/curl']
     for file in input:
-        result.extend(['--form', '%s=@%s' % (os.path.basename(file), file)])
+        form_part = '{}=@{}'.format(os.path.basename(file), file)
+        result.extend(['--form', form_part])
     return result

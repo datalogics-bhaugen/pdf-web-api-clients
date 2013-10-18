@@ -18,14 +18,14 @@ def test_no_application_id():
 
 def test_bad_application_id():
     application_id = str(uuid.uuid4())[:8]
-    error = 'application with id="%s" was not found' % application_id
+    error = 'application with id="{}" was not found'.format(application_id)
     authorize_error(web_api_client(application_id), error)
 
 def test_no_application_key():
     authorize_error(web_api_client(app_key=''), 'application key is missing')
 
 def test_bad_application_key():
-    error = 'application key "%s" is invalid' % test.PUBLIC_KEY
+    error = 'application key "{}" is invalid'.format(test.PUBLIC_KEY)
     authorize_error(web_api_client(test.TEST_ID), error)
 
 def test_usage_limit_exceeded():

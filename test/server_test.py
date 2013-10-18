@@ -14,7 +14,8 @@ def test_bad_url():
     except Exception as exception:
         assert_in(max_retry_error('/spam.pdf'), str(exception))
 
-def max_retry_error(url): return 'Max retries exceeded with url: %s' % url
+def max_retry_error(url):
+    return 'Max retries exceeded with url: {}'.format(url)
 
 def test_good_url():
     result = Result(ProcessCode.OK, StatusCode.OK)

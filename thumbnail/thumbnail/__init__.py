@@ -51,7 +51,7 @@ def request_data(request):
     form = request.form
     input_url = form.get(INPUT_NAME, None) or request.args.get(INPUT_NAME)
     result = (input_url, JSON.parse(form.get('options', '{}')))
-    app.logger.info('%s: options = %s' % result)
+    app.logger.info('{}: options = {}'.format(result))
     return result
 
 def smaller_thumbnail(request, input_file, options):

@@ -11,7 +11,8 @@ def _find_dir(dir_name, path=None):
     "return directory on path to root, e.g. /opt/pdfprocess/web-api/tmp"
     path = path or os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(path)
-    if parent_dir == path: raise UNKNOWN.copy('no %s directory' % dir_name)
+    if parent_dir == path:
+        raise UNKNOWN.copy('no {} directory'.format(dir_name))
     path = os.path.join(parent_dir, dir_name)
     return path if os.path.isdir(path) else _find_dir(dir_name, parent_dir)
 

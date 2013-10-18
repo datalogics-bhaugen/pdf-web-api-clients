@@ -13,7 +13,7 @@ from web_api import UNKNOWN
 
 class OutputFile(object):
     def __init__(self, name, extension):
-        self._pattern = '%s*.%s' % (name, extension)
+        self._pattern = '{}*.{}'.format(name, extension)
     def __del__(self):
         for filename in self.glob():
             try: os.remove(filename)

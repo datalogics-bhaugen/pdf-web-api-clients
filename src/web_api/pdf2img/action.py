@@ -27,7 +27,7 @@ class Action(web_api.Action):
     def _get_image(self, input_name, output_file):
         with web_api.Stdout() as stdout:
             options = Action._options() + self._parser.pdf2img_options
-            if self.password: options += ['-password=%s' % self.password]
+            if self.password: options += ['-password={}'.format(self.password)]
             args = ['pdf2img'] + options + [input_name, self.output_format]
             if subprocess.call(args, stdout=stdout):
                 self.raise_error(Action.get_error(stdout))
@@ -40,7 +40,7 @@ class Action(web_api.Action):
         output_format = self.output_format
         if output_format: output_format = ' ' + output_format
         info_args = (options, self.input_name, output_format, self.client)
-        logger.info('pdf2img%s %s%s %s' % info_args)
+        logger.info('pdf2img{} {}{} {}'.format(*info_args))
     def _pdf2img(self):
         with web_api.TemporaryFile() as input_file:
             self._save_input(input_file)
@@ -55,7 +55,7 @@ class Action(web_api.Action):
         if not web_api.RESOURCE: return []
         resources = ('CMap', 'Font', 'Unicode')
         resources = [os.path.join(web_api.RESOURCE, r) for r in resources]
-        return ['-fontlist="%s"' % ';'.join(resources)]
+        return ['-fontlist="{}"'.format(';'.join(resources))]
     @property
     def output_format(self): return self._parser.output_format
     @property
@@ -70,7 +70,7 @@ class FromFile(Action):
             error = 'no inputURL or request file'
             self.raise_error(Error(ProcessCode.InvalidInput, error))
         if len(request_files) > 1:
-            error = 'excess input: %d files' % len(request_files)
+            error = 'excess input: {} files'.format(len(request_files))
             self.raise_error(Error(ProcessCode.InvalidInput, error))
         self._input = request_files[0]
         Action._set_input(self, request)

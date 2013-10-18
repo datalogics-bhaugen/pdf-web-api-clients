@@ -23,7 +23,7 @@ class Translator(object):
     @property
     def options(self):
         if self.option is None: return []
-        return ['-%s=%s' % (self._name, self.option)]
+        return ['-{}={}'.format(self._name, self.option)]
 
 class ImageSize(Translator):
     OPTIONS = [Option('imageWidth'), Option('imageHeight')]
@@ -35,11 +35,11 @@ class ImageSize(Translator):
             if key in ImageSize.OPTIONS:
                 self._dimensions[ImageSize.OPTIONS.index(key)] = value
         if self.width and self.height:
-            self.set_option('%sx%s' % (self.width, self.height))
+            self.set_option('{}x{}'.format(self.width, self.height))
         elif self.width:
-            self.set_option('w:%s' % self.width)
+            self.set_option('w:{}'.format(self.width))
         elif self.height:
-            self.set_option('h:%s' % self.height)
+            self.set_option('h:{}'.format(self.height))
         return self.options
     @property
     def width(self): return self._dimensions[0]

@@ -14,7 +14,7 @@ def set_python_path():
     eggs_dir = os.path.join(root_dir, 'eggs')
     json_dir = glob.glob(os.path.join(eggs_dir, 'simplejson-*.egg'))[0]
     requests_dir = glob.glob(os.path.join(eggs_dir, 'requests-*.egg'))[0]
-    os.environ['PYTHONPATH'] = '%s:%s' % (json_dir, requests_dir)
+    os.environ['PYTHONPATH'] = '{}:{}'.format(json_dir, requests_dir)
 
 def test_pdf2img_application():
     args = ['pdf2img', 'data/hello_world.pdf', 'tif']
