@@ -49,14 +49,15 @@
 
 import sys
 import base64
+import inspect
 
 import requests
 import simplejson as json
 
 
+## %Request factory
 class Application(object):
     BASE_URL = 'https://pdfprocess.datalogics-cloud.com'
-
     ## @param id from our [developer portal](http://api.datalogics-cloud.com/)
     #  @param key from our [developer portal](http://api.datalogics-cloud.com/)
     def __init__(self, id, key):
@@ -64,16 +65,21 @@ class Application(object):
     def __str__(self):
         return json.dumps({'id': self.id, 'key': self.key})
 
-    ## Request factory
+    ## Create a request for the specified request type
     # @return a Request object
     # @param request_type e.g. 'render/pages'
     def make_request(self, request_type, base_url=BASE_URL):
         return Application._request_class(request_type)(self, base_url)
 
     @classmethod
+    def _request_class_predicate(cls, request_type):
+        return lambda m: inspect.isclass(m) and 'REQUEST_TYPE' in dir(m) \
+            and m.REQUEST_TYPE == request_type
+    @classmethod
     def _request_class(cls, request_type):
-        classes = (FlattenForm, RenderPages)
-        return next(cls for cls in classes if cls.REQUEST_TYPE == request_type)
+        is_request_class = cls._request_class_predicate(request_type)
+        members = inspect.getmembers(sys.modules[__name__], is_request_class)
+        return members[0][1]
     @property
     ## ID property (string)
     def id(self): return self._id
@@ -82,13 +88,14 @@ class Application(object):
     def key(self): return self._key
 
 
+## Service request
 class Request(object):
     def __init__(self, application, base_url):
         self._data = {'application': str(application)}
         self._url = '%s/api/actions/%s' % (base_url, self.REQUEST_TYPE)
 
     ## Send request
-    #  @return a requests.Response object
+    #  @return a Response object
     #  @param input input document URL or file object
     #  @param input_name input name for service log
     #  @param password document password
@@ -114,49 +121,7 @@ class Request(object):
     def url(self): return self._url
 
 
-class FlattenForm(Request):
-    REQUEST_TYPE = 'flatten/form'
-    @property
-    ## Output filename extension property (string)
-    def output_form(self): return 'pdf'
-
-
-class RenderPages(Request):
-    REQUEST_TYPE = 'render/pages'
-    @property
-    ## Output filename extension property (string)
-    def output_form(self): return self._output_form
-    ## Send request
-    #  @return a requests.Response object
-    #  @param input input document URL or file object
-    #  @param input_name input name for service log
-    #  @param password document password
-    #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
-    #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel)
-    #  * [compression](https://api.datalogics-cloud.com/docs#compression)
-    #  * [disableColorManagement]
-    #     (https://api.datalogics-cloud.com/docs#disableColorManagement)
-    #  * [disableThinLineEnhancement]
-    #     (https://api.datalogics-cloud.com/docs#disableThinLineEnhancement)
-    #  * [imageHeight](https://api.datalogics-cloud.com/docs#imageHeight)
-    #  * [imageWidth](https://api.datalogics-cloud.com/docs#imageWidth)
-    #  * [OPP](https://api.datalogics-cloud.com/docs#OPP)
-    #  * [outputForm](https://api.datalogics-cloud.com/docs#outputForm)
-    #  * [pages](https://api.datalogics-cloud.com/docs#pages)
-    #  * [password](https://api.datalogics-cloud.com/docs#password)
-    #  * [pdfRegion](https://api.datalogics-cloud.com/docs#pdfRegion)
-    #  * [printPreview](https://api.datalogics-cloud.com/docs#printPreview)
-    #  * [resolution](https://api.datalogics-cloud.com/docs#resolution)
-    #  * [smoothing](https://api.datalogics-cloud.com/docs#smoothing)
-    #  * [suppressAnnotations]
-    #     (https://api.datalogics-cloud.com/docs#suppressAnnotations)
-    def __call__(self, input, input_name=None, password=None, options={}):
-        self._output_form = options.get('outputForm', 'tif')
-        return Request.__call__(self, input=input, input_name=input_name,
-                                password=password, options=options)
-
-
-## Returned by Request.__call__
+## Service response
 class Response(object):
     def __init__(self, request_response):
         self._status_code = request_response.status_code
@@ -194,7 +159,7 @@ class Response(object):
     def status_code(self): return self._status_code
 
 
-## Values returned by Response.process_code
+## API status codes
 class ProcessCode:
     OK = 0
     AuthorizationError = 1
@@ -209,13 +174,55 @@ class ProcessCode:
     UsageLimitExceeded = 10
     UnknownError = 20
 
-## Response.process_code values for FlattenForm requests
-class FlattenFormCode(ProcessCode):
-    NoAnnotations = 21
 
-## Response.process_code values for RenderPages requests
-class RenderPagesCode(ProcessCode):
-    InvalidColorModel = 31
-    InvalidCompression = 32
-    InvalidRegion = 33
-    InvalidResolution = 34
+## Flatten form fields and other annotations
+class FlattenForm(Request):
+    REQUEST_TYPE = 'flatten/form'
+    ## Status codes for %FlattenForm requests
+    class ProcessCode(ProcessCode):
+        NoAnnotations = 21
+    @property
+    ## Output filename extension property (string)
+    def output_format(self): return 'pdf'
+
+
+## Create raster image representation
+class RenderPages(Request):
+    REQUEST_TYPE = 'render/pages'
+    ## Status codes for %RenderPages requests
+    class ProcessCode(ProcessCode):
+        InvalidColorModel = 31
+        InvalidCompression = 32
+        InvalidRegion = 33
+        InvalidResolution = 34
+    @property
+    ## Output filename extension property (string)
+    def output_format(self): return self._output_format
+    ## Send request
+    #  @return a requests.Response object
+    #  @param input input document URL or file object
+    #  @param input_name input name for service log
+    #  @param password document password
+    #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
+    #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel)
+    #  * [compression](https://api.datalogics-cloud.com/docs#compression)
+    #  * [disableColorManagement]
+    #     (https://api.datalogics-cloud.com/docs#disableColorManagement)
+    #  * [disableThinLineEnhancement]
+    #     (https://api.datalogics-cloud.com/docs#disableThinLineEnhancement)
+    #  * [imageHeight](https://api.datalogics-cloud.com/docs#imageHeight)
+    #  * [imageWidth](https://api.datalogics-cloud.com/docs#imageWidth)
+    #  * [OPP](https://api.datalogics-cloud.com/docs#OPP)
+    #  * [outputForm](https://api.datalogics-cloud.com/docs#outputForm)
+    #  * [pages](https://api.datalogics-cloud.com/docs#pages)
+    #  * [password](https://api.datalogics-cloud.com/docs#password)
+    #  * [pdfRegion](https://api.datalogics-cloud.com/docs#pdfRegion)
+    #  * [printPreview](https://api.datalogics-cloud.com/docs#printPreview)
+    #  * [resolution](https://api.datalogics-cloud.com/docs#resolution)
+    #  * [smoothing](https://api.datalogics-cloud.com/docs#smoothing)
+    #  * [suppressAnnotations]
+    #     (https://api.datalogics-cloud.com/docs#suppressAnnotations)
+    def __call__(self, input, input_name=None, password=None, options={}):
+        self._output_format = options.get('outputForm', 'tif')
+        return Request.__call__(self, input=input, input_name=input_name,
+                                password=password, options=options)
