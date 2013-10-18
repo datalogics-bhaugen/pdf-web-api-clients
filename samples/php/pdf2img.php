@@ -53,49 +53,15 @@ include 'phpclient.php';
 error_reporting(E_ALL);
 class PDF2IMG 
 {
-    /**
-     * @var string
-     */
     var $base_url;
-
-    /** 
-     * @var string
-     */
     var $application_id = 'TODO: Add Application ID';
-
-    /**
-     * @var string
-     */
     var $application_key = 'TODO: Add Application Key';
-
-    /**
-     * @var string
-     */
     var $source_file_name;
-
-    /**
-     * @var string
-     */
     var $destination_file_name;
-
-    /**
-     * @var string
-     */
     var $output_format = 'tif';
-
-    /**
-     * @var string
-     */
     var $print_preview = FALSE;
-
-    /**
-     * @var Array
-     */
     var $options;
   
-    /**  
-     * @param string     $version Version Number 
-     */
     public function __construct() 
     { 
         $this->base_url = "https://pdfprocess.datalogics-cloud.com/api/"
