@@ -18,7 +18,7 @@ class TestColorModel(SyntaxFixture):
     def test_invalid_color_model(self):
         self.validate({'colorModel': 'spam'})
     def test_invalid_gif_color_model(self):
-        self.validate({'outputForm': 'gif', 'colorModel': 'cmyk'})
+        self.validate({'outputFormat': 'gif', 'colorModel': 'cmyk'})
     @property
     def result(self): return Result(ProcessCode.InvalidColorModel)
 
@@ -28,6 +28,9 @@ class TestInvalidSyntax(SyntaxFixture):
     def test_invalid_flag_value(self):
         error = 'invalid printPreview value: true'
         assert_in(error, self.validate({'printPreview': 'true'}).exc_info)
+    def test_another_invalid_flag_value(self):
+        error = 'invalid printPreview value: True'
+        assert_in(error, self.validate({'printPreview': 'True'}).exc_info)
     def test_invalid_option(self):
         self.validate({'spam': 'spam'})
     def test_invalid_compression(self):
@@ -41,11 +44,11 @@ class TestInvalidSyntax(SyntaxFixture):
 
 class TestOutputFormat(SyntaxFixture):
     def test_invalid(self):
-        self.validate({'outputForm': 'spam'})
+        self.validate({'outputFormat': 'spam'})
     def test_unsupported(self):
-        self.validate({'outputForm': 'raw'})
+        self.validate({'outputFormat': 'raw'})
     def test_unsupported_multipage(self):
-        self.validate({'outputForm': 'jpg', 'pages': '1-2'})
+        self.validate({'outputFormat': 'jpg', 'pages': '1-2'})
     @property
     def result(self): return Result(ProcessCode.InvalidOutputFormat)
 
@@ -53,17 +56,17 @@ class TestPagesInvalid(SyntaxFixture):
     def test_invalid_pages(self):
         self.validate({'pages': 'spam'})
     def test_invalid_page_range(self):
-        self.validate({'pages': '1-2-3'})
+        self.validate({'outputFormat': 'tif', 'pages': '1-2-3'})
     def test_inverted_page_range(self):
-        self.validate({'pages': '2-1'})
+        self.validate({'outputFormat': 'tif', 'pages': '2-1'})
     def test_no_start_page(self):
-        self.validate({'pages': '-2'})
+        self.validate({'outputFormat': 'tif', 'pages': '-2'})
     def test_no_end_page(self):
-        self.validate({'pages': '1-'})
+        self.validate({'outputFormat': 'tif', 'pages': '1-'})
     def test_start_page_out_of_range(self):
         self.validate({'pages': '5'})
     def test_end_page_out_of_range(self):
-        self.validate({'pages': '1-5'})
+        self.validate({'outputFormat': 'tif', 'pages': '1-5'})
     @property
     def result(self): return Result(ProcessCode.InvalidPage)
 
@@ -73,10 +76,10 @@ class TestPagesOK(SyntaxFixture):
     def test_valid_page(self):
         self.validate({'pages': '2'})
     def test_valid_page_list(self):
-        self.validate({'pages': '1,2,3'})
+        self.validate({'outputFormat': 'tif', 'pages': '1,2,3'})
     def test_another_valid_page_list(self):
-        self.validate({'pages': '3,2,1'})
+        self.validate({'outputFormat': 'tif', 'pages': '3,2,1'})
     def test_valid_page_range(self):
-        self.validate({'pages': '1-2'})
+        self.validate({'outputFormat': 'tif', 'pages': '1-2'})
     @property
     def result(self): return Result(ProcessCode.OK, StatusCode.OK)

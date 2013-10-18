@@ -203,7 +203,7 @@ class RenderPages(Request):
     #  @param input input document URL or file object
     #  @param input_name input name for service log
     #  @param password document password
-    #  @param options e.g. {'outputForm': 'jpg', 'printPreview': True}
+    #  @param options e.g. {'outputFormat': 'jpg', 'printPreview': True}
     #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel)
     #  * [compression](https://api.datalogics-cloud.com/docs#compression)
     #  * [disableColorManagement]
@@ -213,7 +213,7 @@ class RenderPages(Request):
     #  * [imageHeight](https://api.datalogics-cloud.com/docs#imageHeight)
     #  * [imageWidth](https://api.datalogics-cloud.com/docs#imageWidth)
     #  * [OPP](https://api.datalogics-cloud.com/docs#OPP)
-    #  * [outputForm](https://api.datalogics-cloud.com/docs#outputForm)
+    #  * [outputFormat](https://api.datalogics-cloud.com/docs#outputFormat)
     #  * [pages](https://api.datalogics-cloud.com/docs#pages)
     #  * [password](https://api.datalogics-cloud.com/docs#password)
     #  * [pdfRegion](https://api.datalogics-cloud.com/docs#pdfRegion)
@@ -223,6 +223,6 @@ class RenderPages(Request):
     #  * [suppressAnnotations]
     #     (https://api.datalogics-cloud.com/docs#suppressAnnotations)
     def __call__(self, input, input_name=None, password=None, options={}):
-        self._output_format = options.get('outputForm', 'tif')
+        self._output_format = options.get('outputFormat', 'png')
         return Request.__call__(self, input=input, input_name=input_name,
                                 password=password, options=options)

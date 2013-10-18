@@ -46,17 +46,18 @@ class ImageSize(Translator):
     @property
     def height(self): return self._dimensions[1]
 
-class OutputForm(Translator):
-    OPTIONS = [Option('outputForm')]
+class OutputFormat(Translator):
+    OPTIONS = [Option('outputFormat')]
     def __init__(self):
-        Translator.__init__(self, 'outputForm')
+        Translator.__init__(self, 'outputFormat')
     def validate(self, *args):
         if self.option == 'jpeg': self._option = 'jpg'
-        if self.option == 'tiff' or not self.option: self._option = 'tif'
-        output_forms = ('gif', 'jpg', 'png', 'tif')
-        if self.option not in output_forms:
-            message = 'outputForm must be one of ' + str(output_forms)
-            raise Error(ProcessCode.InvalidOutputFormat, message)
+        if self.option == 'tiff': self._option = 'tif'
+        if not self.option: self._option = 'png'
+        output_formats = ('gif', 'jpg', 'png', 'tif')
+        if self.option not in output_formats:
+            error = 'outputFormat must be one of ' + str(output_formats)
+            raise Error(ProcessCode.InvalidOutputFormat, error)
         return self.options
 
 class Pages(Translator):
@@ -64,38 +65,33 @@ class Pages(Translator):
     def __init__(self):
         Translator.__init__(self, 'pages')
     def validate(self, *args):
-        multipage_options, multipage_request = [], self.multipage_request()
-        if args[0] == 'tif':
-            if multipage_request: multipage_options = ['-multipage']
-        elif self.option is None:
-            self._option = '1'
-        elif multipage_request:
-            message = 'Use TIFF format for multi-page image requests'
-            raise Error(ProcessCode.InvalidOutputFormat, message)
-        return self.options + multipage_options
-    def multipage_request(self):
-        return self.option is None or '-' in self.option or ',' in self.option
+        if not self.option: self._option = '1'
+        multipage_request = '-' in self.option or ',' in self.option
+        if not multipage_request: return self.options
+        if args[0] == 'tif': return self.options + ['-multipage']
+        error = 'Use TIFF format for multi-page image requests'
+        raise Error(ProcessCode.InvalidOutputFormat, error)
 
 class Resolution(Translator):
     OPTIONS = [Option('resolution')]
     def __init__(self):
         Translator.__init__(self, 'resolution')
     def validate(self, *args):
-        if self.option and 'x' in self.option:
-            message = 'No support for non-square pixel rendering.'
-            raise Error(ProcessCode.InvalidResolution, message)
-        return self.options
+        if not self.option: self._option = '150'
+        if 'x' not in self.option: return self.options
+        error = 'No support for non-square pixel rendering.'
+        raise Error(ProcessCode.InvalidResolution, error)
 
 class Smoothing(Translator):
     OPTIONS = [Option('smoothing')]
     def __init__(self):
         Translator.__init__(self, 'smoothing')
     def validate(self, *args):
-        if self.option is None: self._option = 'all'
+        if not self.option: self._option = 'all'
         if self.option == 'none': self._option = None
         return self.options
 
 
 OPTIONS =\
-    ImageSize.OPTIONS + OutputForm.OPTIONS + Pages.OPTIONS +\
+    ImageSize.OPTIONS + OutputFormat.OPTIONS + Pages.OPTIONS +\
     Resolution.OPTIONS + Smoothing.OPTIONS

@@ -3,7 +3,7 @@
 import argparse
 import translator
 from options import Option, Flag, OPTIONS
-from translator import ImageSize, OutputForm, Pages, Resolution, Smoothing
+from translator import ImageSize, OutputFormat, Pages, Resolution, Smoothing
 
 
 class ArgumentParser(argparse.ArgumentParser):
@@ -11,19 +11,19 @@ class ArgumentParser(argparse.ArgumentParser):
         argparse.ArgumentParser.__init__(self, 'actions/render/pages')
         self._request_logger = request_logger
         self._image_size = ImageSize()
-        self._output_form = OutputForm()
+        self._output_format = OutputFormat()
         self._pages = Pages()
         self._resolution = Resolution()
         self._smoothing = Smoothing()
         for option in OPTIONS + translator.OPTIONS:
             self.add_argument('-%s' % option.name, action=option.action)
     def __call__(self, options):
-        self._output_form(options)
+        self._output_format(options)
         self._set_options(options)
         self._request_logger(self.options)
         self.parse_args(self.options)
         self.pdf2img_options.extend(self._image_size(options))
-        self.pdf2img_options.extend(self._pages(options, self.output_form))
+        self.pdf2img_options.extend(self._pages(options, self.output_format))
         self.pdf2img_options.extend(self._resolution(options))
         self.pdf2img_options.extend(self._smoothing(options))
     def error(self, message):
@@ -50,7 +50,7 @@ class ArgumentParser(argparse.ArgumentParser):
     @property
     def options(self): return self._options
     @property
-    def output_form(self): return self._output_form.option
+    def output_format(self): return self._output_format.option
     @property
     def pages(self): return self._pages.option
     @property
