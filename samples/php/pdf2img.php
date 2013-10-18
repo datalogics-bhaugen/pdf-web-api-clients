@@ -58,7 +58,7 @@ class PDF2IMG
     var $application_key = 'TODO: Add Application Key';
     var $source_file_name;
     var $destination_file_name;
-    var $output_format = 'tif';
+    var $output_format = 'png';
     var $print_preview = FALSE;
     var $options;
   
@@ -72,7 +72,7 @@ class PDF2IMG
     {
         $scriptName = $args[0];
         $options = array();
-        $options['outputForm'] = $this->output_format;
+        $options['outputFormat'] = $this->output_format;
         $lastElement = end($args);
         foreach ($args as $key => $index)
         {
@@ -107,10 +107,10 @@ class PDF2IMG
                     $this->source_file_name = $index;
                     list($this->destination_file_name, $type) 
                         = explode('.', $index);
-                    if (array_key_exists('outputForm', $options))
+                    if (array_key_exists('outputFormat', $options))
                     {
                         $this->destination_file_name
-                            .= '.'.$options[outputForm]; 
+                            .= '.'.$options[outputFormat]; 
                     }
                     else
                     {
