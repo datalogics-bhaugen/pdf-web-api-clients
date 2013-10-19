@@ -13,10 +13,10 @@ PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
 class Client(ThreeScaleAuthRep):
     def __init__(self, address, request_form):
         app_id, app_key = self._application(request_form)
-        logger.info("%s: id='%s', key='%s'" % (address, app_id, app_key))
+        logger.info("{}: id='{}', key='{}'".format(address, app_id, app_key))
         ThreeScaleAuthRep.__init__(self, PROVIDER_KEY, app_id, app_key)
     def __str__(self):
-        return "(id='%s', key='*%s')" % (self.app_id, self.app_key[-7:])
+        return "(id='{}', key='*{}')".format(self.app_id, self.app_key[-7:])
     def authorize(self):
         try:
             if self.authrep(): return

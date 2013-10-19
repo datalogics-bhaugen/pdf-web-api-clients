@@ -16,7 +16,7 @@ class ArgumentParser(argparse.ArgumentParser):
         self._resolution = Resolution()
         self._smoothing = Smoothing()
         for option in OPTIONS + translator.OPTIONS:
-            self.add_argument('-%s' % option.name, action=option.action)
+            self.add_argument('-{}'.format(option.name), action=option.action)
     def __call__(self, options):
         self._output_format(options)
         self._set_options(options)
@@ -44,9 +44,9 @@ class ArgumentParser(argparse.ArgumentParser):
                 option = translator.OPTIONS[translator.OPTIONS.index(key)]
                 self.options.append(option.format(value))
             elif value is True:
-                self.options.append(Flag.FORMAT % key)
+                self.options.append(Flag.FORMAT.format(key))
             else:
-                self.options.append(Option.FORMAT % (key, value))
+                self.options.append(Option.FORMAT.format(key, value))
     @property
     def options(self): return self._options
     @property

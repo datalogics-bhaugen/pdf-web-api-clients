@@ -45,7 +45,7 @@ class Error(Exception):
         self._process_code = process_code
         self._status_code = status_code
     def __repr__(self):
-        return '%s: %s' % (self.process_code, self.message)
+        return '{}: {}'.format(self.process_code, self.message)
     def copy(self, message=None):
         message = message or self.message
         return Error(self.process_code, message, self.status_code)
@@ -78,4 +78,5 @@ class JSON:
         try:
             return simplejson.loads(json)
         except Exception:
-            raise Error(ProcessCode.InvalidSyntax, 'cannot parse %s' % json)
+            error = 'cannot parse {}'.format(json)
+            raise Error(ProcessCode.InvalidSyntax, error)

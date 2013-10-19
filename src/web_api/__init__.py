@@ -20,7 +20,7 @@ import pdf2img
 app = flask.Flask('pdfprocess')
 configuration = Configuration()
 logger.start(app.logger, app.name, configuration.server_version)
-logger.info('versions: %s' % configuration.filename)
+logger.info('versions: {}'.format(configuration.filename))
 
 @app.route('/api/actions/render/pages', methods=['POST'])
 def pdf2img_action():

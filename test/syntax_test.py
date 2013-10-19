@@ -10,7 +10,7 @@ ProcessCode = RenderPages.ProcessCode
 
 class SyntaxFixture(object):
     def validate(self, options, process_code=None):
-        options = 'options=%s' % json.dumps(options)
+        options = 'options={}'.format(json.dumps(options))
         result = Result(process_code) if process_code else self.result
         return Test(['data/four_pages.pdf', options], result)()
 

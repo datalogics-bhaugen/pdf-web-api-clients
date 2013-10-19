@@ -19,7 +19,7 @@ class Action(object):
         raise error
     def _set_input(self, request, input_name=None):
         name = request.form.get('inputName', input_name or '<anon>')
-        self._input_name = '"%s"' % name if ' ' in name else name
+        self._input_name = '"{}"'.format(name) if ' ' in name else name
     @classmethod
     def get_error(cls, stdout):
         import pdf2img

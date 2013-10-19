@@ -36,7 +36,8 @@ class FileHandler(BaseHandler, BaseFileHandler):
         "rotate daily by default"
         BaseHandler.__init__(self)
         logging.Formatter.converter = time.gmtime
-        log_path = os.path.join(tmpdir.VAR_DIR, 'log', '%s.log' % log_name)
+        log_filename = '{}.log'.format(log_name)
+        log_path = os.path.join(tmpdir.VAR_DIR, 'log', log_filename)
         BaseFileHandler.__init__(self, log_path, when=when, interval=interval)
 
 class SysLogHandler(BaseHandler, BaseSysLogHandler):
@@ -60,6 +61,6 @@ def start(app_logger, name, version=None, log_level=logging.DEBUG):
     LOGGER.addHandler(SysLogHandler())
     LOGGER.addHandler(FileHandler(name))
     if version:
-        info('%s (%s) started' % (name, version))
+        info('{} ({}) started'.format(name, version))
     else:
-        info('%s started' % name)
+        info('{} started'.format(name))

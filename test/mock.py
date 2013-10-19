@@ -8,7 +8,7 @@ import subprocess
 class Client(object):
     def __init__(self, mock, pdf2img='pdf2img'):
         self._set_pdf2img(pdf2img)
-        if not self.pdf2img: sys.exit('no %s in PATH' % pdf2img)
+        if not self.pdf2img: sys.exit('no {} in PATH'.format(pdf2img))
         self._set_temporary_name(pdf2img)
         subprocess.call(['mv', self.pdf2img, self.temporary_name])
         subprocess.call(['ln', '-s', os.path.abspath(mock), self.pdf2img])
