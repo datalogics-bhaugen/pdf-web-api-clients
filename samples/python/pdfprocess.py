@@ -56,9 +56,9 @@ import simplejson as json
 from pdfclient import Application
 
 
-OPTIONS = ('inputName', 'password', 'options')
-USAGE = '''usage:\
- {} requestType input [inputName=name] [password=pwd] [options=json]'''
+OPTIONS = ('input_name', 'password', 'options')
+USAGE_OPTIONS = '[{}=name] [{}=pwd] [{}=json]'.format(*OPTIONS)
+USAGE = 'usage: {} requestType input ' + USAGE_OPTIONS
 
 
 ## Sample pdfclient driver
@@ -68,8 +68,9 @@ class Client(Application):
     def __call__(self, argv, base_url=Application.BASE_URL):
         args, input = self._initialize(argv), argv[2]
         self._request = self.make_request(argv[1], base_url)
-        self._input_name = args.get('inputName', os.path.basename(input))
         url_input = input.lower().startswith('http')
+        input_name = os.path.basename(input) if url_input else input
+        self._input_name = args.get('input_name', input_name)
         send_method = self._send_url if url_input else self._send_file
         return Response(send_method(input, args), self.output_filename)
 
