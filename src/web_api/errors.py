@@ -1,5 +1,6 @@
 "web_api error definitions"
 
+import requests
 import simplejson
 
 
@@ -12,7 +13,7 @@ class EnumValue(object):
         return self._value
 
 
-class ProcessCode(object):
+class ErrorCode(object):
     OK = EnumValue('OK', 0)
     AuthorizationError = EnumValue('AuthorizationError', 1)
     InvalidSyntax = EnumValue('InvalidSyntax', 2)
@@ -27,49 +28,47 @@ class ProcessCode(object):
     UnknownError = EnumValue('UnknownError', 20)
 
 
-class StatusCode:
-    OK = 200
-    BadRequest = 400
-    Forbidden = 403
-    NotFound = 404
-    RequestEntityTooLarge = 413
-    UnsupportedMediaType = 415
-    TooManyRequests = 429
-    InternalServerError = 500
+class HTTPCode:
+    OK = requests.codes.ok
+    BadRequest = requests.codes.bad_request
+    Forbidden = requests.codes.forbidden
+    NotFound = requests.codes.not_found
+    RequestEntityTooLarge = requests.codes.request_entity_too_large
+    UnsupportedMediaType = requests.codes.unsupported_media_type
+    TooManyRequests = requests.codes.too_many_requests
+    InternalServerError = requests.codes.internal_server_error
 
 
 class Error(Exception):
-    def __init__(self, process_code, message,
-                 status_code=StatusCode.BadRequest):
+    def __init__(self, code, message, http_code=HTTPCode.BadRequest):
         Exception.__init__(self, message)
-        self._process_code = process_code
-        self._status_code = status_code
-    def __repr__(self):
-        return '{}: {}'.format(self.process_code, self.message)
+        self._code, self._http_code = code, http_code
+    def __str__(self):
+        return '{}: {}'.format(self.code, self.message)
     def copy(self, message=None):
         message = message or self.message
-        return Error(self.process_code, message, self.status_code)
+        return Error(self.code, message, self.http_code)
     @property
-    def process_code(self): return self._process_code
+    def code(self): return self._code
     @property
-    def status_code(self): return self._status_code
-    @process_code.setter
-    def process_code(self, value): self._process_code = value
+    def http_code(self): return self._http_code
+    @code.setter
+    def code(self, value): self._code = value
 
 
 APDFL_ERRORS = [
-    Error(ProcessCode.InvalidInput, "File does not begin with '%PDF-'",
-          StatusCode.UnsupportedMediaType),
-    Error(ProcessCode.InvalidInput,
+    Error(ErrorCode.InvalidInput, "File does not begin with '%PDF-'",
+          HTTPCode.UnsupportedMediaType),
+    Error(ErrorCode.InvalidInput,
           'The file is damaged and could not be repaired'),
-    Error(ProcessCode.InvalidPassword, 'This document requires authentication',
-          StatusCode.Forbidden),
-    Error(ProcessCode.AdeptDRM,
+    Error(ErrorCode.InvalidPassword, 'This document requires authentication',
+          HTTPCode.Forbidden),
+    Error(ErrorCode.AdeptDRM,
           'The security plug-in required by this command is unavailable',
-          StatusCode.Forbidden)]
+          HTTPCode.Forbidden)]
 
-UNKNOWN = Error(ProcessCode.UnknownError, 'Internal server error',
-                StatusCode.InternalServerError)
+UNKNOWN = Error(ErrorCode.UnknownError, 'Internal server error',
+                HTTPCode.InternalServerError)
 
 
 class JSON:
@@ -79,4 +78,4 @@ class JSON:
             return simplejson.loads(json)
         except Exception:
             error = 'cannot parse {}'.format(json)
-            raise Error(ProcessCode.InvalidSyntax, error)
+            raise Error(ErrorCode.InvalidSyntax, error)

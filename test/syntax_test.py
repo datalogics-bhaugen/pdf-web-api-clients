@@ -2,16 +2,16 @@
 
 import simplejson as json
 from test import Result, Test
-from test_client import RenderPages, StatusCode
+from test_client import HTTPCode, RenderPages
 from nose.tools import assert_in
 
 
-ProcessCode = RenderPages.ProcessCode
+ErrorCode = RenderPages.ErrorCode
 
 class SyntaxFixture(object):
-    def validate(self, options, process_code=None):
+    def validate(self, options, error_code=None):
         options = 'options={}'.format(json.dumps(options))
-        result = Result(process_code) if process_code else self.result
+        result = Result(error_code) if error_code else self.result
         return Test(['data/four_pages.pdf', options], result)()
 
 class TestColorModel(SyntaxFixture):
@@ -20,27 +20,29 @@ class TestColorModel(SyntaxFixture):
     def test_invalid_gif_color_model(self):
         self.validate({'outputFormat': 'gif', 'colorModel': 'cmyk'})
     @property
-    def result(self): return Result(ProcessCode.InvalidColorModel)
+    def result(self): return Result(ErrorCode.InvalidColorModel)
 
 class TestInvalidSyntax(SyntaxFixture):
     def test_invalid_flag(self):
         self.validate({'spam': True})
     def test_invalid_flag_value(self):
+        test_result = self.validate({'printPreview': 'true'})
         error = 'invalid printPreview value: true'
-        assert_in(error, self.validate({'printPreview': 'true'}).exc_info)
+        assert_in(error, test_result.error_message)
     def test_another_invalid_flag_value(self):
+        test_result = self.validate({'printPreview': 'True'})
         error = 'invalid printPreview value: True'
-        assert_in(error, self.validate({'printPreview': 'True'}).exc_info)
+        assert_in(error, test_result.error_message)
     def test_invalid_option(self):
         self.validate({'spam': 'spam'})
     def test_invalid_compression(self):
-        self.validate({'compression': 'spam'}, ProcessCode.InvalidCompression)
+        self.validate({'compression': 'spam'}, ErrorCode.InvalidCompression)
     def test_invalid_region(self):
-        self.validate({'pdfregion': 'spam'}, ProcessCode.InvalidRegion)
+        self.validate({'pdfregion': 'spam'}, ErrorCode.InvalidRegion)
     def test_invalid_resolution(self):
-        self.validate({'resolution': '300x300'}, ProcessCode.InvalidResolution)
+        self.validate({'resolution': '300x300'}, ErrorCode.InvalidResolution)
     @property
-    def result(self): return Result(ProcessCode.InvalidSyntax)
+    def result(self): return Result(ErrorCode.InvalidSyntax)
 
 class TestOutputFormat(SyntaxFixture):
     def test_invalid(self):
@@ -50,7 +52,7 @@ class TestOutputFormat(SyntaxFixture):
     def test_unsupported_multipage(self):
         self.validate({'outputFormat': 'jpg', 'pages': '1-2'})
     @property
-    def result(self): return Result(ProcessCode.InvalidOutputFormat)
+    def result(self): return Result(ErrorCode.InvalidOutputFormat)
 
 class TestPagesInvalid(SyntaxFixture):
     def test_invalid_pages(self):
@@ -68,7 +70,7 @@ class TestPagesInvalid(SyntaxFixture):
     def test_end_page_out_of_range(self):
         self.validate({'outputFormat': 'tif', 'pages': '1-5'})
     @property
-    def result(self): return Result(ProcessCode.InvalidPage)
+    def result(self): return Result(ErrorCode.InvalidPage)
 
 class TestPagesOK(SyntaxFixture):
     def test_last_page(self):
@@ -82,4 +84,4 @@ class TestPagesOK(SyntaxFixture):
     def test_valid_page_range(self):
         self.validate({'outputFormat': 'tif', 'pages': '1-2'})
     @property
-    def result(self): return Result(ProcessCode.OK, StatusCode.OK)
+    def result(self): return Result()

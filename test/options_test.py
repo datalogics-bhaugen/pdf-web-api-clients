@@ -3,7 +3,7 @@
 import simplejson as json
 import mock
 import test
-from test_client import ProcessCode, StatusCode
+from test_client import ErrorCode, HTTPCode
 from nose.tools import assert_in, assert_not_in
 
 
@@ -16,7 +16,7 @@ class TestFixture(object):
         cls.mock = None
     @classmethod
     def validate(cls, options, expected, unexpected=None):
-        ok = test.Result(ProcessCode.OK, StatusCode.OK)
+        ok = test.Result()
         options = 'options={}'.format(json.dumps(options))
         test_response = test.Test(['data/four_pages.pdf', options], ok)()
         output = test_response.output.rstrip().split(' ')

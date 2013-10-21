@@ -11,7 +11,7 @@ import tmpdir
 
 from action import Action
 from configuration import Configuration
-from errors import EnumValue, Error, ProcessCode, StatusCode, UNKNOWN
+from errors import EnumValue, Error, ErrorCode, HTTPCode, UNKNOWN
 from tmpdir import RESOURCE, Stdout, TemporaryFile
 
 import pdf2img
@@ -27,20 +27,17 @@ def pdf2img_action():
     try:
         return pdf2img.Action.from_request(flask.request)()
     except Error as error:
-        return error_response(error)
+        return response(error)
     except Exception as exception:
-        return error_response(UNKNOWN.copy(str(exception)))
+        return response(UNKNOWN.copy(str(exception)))
 
-def error_response(error):
+def response(error):
     logger.error(error)
-    if error.process_code == ProcessCode.UnknownError: log_traceback()
-    return response(error.process_code, error.message, error.status_code)
+    if error.code == ErrorCode.UnknownError: log_traceback()
+    json = flask.jsonify(errorCode=int(error.code), errorMessage=error.message)
+    return json, error.http_code
 
 def log_traceback():
     for entry in traceback.format_tb(sys.exc_info()[2]):
         logger.error(entry.rstrip())
         if '/eggs/' in entry: return
-
-def response(process_code, output, status_code=StatusCode.OK):
-    json = flask.jsonify(processCode=int(process_code), output=output)
-    return json, status_code

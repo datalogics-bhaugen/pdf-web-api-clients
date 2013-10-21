@@ -5,7 +5,7 @@ import requests
 
 import logger
 import tmpdir
-from errors import JSON, StatusCode
+from errors import HTTPCode, JSON
 from pdfclient import Application
 
 
@@ -45,7 +45,7 @@ def action():
     except Exception as exception:
         error = str(exception)
         app.logger.exception(error)
-        return error, StatusCode.InternalServerError
+        return error, HTTPCode.InternalServerError
 
 def request_data(request):
     form = request.form
@@ -60,16 +60,18 @@ def smaller_thumbnail(request, input_file, options):
     landscape_options[str(IMAGE_WIDTH)] = MAX_THUMBNAIL_DIMENSION
     portrait_response = request(input_file, options=portrait_options)
     landscape_response = request(input_file, options=landscape_options)
-    if landscape_response.process_code: return response(portrait_response)
-    if portrait_response.process_code: return response(landscape_response)
+    if landscape_response: return response(portrait_response)
+    if portrait_response: return response(landscape_response)
     return response(smaller_response(portrait_response, landscape_response))
 
-def smaller_response(response1, response2):
-    output1, output2 = response1['output'], response2['output']
-    return response2 if len(output2) < len(output1) else response1
+def smaller_response(api_response_1, api_response_2):
+    output1, output2 = api_response_1.output, api_response_2.output
+    return api_response_2 if len(output2) < len(output1) else api_response_1
 
-def response(request_response):
-    process_code = int(request_response['processCode'])
-    status_code = request_response.status_code
-    output = request_response['output']
-    return flask.jsonify(processCode=process_code, output=output), status_code
+def response(api_response):
+    if api_response:
+        return api_response.output
+    else:
+        code, message = api_response.error_code, api_response.error_message
+        json = flask.jsonify(errorCode=code, errorMessage=message)
+        return json, api_response.status_code
