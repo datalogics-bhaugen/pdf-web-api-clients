@@ -21,7 +21,7 @@
 # remain the sole and exclusive property of Datalogics and are protected by
 # the laws of copyright in the U.S. and other countries.
 #
-# Datalogics and Datalogics PDF Web API are trademarks of Datalogics, Inc.
+# Datalogics and Datalogics PDF WebAPI are trademarks of Datalogics, Inc.
 #
 # TERM
 # ----
