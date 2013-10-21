@@ -36,6 +36,12 @@ def test_pdfprocess_sample_python(python3=False):
     with Stdout() as stdout:
         assert_equal(subprocess.call(args, stdout=stdout), 0)
         assert_in('TODO: Application ID', str(stdout))
+def test_pdfprocess_sample_php():
+    args = ['../samples/php/pdfprocess.php', 'data/bad.pdf']
+    with Stdout() as stdout:
+        process_code = subprocess.call(args, stdout=stdout)
+        assert_equal(process_code, ProcessCode.AuthorizationError)
+        assert_in('TODO: Application ID', str(stdout))
 
 if platform.system() == 'Darwin':
     def test_pdfprocess_sample_python3():
