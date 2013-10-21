@@ -45,8 +45,7 @@ $(LOG_FILE): $(VAR_LOG)
 
 Resource:
 ifeq ($(PLATFORM), Linux)
-	ln -s ../Resource .
-	ls Resource/CMap
+	ls ../Resource/CMap
 endif
 
 bin/segfault: test/src/segfault.c
