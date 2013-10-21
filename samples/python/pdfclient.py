@@ -48,7 +48,6 @@
 # DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
 
 import sys
-import base64
 import inspect
 
 import requests
@@ -125,44 +124,41 @@ class Request(object):
 ## Service response
 class Response(object):
     def __init__(self, request_response):
-        self._status_code = request_response.status_code
-        try: self._json = request_response.json()
-        except ValueError: self._json = {}
+        self._http_code = request_response.status_code
+        self._error_code, self._error_message = None, None
+        self._output = request_response.content if self else None
+        if not self:
+            try:
+                json = request_response.json()
+                self._error_code = json['errorCode']
+                self._error_message = json['errorMessage']
+            except:
+                pass
     def __str__(self):
-        return '{}: {}'.format(self.process_code, self.output or self.exc_info)
+        return self.output or \
+            '{}: {}'.format(self.error_code, self.error_message)
     def __bool__(self):
-        return self.process_code == 0
+        return self.http_code == requests.codes.ok
     __nonzero__ = __bool__
-    def __getitem__(self, key):
-        return json.dumps(self._json[key])
     @property
-    ## API status code (int)
-    def process_code(self):
-        if 'processCode' in self._json: return int(self['processCode'])
+    ## HTTP status code (int)
+    def http_code(self): return self._http_code
 
     @property
     ## Document or image data (bytes) if request was successful, otherwise None
-    def output(self):
-        if 'output' not in self._json or not self:
-            return None
-        elif sys.version_info.major < 3:
-            return self['output'].decode('base64')
-        else:
-            return base64.b64decode(self['output'])
+    def output(self): return self._output
 
     @property
-    ## None if successful, otherwise information (string) about process_code
-    def exc_info(self):
-        if 'output' in self._json and not self: return self['output']
+    ## None if successful, otherwise API error code (int)
+    def error_code(self): return self._error_code
 
     @property
-    ## HTTP status code (int)
-    def status_code(self): return self._status_code
+    ## None if successful, otherwise information (string) about error
+    def error_message(self): return self._error_message
 
 
-## API status codes
-class ProcessCode:
-    OK = 0
+## API error codes
+class ErrorCode:
     AuthorizationError = 1
     InvalidSyntax = 2
     InvalidInput = 3
@@ -179,8 +175,8 @@ class ProcessCode:
 ## Flatten form fields and other annotations
 class FlattenForm(Request):
     REQUEST_TYPE = 'flatten/form'
-    ## Status codes for %FlattenForm requests
-    class ProcessCode(ProcessCode):
+    ## Error codes for %FlattenForm requests
+    class ErrorCode(ErrorCode):
         NoAnnotations = 21
     @property
     ## Output filename extension property (string)
@@ -190,8 +186,8 @@ class FlattenForm(Request):
 ## Create raster image representation
 class RenderPages(Request):
     REQUEST_TYPE = 'render/pages'
-    ## Status codes for %RenderPages requests
-    class ProcessCode(ProcessCode):
+    ## Error codes for %RenderPages requests
+    class ErrorCode(ErrorCode):
         InvalidColorModel = 31
         InvalidCompression = 32
         InvalidRegion = 33

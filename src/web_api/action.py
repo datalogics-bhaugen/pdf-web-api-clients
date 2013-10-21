@@ -3,7 +3,7 @@
 import os
 
 from client import Client
-from errors import APDFL_ERRORS, Error, JSON, ProcessCode, StatusCode, UNKNOWN
+from errors import APDFL_ERRORS, Error, ErrorCode, JSON, UNKNOWN
 
 
 class Action(object):
@@ -13,9 +13,9 @@ class Action(object):
         self._request_form = request.form
         self._set_input(request)
     def raise_error(self, error):
-        invalid_password = ProcessCode.InvalidPassword
-        if error.process_code == invalid_password and not self.password:
-            error.process_code = ProcessCode.MissingPassword
+        invalid_password = ErrorCode.InvalidPassword
+        if error.code == invalid_password and not self.password:
+            error.code = ErrorCode.MissingPassword
         raise error
     def _set_input(self, request, input_name=None):
         name = request.form.get('inputName', input_name or '<anon>')

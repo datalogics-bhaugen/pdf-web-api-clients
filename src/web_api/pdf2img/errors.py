@@ -1,10 +1,10 @@
 "web_api pdf2img action errors"
 
 import web_api
-from web_api import EnumValue, Error, StatusCode
+from web_api import EnumValue, Error, HTTPCode
 
 
-class ProcessCode(web_api.ProcessCode):
+class ErrorCode(web_api.ErrorCode):
     InvalidColorModel = EnumValue('InvalidColorModel', 31)
     InvalidCompression = EnumValue('InvalidCompression', 32)
     InvalidRegion = EnumValue('InvalidRegion', 33)
@@ -12,19 +12,19 @@ class ProcessCode(web_api.ProcessCode):
 
 
 ERRORS = [
-    Error(ProcessCode.InvalidOutputFormat, 'Invalid output type'),
-    Error(ProcessCode.InvalidPage, "Bad '-pages' argument"),
-    Error(ProcessCode.InvalidPage, "Could not parse '-pages' option"),
-    Error(ProcessCode.InvalidPage, 'is greater than End page'),
-    Error(ProcessCode.InvalidPage, 'is greater than last PDF page'),
-    Error(ProcessCode.InvalidPage, 'last PDF page is'),
-    Error(ProcessCode.RequestTooLarge, 'Insufficient memory available',
-          StatusCode.RequestEntityTooLarge),
-    Error(ProcessCode.RequestTooLarge, 'pdf2img ran out of memory',
-          StatusCode.RequestEntityTooLarge),
-    Error(ProcessCode.InvalidColorModel, 'Invalid color model'),
-    Error(ProcessCode.InvalidColorModel,
+    Error(ErrorCode.InvalidOutputFormat, 'Invalid output type'),
+    Error(ErrorCode.InvalidPage, "Bad '-pages' argument"),
+    Error(ErrorCode.InvalidPage, "Could not parse '-pages' option"),
+    Error(ErrorCode.InvalidPage, 'is greater than End page'),
+    Error(ErrorCode.InvalidPage, 'is greater than last PDF page'),
+    Error(ErrorCode.InvalidPage, 'last PDF page is'),
+    Error(ErrorCode.RequestTooLarge, 'Insufficient memory available',
+          HTTPCode.RequestEntityTooLarge),
+    Error(ErrorCode.RequestTooLarge, 'pdf2img ran out of memory',
+          HTTPCode.RequestEntityTooLarge),
+    Error(ErrorCode.InvalidColorModel, 'Invalid color model'),
+    Error(ErrorCode.InvalidColorModel,
           'GIF only supports RGB and Gray images'),
-    Error(ProcessCode.InvalidCompression, 'Invalid compression type'),
-    Error(ProcessCode.InvalidRegion, 'Invalid PDF region type'),
-    Error(ProcessCode.InvalidResolution, "'-resolution' bad value specified")]
+    Error(ErrorCode.InvalidCompression, 'Invalid compression type'),
+    Error(ErrorCode.InvalidRegion, 'Invalid PDF region type'),
+    Error(ErrorCode.InvalidResolution, "'-resolution' bad value specified")]

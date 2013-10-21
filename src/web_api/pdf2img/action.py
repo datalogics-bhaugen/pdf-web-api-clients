@@ -1,12 +1,11 @@
 "web_api pdf2img action"
 
 import os
-import base64
 import subprocess
 
 import requests
 import web_api
-from web_api import Error, ProcessCode, UNKNOWN, logger
+from web_api import Error, ErrorCode, UNKNOWN, logger
 from argument_parser import ArgumentParser
 from output_file import OutputFile
 
@@ -21,7 +20,7 @@ class Action(web_api.Action):
         except Error as error:
             self.raise_error(error)
         except Exception as exc:
-            self.raise_error(Error(ProcessCode.InvalidSyntax, exc.message))
+            self.raise_error(Error(ErrorCode.InvalidSyntax, exc.message))
         self.client.authorize()
         return self._pdf2img()
     def _get_image(self, input_name, output_file):
@@ -32,8 +31,7 @@ class Action(web_api.Action):
             if subprocess.call(args, stdout=stdout):
                 self.raise_error(Action.get_error(stdout))
         with open(output_file.name, 'rb') as image_file:
-            image = base64.b64encode(image_file.read())
-            return web_api.response(ProcessCode.OK, image)
+            return image_file.read()
     def _log_request(self, parser_options):
         options = ' '.join(parser_options)
         if options: options = ' ' + options
@@ -68,10 +66,10 @@ class FromFile(Action):
         request_files = request.files.values()
         if not request_files:
             error = 'no inputURL or request file'
-            self.raise_error(Error(ProcessCode.InvalidInput, error))
+            self.raise_error(Error(ErrorCode.InvalidInput, error))
         if len(request_files) > 1:
-            error = 'excess input: {} files'.format(len(request_files))
-            self.raise_error(Error(ProcessCode.InvalidInput, error))
+            error = 'excess input ({} files)'.format(len(request_files))
+            self.raise_error(Error(ErrorCode.InvalidInput, error))
         self._input = request_files[0]
         Action._set_input(self, request)
 
@@ -80,11 +78,11 @@ class FromURL(Action):
         input_file.write(self.input)
     def _set_input(self, request):
         if request.files.values():
-            error = 'excess input: inputURL and request file'
-            self.raise_error(Error(ProcessCode.InvalidInput, error))
+            error = 'excess input (inputURL and request file)'
+            self.raise_error(Error(ErrorCode.InvalidInput, error))
         input_url = request.form.get('inputURL')
         try:
             self._input = requests.get(input_url).content
         except Exception as exception:
-            self.raise_error(Error(ProcessCode.InvalidInput, str(exception)))
+            self.raise_error(Error(ErrorCode.InvalidInput, str(exception)))
         Action._set_input(self, request, os.path.basename(input_url))

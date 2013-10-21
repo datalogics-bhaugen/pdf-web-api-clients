@@ -12,7 +12,8 @@ requests_dir = glob.glob(os.path.join(root_dir, 'eggs', 'requests-*.egg'))[0]
 samples_dir = os.path.join(root_dir, 'samples', 'python')
 sys.path[0:0] = [json_dir, requests_dir, samples_dir]
 
-from pdfclient import Application, ProcessCode, RenderPages
+import requests
+from pdfclient import Application, ErrorCode, RenderPages
 from pdfprocess import Client
 
 
@@ -21,15 +22,15 @@ BASE_URL = 'https://pdfprocess-test.datalogics-cloud.com'
 TEST_ID = '84445ec0'
 TEST_KEY = '2d3eac77bb3b9bea69a91e625b9241d2'
 
-class StatusCode:
-    OK = 200
-    BadRequest = 400
-    Forbidden = 403
-    NotFound = 404
-    RequestEntityTooLarge = 413
-    UnsupportedMediaType = 415
-    TooManyRequests = 429
-    InternalServerError = 500
+class HTTPCode:
+    OK = requests.codes.ok
+    BadRequest = requests.codes.bad_request
+    Forbidden = requests.codes.forbidden
+    NotFound = requests.codes.not_found
+    RequestEntityTooLarge = requests.codes.request_entity_too_large
+    UnsupportedMediaType = requests.codes.unsupported_media_type
+    TooManyRequests = requests.codes.too_many_requests
+    InternalServerError = requests.codes.internal_server_error
 
 def client(id=TEST_ID, key=TEST_KEY): return Client(id, key)
 def run(argv, base_url=BASE_URL): return client()(argv, base_url)

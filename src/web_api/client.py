@@ -4,7 +4,7 @@ import ThreeScalePY
 import logger
 
 from ThreeScalePY import ThreeScaleAuthRep
-from errors import Error, JSON, ProcessCode, StatusCode, UNKNOWN
+from errors import Error, ErrorCode, HTTPCode, JSON, UNKNOWN
 
 
 PROVIDER_KEY = 'f362180da04b6ca1790784bde6ed70d6'
@@ -22,12 +22,12 @@ class Client(ThreeScaleAuthRep):
             if self.authrep(): return
             error = self.build_response().get_reason()
             if 'usage limit' in error.lower():
-                limit_exceeded = ProcessCode.UsageLimitExceeded
-                raise Error(limit_exceeded, error, StatusCode.TooManyRequests)
+                limit_exceeded = ErrorCode.UsageLimitExceeded
+                raise Error(limit_exceeded, error, HTTPCode.TooManyRequests)
         except ThreeScalePY.ThreeScaleException as exception:
             error = str(exception)
-        authorization_error = ProcessCode.AuthorizationError
-        raise Error(authorization_error, error, StatusCode.Forbidden)
+        authorization_error = ErrorCode.AuthorizationError
+        raise Error(authorization_error, error, HTTPCode.Forbidden)
     def _application(self, request_form):
         application = self._decode_application(request_form)
         if application:

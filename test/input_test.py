@@ -2,32 +2,38 @@
 
 import os
 import subprocess
+import simplejson as json
 from web_api.tmpdir import Stdout
-from test_client import ProcessCode
-from nose.tools import assert_equal, assert_in
+from test_client import ErrorCode
+from nose.tools import assert_equal
 
 
 def test_no_input():
-    validate_error([], 'no input')
+    validate_error([], 'no inputURL or request file')
 
 def test_one_file():
-    validate_input(args(['data/hello_world.pdf']), ProcessCode.OK)
+    validate_input(args(['data/hello_world.pdf']))
 
 def test_two_files():
-    validate_error(['data/hello_world.pdf', 'data/bad.pdf'], 'excess input')
+    error = 'excess input (2 files)'
+    validate_error(['data/hello_world.pdf', 'data/bad.pdf'], error)
 
 def test_url_and_file():
+    error = 'excess input (inputURL and request file)'
     input = args(['data/bad.pdf']) + ['--form', 'inputURL=http://spam.pdf']
-    validate_input(input, ProcessCode.InvalidInput, 'excess input')
+    validate_input(input, ErrorCode.InvalidInput, error)
 
 
 def validate_error(input, error):
-    validate_input(args(input), ProcessCode.InvalidInput, error)
+    validate_input(args(input), ErrorCode.InvalidInput, error)
 
-def validate_input(input, process_code, error=None):
+def validate_input(input, error_code=0, error_message=None):
     with Stdout() as stdout:
-        assert_equal(subprocess.call(input, stdout=stdout), process_code)
-        if error: assert_in(error, str(stdout))
+        subprocess.call(input, stdout=stdout)
+        if error_code:
+            response = json.loads(str(stdout))
+            assert_equal(error_code, response['errorCode'])
+            assert_equal(error_message, response['errorMessage'])
 
 def args(input):
     result = ['scripts/curl']

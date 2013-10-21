@@ -1,7 +1,7 @@
 "server test classes"
 
 import test_client
-from test_client import StatusCode
+from test_client import HTTPCode
 from nose.tools import assert_equal, assert_in
 from nose.tools import assert_is_none, assert_is_not_none
 
@@ -16,24 +16,22 @@ TEST_KEY = test_client.TEST_KEY
 
 
 class Result(object):
-    def __init__(self, process_code, status_code=StatusCode.BadRequest):
-        self._process_code = process_code
-        self._status_code = status_code
+    def __init__(self, error_code=None, http_code=HTTPCode.OK):
+        if error_code and http_code == HTTPCode.OK:
+            http_code = HTTPCode.BadRequest
+        self._error_code, self._http_code = error_code, http_code
     def validate(self, response):
-        assert_equal(self._process_code, response.process_code)
-        if isinstance(self._status_code, int):
-            assert_equal(response.status_code, self._status_code)
+        assert_equal(self._error_code, response.error_code)
+        if isinstance(self._http_code, int):
+            assert_equal(response.http_code, self._http_code)
         else:
-            assert_in(response.status_code, self._status_code)
-        if self._process_code is None:
-            assert_is_none(response.output)
-            assert_is_none(response.exc_info)
-        elif response:
+            assert_in(response.http_code, self._http_code)
+        if response:
             assert_is_not_none(response.output)
-            assert_is_none(response.exc_info)
+            assert_is_none(response.error_message)
         else:
             assert_is_none(response.output)
-            assert_is_not_none(response.exc_info)
+            assert_is_not_none(response.error_message)
         return response
 
 class Test(object):
