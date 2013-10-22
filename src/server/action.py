@@ -1,4 +1,4 @@
-"web_api action"
+"WebAPI action"
 
 import os
 

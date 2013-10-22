@@ -1,8 +1,8 @@
-"web_api pdf2img action option translator"
+"WebAPI pdf2img action option translator"
 
 import simplejson as json
 
-from web_api import logger
+from server import logger
 from errors import Error, ErrorCode
 from options import Option
 

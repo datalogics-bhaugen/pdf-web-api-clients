@@ -1,4 +1,4 @@
-"web_api client"
+"WebAPI client"
 
 import ThreeScalePY
 import logger

@@ -1,18 +1,18 @@
-"web_api pdf2img action"
+"WebAPI pdf2img action"
 
 import os
 import subprocess
 
 import requests
-import web_api
-from web_api import Error, ErrorCode, UNKNOWN, logger
+import server
+from server import Error, ErrorCode, UNKNOWN, logger
 from argument_parser import ArgumentParser
 from output_file import OutputFile
 
 
-class Action(web_api.Action):
+class Action(server.Action):
     def __init__(self, request):
-        web_api.Action.__init__(self, request)
+        server.Action.__init__(self, request)
         self._parser = ArgumentParser(self._log_request)
     def __call__(self):
         try:
@@ -24,7 +24,7 @@ class Action(web_api.Action):
         self.client.authorize()
         return self._pdf2img()
     def _get_image(self, input_name, output_file):
-        with web_api.Stdout() as stdout:
+        with server.Stdout() as stdout:
             options = Action._options() + self._parser.pdf2img_options
             if self.password: options += ['-password={}'.format(self.password)]
             args = ['pdf2img'] + options + [input_name, self.output_format]
@@ -40,7 +40,7 @@ class Action(web_api.Action):
         info_args = (options, self.input_name, output_format, self.client)
         logger.info('pdf2img{} {}{} {}'.format(*info_args))
     def _pdf2img(self):
-        with web_api.TemporaryFile() as input_file:
+        with server.TemporaryFile() as input_file:
             self._save_input(input_file)
             with OutputFile(input_file.name, self.output_format) as output:
                 return self._get_image(input_file.name, output)
@@ -50,9 +50,9 @@ class Action(web_api.Action):
         return action(request)
     @classmethod
     def _options(cls):
-        if not web_api.RESOURCE: return []
+        if not server.RESOURCE: return []
         resources = ('CMap', 'Font', 'Unicode')
-        resources = [os.path.join(web_api.RESOURCE, r) for r in resources]
+        resources = [os.path.join(server.RESOURCE, r) for r in resources]
         return ['-fontlist="{}"'.format(';'.join(resources))]
     @property
     def output_format(self): return self._parser.output_format

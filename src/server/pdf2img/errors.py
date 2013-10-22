@@ -1,10 +1,10 @@
-"web_api pdf2img action errors"
+"WebAPI pdf2img action errors"
 
-import web_api
-from web_api import EnumValue, Error, HTTPCode
+import server
+from server import EnumValue, Error, HTTPCode
 
 
-class ErrorCode(web_api.ErrorCode):
+class ErrorCode(server.ErrorCode):
     InvalidColorModel = EnumValue('InvalidColorModel', 31)
     InvalidCompression = EnumValue('InvalidCompression', 32)
     InvalidRegion = EnumValue('InvalidRegion', 33)

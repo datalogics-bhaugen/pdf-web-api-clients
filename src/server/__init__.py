@@ -1,4 +1,4 @@
-"web_api application"
+"WebAPI application"
 
 import os
 import sys

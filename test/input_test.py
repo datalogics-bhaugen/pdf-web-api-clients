@@ -3,7 +3,7 @@
 import os
 import subprocess
 import simplejson as json
-from web_api.tmpdir import Stdout
+from server.tmpdir import Stdout
 from test_client import ErrorCode
 from nose.tools import assert_equal
 

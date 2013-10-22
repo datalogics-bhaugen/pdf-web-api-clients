@@ -1,4 +1,4 @@
-"web_api file utilities"
+"WebAPI file utilities"
 
 import os
 import platform

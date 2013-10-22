@@ -1,4 +1,4 @@
-"web_api error definitions"
+"WebAPI error definitions"
 
 import requests
 import simplejson

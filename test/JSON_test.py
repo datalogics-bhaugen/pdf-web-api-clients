@@ -1,9 +1,9 @@
 "server regression tests, JSON"
 
 import mock
-from web_api.action import Action
-from web_api.client import Client
-from web_api.errors import Error
+from server.action import Action
+from server.client import Client
+from server.errors import Error
 from test import TEST_ID, TEST_KEY
 from nose.tools import assert_equal, assert_in, assert_is_none
 

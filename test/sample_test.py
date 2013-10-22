@@ -1,10 +1,10 @@
-"web_api regression tests"
+"WebAPI regression tests"
 
 import os
 import glob
 import platform
 import subprocess
-from web_api.tmpdir import Stdout
+from server.tmpdir import Stdout
 from test_client import ErrorCode
 from nose.tools import assert_equal, assert_in
 
