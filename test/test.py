@@ -1,18 +1,12 @@
 "server test classes"
 
 import test_client
-from test_client import HTTPCode
+from test_client import HTTPCode, THREE_SCALE
 from nose.tools import assert_equal, assert_in
 from nose.tools import assert_is_none, assert_is_not_none
 
 
 BASE_URL = 'http://127.0.0.1:5000'
-
-PUBLIC_ID = 'c953bc0d'
-PUBLIC_KEY = 'c7a7c21fb25c384127879ded5ed3b0a4'
-
-TEST_ID = test_client.TEST_ID
-TEST_KEY = test_client.TEST_KEY
 
 
 class Result(object):
@@ -38,10 +32,10 @@ class Test(object):
     def __init__(self, args, result, client=None):
         self._args, self._result = args, result
         self._client = client or Test.client()
-    def __call__(self, base_url=BASE_URL):
-        return self._result.validate(self.post(base_url))
-    def post(self, base_url):
-        return self._client(['test', 'render/pages'] + self._args, base_url)
+    def __call__(self, base_url=BASE_URL, request_type='render/pages'):
+        return self._result.validate(self.post(base_url, request_type))
+    def post(self, base_url, request_type='render/pages'):
+        return self._client(['test', request_type] + self._args, base_url)
     @classmethod
-    def client(cls, id=TEST_ID, key=TEST_KEY):
+    def client(cls, id=THREE_SCALE.test_id, key=THREE_SCALE.test_key):
         return test_client.client(id, key)

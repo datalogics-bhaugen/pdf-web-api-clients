@@ -5,14 +5,12 @@ import requests
 
 import logger
 import tmpdir
+from cfg import Configuration
 from errors import HTTPCode, JSON
 from pdfclient import Application
 
 
 BASE_URL = 'http://127.0.0.1:5000'
-
-JOEL_GERACI_ID = 'b0ecd1e6'
-JOEL_GERACI_KEY = '5024e1e9c089abd46b419cc17222b86b'
 
 INPUT_NAME = 'inputURL'
 MAX_THUMBNAIL_DIMENSION = 150
@@ -35,7 +33,9 @@ logger.start(app.logger, app.name)
 def action():
     try:
         input_url, options = request_data(flask.request)
-        application = Application(JOEL_GERACI_ID, JOEL_GERACI_KEY)
+        application_id = Configuration.three_scale.thumbnail_id
+        application_key = Configuration.three_scale.thumbnail_key
+        application = Application(application_id, application_key)
         request = application.make_request('render/pages', BASE_URL)
         if IMAGE_WIDTH in options.keys() or IMAGE_HEIGHT in options.keys():
             return response(request(input_url, options=options))

@@ -6,12 +6,14 @@ import os
 import sys
 import subprocess
 
+import cfg
+
 
 INPUT_URL = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
 
 def base_url():
-    environment = (os.getenv('DLENV') or '').lower()
-    suffix = '' if environment == 'prod' else '-{}'.format(environment)
+    dlenv = cfg.Configuration.environment.dlenv
+    suffix = '' if dlenv == 'prod' else '-{}'.format(dlenv)
     return 'http://thumbnail{}.datalogics-cloud.com'.format(suffix)
 
 def monitor(argv):

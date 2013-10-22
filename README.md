@@ -57,13 +57,17 @@ We use Buildout, which is a three-step process. These steps are executed by the 
 ## Run
 
 * `scripts/gunicorn` starts this server
-* `scripts/monitor.py` is used by Scout to monitor this server
 * `thumbnail/scripts/gunicorn` runs the thumbnail server
 
 On Linux, the corresponding init daemon commands are:
 
 * `/sbin/start webapi` and `/sbin/stop webapi`
 * `/sbin/start thumbnail` and `/sbin/stop thumbnail`
+
+## Monitor
+
+* `web-api/monitor.py` is used by Scout to monitor this server
+* `web-api/monitor-thumbnail.py` is used to monitor the thumbnail server
 
 ## Test
 

@@ -14,7 +14,7 @@ ifeq ($(PLATFORM), Darwin)
 endif
 	python virtualenv.py --never-download venv
 	venv/bin/python bootstrap.py
-	scripts/make_server_cfg > server.cfg
+	scripts/make_server_cfg > cfg/versions
 	bin/buildout | scripts/make_versions_cfg > versions.cfg
 	@diff $(VENV) virtualenv.py > /dev/null || echo Upgrade virtualenv!
 	@cp $(VENV) .
@@ -27,7 +27,7 @@ clean:
 	@$(MAKE_THUMBNAIL) clean
 
 qa: bin/segfault
-	$(QA) samples scripts src test
+	$(QA) cfg samples scripts src test
 	@$(MAKE_THUMBNAIL) qa
 
 html: $(DOXYGEN)
@@ -45,7 +45,7 @@ $(LOG_FILE): $(VAR_LOG)
 
 Resource:
 ifeq ($(PLATFORM), Linux)
-	ls ../Resource/CMap
+	ls -d ../Resource/CMap
 endif
 
 bin/segfault: test/src/segfault.c

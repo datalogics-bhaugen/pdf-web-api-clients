@@ -2,14 +2,15 @@
 
 import mock
 from server.action import Action
+from server.cfg import Configuration
 from server.client import Client
 from server.errors import Error
-from test import TEST_ID, TEST_KEY
 from nose.tools import assert_equal, assert_in, assert_is_none
 
 
 def test_bad_application():
-    application = {'id': TEST_ID, 'key': TEST_KEY}
+    three_scale = Configuration.three_scale
+    application = {'id': three_scale.test_id, 'key': three_scale.test_key}
     error_message = 'cannot parse {}'.format(application)
     request_form = {'application': str(application)}
     try: assert_is_none(Client('127.0.0.1', request_form))
