@@ -54,10 +54,14 @@ def error(msg, *args, **kwargs): LOGGER.error(msg, *args, **kwargs)
 def critical(msg, *args, **kwargs): LOGGER.critical(msg, *args, **kwargs)
 def log(lvl, msg, *args, **kwargs): LOGGER.log(lvl, msg, *args, **kwargs)
 
-def start(app_logger, name, version=None, log_level=logging.DEBUG):
+def log_level():
+    environment = (os.getenv('DLENV') or '').lower()
+    return logging.DEBUG if environment == 'test' else logging.INFO
+
+def start(app_logger, name, version=None):
     global LOGGER
     LOGGER = app_logger
-    LOGGER.setLevel(log_level)
+    LOGGER.setLevel(log_level())
     LOGGER.addHandler(SysLogHandler())
     LOGGER.addHandler(FileHandler(name))
     if version:

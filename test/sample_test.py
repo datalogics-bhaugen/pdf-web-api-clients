@@ -1,11 +1,11 @@
-"web_api regression tests"
+"WebAPI regression tests"
 
 import os
 import glob
 import platform
 import subprocess
-from web_api.tmpdir import Stdout
-from test_client import ProcessCode
+from server.tmpdir import Stdout
+from test_client import ErrorCode
 from nose.tools import assert_equal, assert_in
 
 
@@ -25,8 +25,15 @@ def test_pdf2img_application():
 def test_pdfprocess_sample_perl():
     args = ['../samples/perl/pdfprocess.pl', 'render/pages', 'data/bad.pdf']
     with Stdout() as stdout:
-        process_code = subprocess.call(args, stdout=stdout)
-        assert_equal(process_code, ProcessCode.AuthorizationError)
+        error_code = subprocess.call(args, stdout=stdout)
+        assert_equal(error_code, ErrorCode.AuthorizationError)
+        assert_in('TODO: Application ID', str(stdout))
+
+def test_pdfprocess_sample_php():
+    args = ['php', '../samples/php/pdfprocess.php', 'data/bad.pdf']
+    with Stdout() as stdout:
+        error_code = subprocess.call(args, stdout=stdout)
+        assert_equal(error_code, ErrorCode.AuthorizationError)
         assert_in('TODO: Application ID', str(stdout))
 
 def test_pdfprocess_sample_python(python3=False):
@@ -35,12 +42,6 @@ def test_pdfprocess_sample_python(python3=False):
     if python3: args[0:0] = ['python3']
     with Stdout() as stdout:
         assert_equal(subprocess.call(args, stdout=stdout), 0)
-        assert_in('TODO: Application ID', str(stdout))
-def test_pdfprocess_sample_php():
-    args = ['../samples/php/pdfprocess.php', 'data/bad.pdf']
-    with Stdout() as stdout:
-        process_code = subprocess.call(args, stdout=stdout)
-        assert_equal(process_code, ProcessCode.AuthorizationError)
         assert_in('TODO: Application ID', str(stdout))
 
 if platform.system() == 'Darwin':

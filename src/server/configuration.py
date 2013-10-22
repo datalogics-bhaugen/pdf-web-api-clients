@@ -1,4 +1,4 @@
-"web_api configuration"
+"WebAPI configuration"
 
 import os
 import ConfigParser

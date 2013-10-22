@@ -1,11 +1,12 @@
 # web-api
 
-Internet-accessible PDF API, a.k.a. "PDF Web API" and "pdfprocess".
+Internet-accessible PDF API, formally known as "PDF WebAPI".
 
 ## System Requirements
 
 * PDF2IMG
 * Python 2.7
+* `pdfprocess` login
 
 MacOS (different versions) is the primary development platform, and Ubuntu is the target deployment platform.
 
@@ -55,21 +56,21 @@ We use Buildout, which is a three-step process. These steps are executed by the 
 
 ## Run
 
-* `scripts/gunicorn` runs this server
-* `test/monitor.py` is used by Scout to monitor this server
+* `scripts/gunicorn` starts this server
+* `scripts/monitor.py` is used by Scout to monitor this server
 * `thumbnail/scripts/gunicorn` runs the thumbnail server
+
+On Linux, the corresponding init daemon commands are:
+
+* `/sbin/start webapi` and `/sbin/stop webapi`
+* `/sbin/start thumbnail` and `/sbin/stop thumbnail`
 
 ## Test
 
 These scripts facilitate testing:
 
 * `bin/nose` runs the regression tests that validate this Flask application
-* `bin/pdfprocess` runs this Flask application with its development server (Werkzeug)
+* `bin/server` runs this Flask application with its development server (Werkzeug)
 * `test/app_test.py` tests this Flask application directly
 * `test/test_client.py` runs `samples/pdfprocess.py` with test settings
 
-## Logging
-
-Our Flask application creates a log file in the directory specified by the LOG_PATH environment variable. If this is not defined, the application creates its log file in the current working directory.
-
-`scripts/configure_logger.py` defines LOG_PATH to our var/log directory, and configures the logger to use UTC timestamps.

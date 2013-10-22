@@ -2,7 +2,7 @@ DOXYGEN = doc/html/index.html
 ERASE = printf '' >
 GIT_HOOK = .git/hooks/pre-commit
 LOG_FILE = $(VAR_LOG)/pdfprocess.log
-MAKE_THUMBNAIL = make --directory thumbnail
+MAKE_THUMBNAIL = make --directory thumbnail-src
 PLATFORM = $(shell uname -s)
 QA = bin/flake8 --max-complexity 10
 VAR_LOG = var/log
@@ -45,8 +45,7 @@ $(LOG_FILE): $(VAR_LOG)
 
 Resource:
 ifeq ($(PLATFORM), Linux)
-	ln -s ../Resource .
-	ls Resource/CMap
+	ls ../Resource/CMap
 endif
 
 bin/segfault: test/src/segfault.c

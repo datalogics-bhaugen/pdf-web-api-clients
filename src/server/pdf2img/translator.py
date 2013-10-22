@@ -1,9 +1,9 @@
-"web_api pdf2img action option translator"
+"WebAPI pdf2img action option translator"
 
 import simplejson as json
 
-from web_api import logger
-from errors import Error, ProcessCode
+from server import logger
+from errors import Error, ErrorCode
 from options import Option
 
 
@@ -57,7 +57,7 @@ class OutputFormat(Translator):
         output_formats = ('gif', 'jpg', 'png', 'tif')
         if self.option not in output_formats:
             error = 'outputFormat must be one of ' + str(output_formats)
-            raise Error(ProcessCode.InvalidOutputFormat, error)
+            raise Error(ErrorCode.InvalidOutputFormat, error)
         return self.options
 
 class Pages(Translator):
@@ -70,7 +70,7 @@ class Pages(Translator):
         if not multipage_request: return self.options
         if args[0] == 'tif': return self.options + ['-multipage']
         error = 'Use TIFF format for multi-page image requests'
-        raise Error(ProcessCode.InvalidOutputFormat, error)
+        raise Error(ErrorCode.InvalidOutputFormat, error)
 
 class Resolution(Translator):
     OPTIONS = [Option('resolution')]
@@ -80,7 +80,7 @@ class Resolution(Translator):
         if not self.option: self._option = '150'
         if 'x' not in self.option: return self.options
         error = 'No support for non-square pixel rendering.'
-        raise Error(ProcessCode.InvalidResolution, error)
+        raise Error(ErrorCode.InvalidResolution, error)
 
 class Smoothing(Translator):
     OPTIONS = [Option('smoothing')]

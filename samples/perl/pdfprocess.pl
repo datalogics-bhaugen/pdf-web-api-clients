@@ -52,7 +52,6 @@ use strict;
 use HTTP::Request::Common qw(POST);
 use JSON;
 use LWP::UserAgent;
-use MIME::Base64;
 
 my $application_id = 'TODO: Application ID';
 my $application_key = 'TODO: Application key';
@@ -67,34 +66,31 @@ my $content = [
     'inputName' => $input_file,
     'options' => encode_json($options)];
 
-my $url = 'https://pdfprocess.datalogics-cloud.com/api/actions/render/pages';
+my $base_url = 'https://pdfprocess.datalogics-cloud.com';
+my $url = $base_url.'/api/actions/'.$ARGV[0];
 my $request = POST($url, Content_Type => 'form-data', Content => $content);
 
 my $user_agent = LWP::UserAgent->new(ssl_opts => {verify_hostname => 0});
-my $response = $user_agent->request($request)->decoded_content;
+my $response = $user_agent->request($request);
 
 #
-# Response is JSON-encoded
+# If request was successful, response body is image data
 #
-my $decoded_response = decode_json($response);
-my $process_code = $decoded_response->{'processCode'};
-my $output = $decoded_response->{'output'};
-
-#
-# If process code != 0, output is error message
-#
-if ($process_code != 0) {
-    print 'ERROR: '.$process_code."\n";
-    print 'Error Message: '.$output."\n";
-    exit $process_code;
+if ($response->is_success) {
+    (my $output_file = $input_file) =~ s/.pdf/.jpg/;
+    open(FILE, '>', $output_file) or die "cannot open file: $!";
+    binmode FILE;
+    print FILE $response->decoded_content;
+    close(FILE);
+    exit 0;
 }
 
 #
-# If process code == 0, output is base64-encoded image
+# Otherwise, response body is JSON-encoded error information
 #
-(my $output_file = $input_file) =~ s/.pdf/.jpg/;
-open(FILE, '>', $output_file) or die "cannot open file: $!";
-binmode FILE;
-print FILE decode_base64($output);
-close(FILE);
+my $error = decode_json($response->decoded_content);
+my $error_code = $error->{'errorCode'};
+
+print $error_code.': '.$error->{'errorMessage'}."\n";
+exit $error_code;
 

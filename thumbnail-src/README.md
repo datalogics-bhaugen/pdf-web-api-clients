@@ -4,8 +4,6 @@ This thumbnail server translates GET requests to POST requests as follows:
 
 * adds application ID and key (Joel's credentials)
 * adds default image size (max=150), if necessary
-* adds default image type (PNG), if necessary
-* adds default page number (1), if necessary
 * returns web-api response, unchanged
 
 ## Build
@@ -15,7 +13,7 @@ This thumbnail server translates GET requests to POST requests as follows:
 ## Run
 
 * `scripts/gunicorn` runs this server
-* `test/monitor.py` is used by Scout to monitor this server
+* `scripts/monitor.py` is used by Scout to monitor this server
 
 ## Test
 

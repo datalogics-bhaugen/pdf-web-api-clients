@@ -47,10 +47,10 @@ This [example](examples/renderPages.txt) is a request for an image of the first 
 
 #### Service Response
 
-The message body of the HTTP response is a JSON value:
+If the request was successful, the message body of the HTTP response is the requested document or image. Otherwise, the message body is a JSON value:
 
-* [processCode](https://api.datalogics-cloud.com/docs#processCode) is 0 if the request was successful, or a nonzero code identifying the error
-* [output](https://api.datalogics-cloud.com/docs#output) contains base64-encoded data if the request was successful, or information about the error
+* [errorCode](https://api.datalogics-cloud.com/docs#errorCode) is an integer code identifying the error
+* [errorMessage](https://api.datalogics-cloud.com/docs#errorMessage) is a string describing the error
 
 ### Sample Clients
 
@@ -60,7 +60,6 @@ To facilitate using this service, we supply two sample clients:
     * HTTP::Request::Common
     * JSON
     * LWP::UserAgent
-    * MIME::Base64
 
 * For Python, download this [client](pdfclient_8py_source.html) module and [script](pdfprocess_8py_source.html). After copying your API key into the script, you can use its command-line interface to send requests. This client has the following dependencies:
     * Python 3.3 or 2.7 (other versions might work, but are not supported)
