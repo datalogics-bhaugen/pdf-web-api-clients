@@ -1,0 +1,11 @@
+[three_scale]
+provider_key: f362180da04b6ca1790784bde6ed70d6
+
+public_id: c953bc0d	; rate-limited
+public_key: c7a7c21fb25c384127879ded5ed3b0a4
+
+test_id: 84445ec0	; not rate-limited
+test_key: 2d3eac77bb3b9bea69a91e625b9241d2
+
+thumbnail_id = b0ecd1e6	; Joel Geraci's
+thumbnail_key = 5024e1e9c089abd46b419cc17222b86b

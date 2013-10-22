@@ -10,7 +10,7 @@ import logger
 import tmpdir
 
 from action import Action
-from configuration import Configuration
+from cfg import Configuration
 from errors import EnumValue, Error, ErrorCode, HTTPCode, UNKNOWN
 from tmpdir import RESOURCE, Stdout, TemporaryFile
 
@@ -18,9 +18,7 @@ import pdf2img
 
 
 app = flask.Flask('pdfprocess')
-configuration = Configuration()
-logger.start(app.logger, app.name, configuration.server_version)
-logger.info('versions: {}'.format(configuration.filename))
+logger.start(app.logger, app.name, Configuration.versions.server)
 
 @app.route('/api/actions/render/pages', methods=['POST'])
 def pdf2img_action():
