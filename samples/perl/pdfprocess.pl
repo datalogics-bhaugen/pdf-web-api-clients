@@ -66,7 +66,8 @@ my $content = [
     'inputName' => $input_file,
     'options' => encode_json($options)];
 
-my $url = 'https://pdfprocess.datalogics-cloud.com/api/actions/render/pages';
+my $base_url = 'https://pdfprocess.datalogics-cloud.com';
+my $url = $base_url.'/api/actions/'.$ARGV[0];
 my $request = POST($url, Content_Type => 'form-data', Content => $content);
 
 my $user_agent = LWP::UserAgent->new(ssl_opts => {verify_hostname => 0});
@@ -90,6 +91,6 @@ if ($response->is_success) {
 my $error = decode_json($response->decoded_content);
 my $error_code = $error->{'errorCode'};
 
-print $error_code.": ".$error->{'errorMessage'}."\n";
+print $error_code.': '.$error->{'errorMessage'}."\n";
 exit $error_code;
 
