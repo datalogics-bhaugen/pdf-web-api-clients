@@ -12,7 +12,7 @@ INPUT_URL = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
 def base_url():
     environment = (os.getenv('DLENV') or '').lower()
     suffix = '' if environment == 'prod' else '-{}'.format(environment)
-    return 'http://thumbnail{}.datalogics-cloud.com/{}'.format(suffix)
+    return 'http://thumbnail{}.datalogics-cloud.com'.format(suffix)
 
 def monitor(argv):
     request_url = '{}?inputURL={}'.format(base_url(), INPUT_URL)
