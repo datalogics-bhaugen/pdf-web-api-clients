@@ -3,6 +3,7 @@ import sys
 import time
 import logging
 
+import cfg
 import tmpdir
 from platform import system
 from logging.handlers import SysLogHandler as BaseSysLogHandler
@@ -55,8 +56,8 @@ def critical(msg, *args, **kwargs): LOGGER.critical(msg, *args, **kwargs)
 def log(lvl, msg, *args, **kwargs): LOGGER.log(lvl, msg, *args, **kwargs)
 
 def log_level():
-    environment = (os.getenv('DLENV') or '').lower()
-    return logging.DEBUG if environment == 'test' else logging.INFO
+    dlenv = cfg.Configuration.environment.dlenv
+    return logging.DEBUG if dlenv == 'test' else logging.INFO
 
 def start(app_logger, name, version=None):
     global LOGGER

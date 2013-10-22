@@ -17,6 +17,10 @@ def test_bad_url():
 def max_retry_error(url):
     return 'Max retries exceeded with url: {}'.format(url)
 
+def test_flatten_form():
+    args = ['data/annotated_form.pdf', 'input_name=annotated_form.pdf']
+    Test(args, Result())('http://127.0.0.1:8080', 'flatten/form')
+
 def test_good_url():
     Test(['http://www.datalogics.com/pdf/doc/pdf2img.pdf'], Result())()
 
