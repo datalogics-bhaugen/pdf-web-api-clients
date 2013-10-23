@@ -37,8 +37,10 @@ def action():
         application_key = Configuration.three_scale.thumbnail_key
         application = Application(application_id, application_key)
         request = application.make_request('render/pages', BASE_URL)
+        for option, value in options.iteritems():
+            request.options[option] = value
         if IMAGE_WIDTH in options.keys() or IMAGE_HEIGHT in options.keys():
-            return response(request(input_url, options=options))
+            return response(request(input_url))
         with tmpdir.TemporaryFile() as input_file:
             input_file.write(requests.get(input_url).content)
             return smaller_thumbnail(request, input_file, options)
