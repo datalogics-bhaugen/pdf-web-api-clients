@@ -54,6 +54,8 @@ import requests
 import simplejson as json
 
 
+STRING_TYPES = (str, unicode) if sys.version_info.major < 3 else (str,)
+
 ## %Request factory
 class Application(object):
     BASE_URL = 'https://pdfprocess.datalogics-cloud.com'
@@ -92,6 +94,7 @@ class Application(object):
 class Request(object):
     def __init__(self, application, base_url):
         self._data = {'application': str(application)}
+        self._options, self._output_format = {}, None
         self._url = '{}/api/actions/{}'.format(base_url, self.REQUEST_TYPE)
 
     ## Send request
@@ -99,23 +102,27 @@ class Request(object):
     #  @param input input document URL or file object
     #  @param input_name input name for service log
     #  @param password document password
-    #  @param options other request options
-    def __call__(self, input, input_name=None, password=None, options={}):
+    def __call__(self, input, input_name=None, password=None):
         data, files = self._data.copy(), None
-        if password: data['password'] = password
-        if options: data['options'] = json.dumps(options)
-        string_types = (str, unicode) if sys.version_info.major < 3 else (str,)
-        if type(input) in string_types:
+        if type(input) in STRING_TYPES:
             data['inputURL'] = input
         else:
             input.seek(0)
             files = {'input': input}
             data['inputName'] = input.name
         if input_name: data['inputName'] = input_name
+        if password: data['password'] = password
+        if self.options: data['options'] = json.dumps(self.options)
         request_response =\
             requests.post(self.url, verify=False, data=data, files=files)
         return Response(request_response)
 
+    @property
+    ## %Request options (dict)
+    def options(self): return self._options
+    @property
+    ## Output filename extension property (string)
+    def output_format(self): return self._output_format
     @property
     ## %Request URL property (string)
     def url(self): return self._url
@@ -143,15 +150,12 @@ class Response(object):
     @property
     ## HTTP status code (int)
     def http_code(self): return self._http_code
-
     @property
     ## Document or image data (bytes) if request was successful, otherwise None
     def output(self): return self._output
-
     @property
     ## None if successful, otherwise API error code (int)
     def error_code(self): return self._error_code
-
     @property
     ## None if successful, otherwise information (string) about error
     def error_message(self): return self._error_message
@@ -175,51 +179,68 @@ class ErrorCode:
 ## Flatten form fields and other annotations
 class FlattenForm(Request):
     REQUEST_TYPE = 'flatten/form'
+    ## %FlattenForm has no request options
+    OPTIONS = []
     ## Error codes for %FlattenForm requests
     class ErrorCode(ErrorCode):
         NoAnnotations = 21
-    @property
-    ## Output filename extension property (string)
-    def output_format(self): return 'pdf'
+    def __init__(self, application, base_url):
+        Request.__init__(self, application, base_url)
+        self._output_format = 'pdf'
 
 
 ## Create raster image representation
 class RenderPages(Request):
     REQUEST_TYPE = 'render/pages'
+    ## %RenderPages request options:
+    #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel):
+    #     rgb (default), gray, rgba, or cmyk
+    #  * [compression](https://api.datalogics-cloud.com/docs#compression):
+    #     lzw (default) or jpg
+    #  * [disableColorManagement]
+    #     (https://api.datalogics-cloud.com/docs#disableColorManagement):
+    #     for downstream color management (rarely used)
+    #  * [disableThinLineEnhancement]
+    #     (https://api.datalogics-cloud.com/docs#disableThinLineEnhancement)
+    #     for high-resolution output (rarely used)
+    #  * [imageHeight](https://api.datalogics-cloud.com/docs#imageHeight):
+    #     pixels
+    #  * [imageWidth](https://api.datalogics-cloud.com/docs#imageWidth):
+    #     pixels
+    #  * [OPP](https://api.datalogics-cloud.com/docs#OPP): overprint preview
+    #  * [outputFormat](https://api.datalogics-cloud.com/docs#outputFormat):
+    #     png (default), git, jpg, or tif
+    #  * [pages](https://api.datalogics-cloud.com/docs#pages):
+    #     default = 1
+    #  * [pdfRegion](https://api.datalogics-cloud.com/docs#pdfRegion):
+    #     crop (default), art, bleed, bounding, media, or trim
+    #  * [printPreview](https://api.datalogics-cloud.com/docs#printPreview):
+    #     ignored if suppressAnnotations is true
+    #  * [resolution](https://api.datalogics-cloud.com/docs#resolution):
+    #     12 to 2400 (default = 150)
+    #  * [smoothing](https://api.datalogics-cloud.com/docs#smoothing):
+    #     all (default), none, or text
+    #  * [suppressAnnotations]
+    #     (https://api.datalogics-cloud.com/docs#suppressAnnotations):
+    #     default = False
+    OPTIONS = ['colorModel', 'compression',
+               'disableColorManagement', 'disableThinLineEnhancement',
+               'imageHeight', 'imageWidth',
+               'OPP', 'outputFormat',
+               'pages', 'pdfRegion',
+               'printPreview', 'resolution',
+               'smoothing', 'suppressAnnotations']
     ## Error codes for %RenderPages requests
     class ErrorCode(ErrorCode):
         InvalidColorModel = 31
         InvalidCompression = 32
         InvalidRegion = 33
         InvalidResolution = 34
-    @property
-    ## Output filename extension property (string)
-    def output_format(self): return self._output_format
     ## Send request
-    #  @return a requests.Response object
+    #  @return a Response object
     #  @param input input document URL or file object
     #  @param input_name input name for service log
     #  @param password document password
-    #  @param options e.g. {'outputFormat': 'jpg', 'printPreview': True}
-    #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel)
-    #  * [compression](https://api.datalogics-cloud.com/docs#compression)
-    #  * [disableColorManagement]
-    #     (https://api.datalogics-cloud.com/docs#disableColorManagement)
-    #  * [disableThinLineEnhancement]
-    #     (https://api.datalogics-cloud.com/docs#disableThinLineEnhancement)
-    #  * [imageHeight](https://api.datalogics-cloud.com/docs#imageHeight)
-    #  * [imageWidth](https://api.datalogics-cloud.com/docs#imageWidth)
-    #  * [OPP](https://api.datalogics-cloud.com/docs#OPP)
-    #  * [outputFormat](https://api.datalogics-cloud.com/docs#outputFormat)
-    #  * [pages](https://api.datalogics-cloud.com/docs#pages)
-    #  * [password](https://api.datalogics-cloud.com/docs#password)
-    #  * [pdfRegion](https://api.datalogics-cloud.com/docs#pdfRegion)
-    #  * [printPreview](https://api.datalogics-cloud.com/docs#printPreview)
-    #  * [resolution](https://api.datalogics-cloud.com/docs#resolution)
-    #  * [smoothing](https://api.datalogics-cloud.com/docs#smoothing)
-    #  * [suppressAnnotations]
-    #     (https://api.datalogics-cloud.com/docs#suppressAnnotations)
-    def __call__(self, input, input_name=None, password=None, options={}):
-        self._output_format = options.get('outputFormat', 'png')
-        return Request.__call__(self, input=input, input_name=input_name,
-                                password=password, options=options)
+    def __call__(self, input, input_name=None, password=None):
+        self._output_format = self.options.get('outputFormat', 'png')
+        return Request.__call__(self, input, input_name, password)

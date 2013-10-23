@@ -66,8 +66,8 @@ class Client(Application):
     ## @param argv e.g.['%pdfprocess.py', 'render/pages', 'hello_world.pdf']
     #  @param base_url
     def __call__(self, argv, base_url=Application.BASE_URL):
-        args, input = self._initialize(argv), argv[2]
         self._request = self.make_request(argv[1], base_url)
+        input, args, options = self._initialize(argv)
         url_input = input.lower().startswith('http')
         input_name = os.path.basename(input) if url_input else input
         self._input_name = args.get('input_name', input_name)
@@ -76,23 +76,35 @@ class Client(Application):
 
     def _initialize(self, argv):
         try:
-            return self._parse_args(argv)
-        except Exception:
+            input, args, options = self._parse_args(argv)
+            for option, value in options.iteritems():
+                if option in self._request.OPTIONS:
+                    self._request.options[option] = value
+                else:
+                    Client._invalid_option(option)
+            return input, args, options
+        except Exception as exception:
+            print(exception)
             sys.exit(USAGE.format(argv[0]))
     def _parse_args(self, argv):
-        result = {}
+        input, args, options = argv[2], {}, {}
         for arg in argv[3:]:
             option, value = arg.split('=')
             if option not in OPTIONS:
-                raise Exception('invalid option: {}'.format(option))
-            if option == 'options': value = json.loads(value)
-            result[option] = value
-        return result
+                Client._invalid_option(option)
+            if option == 'options':
+                options = json.loads(value)
+            else:
+                args[option] = value
+        return input, args, options
     def _send_file(self, input, args):
         with open(input, 'rb') as input_file:
             return self._request(input_file, **args)
     def _send_url(self, input, args):
         return self._request(input, **args)
+    @classmethod
+    def _invalid_option(cls, option):
+        raise Exception('invalid option: {}'.format(option))
     @property
     ## Output filename
     def output_filename(self):

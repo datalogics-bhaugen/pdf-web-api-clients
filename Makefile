@@ -21,7 +21,7 @@ endif
 	@$(MAKE_THUMBNAIL)
 	@make qa
 
-clean:
+clean: html-clean
 	rm -rf .installed.cfg $(GIT_HOOK) bin develop-eggs parts
 	$(ERASE) $(LOG_FILE)
 	@$(MAKE_THUMBNAIL) clean
@@ -32,7 +32,10 @@ qa: bin/segfault
 
 html: $(DOXYGEN)
 
-.PHONY: build clean qa html
+html-clean:
+	cd doc/html; rm -rf *.css *.html *.js *.png search
+
+.PHONY: build clean qa html html-clean
 
 eggs tmp $(VAR_LOG):
 	mkdir -p $@
@@ -52,7 +55,7 @@ bin/segfault: test/src/segfault.c
 	gcc $^ -o $@
 
 $(DOXYGEN): doxygen doc/Doxyfile samples/* samples/python/*
-	cd doc/html; rm -rf *.css *.html *.js *.png search; cd ../..
+	@make html-clean
 	doxygen/bin/doxygen doc/Doxyfile
 
 doxygen:
