@@ -50,10 +50,10 @@ class Error(Exception):
         return Error(self.code, message, self.http_code)
     @property
     def code(self): return self._code
-    @property
-    def http_code(self): return self._http_code
     @code.setter
     def code(self, value): self._code = value
+    @property
+    def http_code(self): return self._http_code
 
 
 APDFL_ERRORS = [
