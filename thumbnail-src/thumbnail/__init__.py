@@ -43,7 +43,7 @@ def action():
             return response(request(input_url))
         with tmpdir.TemporaryFile() as input_file:
             input_file.write(requests.get(input_url).content)
-            return smaller_thumbnail(request, input_file, options)
+            return smaller_thumbnail(request, input_file)
     except Exception as exception:
         error = str(exception)
         app.logger.exception(error)
@@ -56,12 +56,12 @@ def request_data(request):
     app.logger.info('{}: options = {}'.format(*result))
     return result
 
-def smaller_thumbnail(request, input_file, options):
-    portrait_options, landscape_options = options, options.copy()
-    portrait_options[str(IMAGE_HEIGHT)] = MAX_THUMBNAIL_DIMENSION
-    landscape_options[str(IMAGE_WIDTH)] = MAX_THUMBNAIL_DIMENSION
-    portrait_response = request(input_file, options=portrait_options)
-    landscape_response = request(input_file, options=landscape_options)
+def smaller_thumbnail(request, input_file):
+    request.options[str(IMAGE_HEIGHT)] = MAX_THUMBNAIL_DIMENSION
+    portrait_response = request(input_file)
+    del request.options[str(IMAGE_HEIGHT)]
+    request.options[str(IMAGE_WIDTH)] = MAX_THUMBNAIL_DIMENSION
+    landscape_response = request(input_file)
     if landscape_response: return response(portrait_response)
     if portrait_response: return response(landscape_response)
     return response(smaller_response(portrait_response, landscape_response))
