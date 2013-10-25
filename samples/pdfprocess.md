@@ -16,7 +16,7 @@ Then, you may address requests to our service:
 ### Service Interface
 
 This is a summary of the interface. For a detailed description, please visit our
-<a href="https://api.datalogics-cloud.com/docs">developer portal</a>.
+<a href="https://api.datalogics-cloud.com/">developer portal</a>.
 
 #### Request Types
 
@@ -29,20 +29,20 @@ There is one service URL per request type, e.g.
 
 A request is a POST method with form data:
 
-* [application](https://api.datalogics-cloud.com/docs#application) is a JSON value identifying your application, e.g. {"id": yourID, "key": yourKey}
+* [application](https://api.datalogics-cloud.com/#application) is a JSON value identifying your application, e.g. {"id": yourID, "key": yourKey}
 * _Optional values:_
-    - [inputURL](https://api.datalogics-cloud.com/docs#inputURL) identifies the input document that the server should process
+    - [inputURL](https://api.datalogics-cloud.com/#inputURL) identifies the input document that the server should process
     - If there is no inputURL, put the input document in the request body (Content-Type: application/pdf)
-    - [inputName](https://api.datalogics-cloud.com/docs#inputName) helps identify the request in the service's request log
-    - [password](https://api.datalogics-cloud.com/docs#password) must be supplied if the document is password-protected
-    - [options](https://api.datalogics-cloud.com/docs#options) is a JSON value containing options for the request type specified by the service URL
+    - [inputName](https://api.datalogics-cloud.com/#inputName) helps identify the request in the service's request log
+    - [password](https://api.datalogics-cloud.com/#password) must be supplied if the document is password-protected
+    - [options](https://api.datalogics-cloud.com/#options) is a JSON value containing options for the request type specified by the service URL
 
 #### Service Response
 
 If the request was successful, the message body of the HTTP response is the requested document or image. Otherwise, the message body is a JSON value:
 
-* [errorCode](https://api.datalogics-cloud.com/docs#errorCode) is an integer code identifying the error
-* [errorMessage](https://api.datalogics-cloud.com/docs#errorMessage) is a string describing the error
+* [errorCode](https://api.datalogics-cloud.com/#errorCode) is an integer code identifying the error
+* [errorMessage](https://api.datalogics-cloud.com/#errorMessage) is a string describing the error
 
 ### Sample Clients
 
