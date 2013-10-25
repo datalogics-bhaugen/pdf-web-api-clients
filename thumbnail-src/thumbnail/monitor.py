@@ -17,7 +17,8 @@ def base_url():
     return 'http://thumbnail{}.datalogics-cloud.com'.format(suffix)
 
 def monitor(argv):
-    request_url = '{}?inputURL={}'.format(base_url(), INPUT_URL)
+    query_string = 'imageHeight=160&inputURL={}'.format(INPUT_URL)
+    request_url = '{}/?{}'.format(base_url(), query_string)
     subprocess.call(['curl', '--output', argv[1], request_url])
 
 if __name__ == '__main__':

@@ -12,8 +12,8 @@ from pdfclient import Application
 
 BASE_URL = 'http://127.0.0.1:5000'
 
-INPUT_NAME = 'inputURL'
-MAX_THUMBNAIL_DIMENSION = 150
+INPUT_URL = 'inputURL'
+MAX_THUMBNAIL_DIMENSION = 250
 
 class Option(object):
     def __init__(self, name): self._name = name
@@ -23,7 +23,7 @@ class Option(object):
 
 IMAGE_WIDTH = Option('imageWidth')
 IMAGE_HEIGHT = Option('imageHeight')
-OUTPUT_FORM = Option('outputForm')
+OPTIONS = Option('options')
 PAGES = Option('pages')
 
 app = flask.Flask(__name__)
@@ -32,28 +32,37 @@ logger.start(app.logger, app.name)
 @app.route('/', methods=['GET'])
 def action():
     try:
-        input_url, options = request_data(flask.request)
-        application_id = Configuration.three_scale.thumbnail_id
-        application_key = Configuration.three_scale.thumbnail_key
-        application = Application(application_id, application_key)
-        request = application.make_request('render/pages', BASE_URL)
-        for option, value in options.iteritems():
-            request.options[option] = value
-        if IMAGE_WIDTH in options.keys() or IMAGE_HEIGHT in options.keys():
-            return response(request(input_url))
+        request = application().make_request('render/pages', BASE_URL)
+        request.options.update(request_options(flask.request))
+        input, options = input_url(flask.request), request.options
+        app.logger.info('{}: options = {}'.format(input, options))
+        if str(IMAGE_WIDTH) in options or str(IMAGE_HEIGHT) in options:
+            return response(request(input))
         with tmpdir.TemporaryFile() as input_file:
-            input_file.write(requests.get(input_url).content)
+            input_file.write(requests.get(input).content)
             return smaller_thumbnail(request, input_file)
     except Exception as exception:
         error = str(exception)
         app.logger.exception(error)
         return error, HTTPCode.InternalServerError
 
-def request_data(request):
-    form = request.form
-    input_url = form.get(INPUT_NAME, None) or request.args.get(INPUT_NAME)
-    result = (input_url, JSON.parse(form.get('options', '{}')))
-    app.logger.info('{}: options = {}'.format(*result))
+def application():
+    three_scale = Configuration.three_scale
+    return Application(three_scale.thumbnail_id, three_scale.thumbnail_key)
+
+def input_url(request):
+    key = str(INPUT_URL)
+    return request.form.get(key, None) or request.args.get(key)
+
+def request_options(request):
+    result = {}
+    pages = request.args.get(str(PAGES), None)
+    if pages: result[str(PAGES)] = str(pages)
+    image_width = request.args.get(str(IMAGE_WIDTH), None)
+    if image_width: result[str(IMAGE_WIDTH)] = image_width
+    image_height = request.args.get(str(IMAGE_HEIGHT), None)
+    if image_height: result[str(IMAGE_HEIGHT)] = image_height
+    result.update(JSON.parse(request.form.get(str(OPTIONS), '{}')))
     return result
 
 def smaller_thumbnail(request, input_file):
