@@ -13,13 +13,10 @@ Then, you may address requests to our service:
 
     https://pdfprocess.datalogics-cloud.com/api
 
-Each application ID has a usage limit, currently 10 requests per minute.
-
 ### Service Interface
 
 This is a summary of the interface. For a detailed description, please visit our
-<a href="https://api.datalogics-cloud.com/docs">developer portal</a>
-or look at our [example](#example).
+<a href="https://api.datalogics-cloud.com/docs">developer portal</a>.
 
 #### Request Types
 
@@ -39,11 +36,6 @@ A request is a POST method with form data:
     - [inputName](https://api.datalogics-cloud.com/docs#inputName) helps identify the request in the service's request log
     - [password](https://api.datalogics-cloud.com/docs#password) must be supplied if the document is password-protected
     - [options](https://api.datalogics-cloud.com/docs#options) is a JSON value containing options for the request type specified by the service URL
-
-<a name="example"/>
-#### Request Example
-
-This [example](examples/renderPages.txt) is a request for an image of the first page of a _hello world_ document. It was sent by our sample Python client.
 
 #### Service Response
 
@@ -65,9 +57,4 @@ To facilitate using this service, we supply two sample clients:
     * Python 3.3 or 2.7 (other versions might work, but are not supported)
     * [Requests](http://docs.python-requests.org/en/latest/): HTTP for Humans
     * [simplejson](http://simplejson.readthedocs.org/en/latest/): JSON encoder and decoder
-
-### Resources
-
-* [PDF2IMG](http://www.datalogics.com/products/pdf2img/)
-* [PDFJT](http://www.datalogics.com/products/pdfjt/)
 
