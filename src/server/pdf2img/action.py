@@ -3,6 +3,7 @@
 import os
 import subprocess
 
+import flask
 import requests
 import server
 from server import Error, ErrorCode, UNKNOWN, logger
@@ -23,6 +24,11 @@ class Action(server.Action):
             self.raise_error(Error(ErrorCode.InvalidSyntax, exc.message))
         self.client.authorize()
         return self._pdf2img()
+    def _content_type(self):
+        image_type = self.output_format.lower()
+        if image_type == 'jpg': image_type = 'jpeg'
+        if image_type == 'tif': image_type = 'tiff'
+        return 'image/{}'.format(image_type)
     def _get_image(self, input_name, output_file):
         with server.Stdout() as stdout:
             options = Action._options() + self._parser.pdf2img_options
@@ -31,7 +37,8 @@ class Action(server.Action):
             if subprocess.call(args, stdout=stdout):
                 self.raise_error(Action.get_error(stdout))
         with open(output_file.name, 'rb') as image_file:
-            return image_file.read()
+            content_type = self._content_type()
+            return flask.Response(image_file.read(), content_type=content_type)
     def _log_request(self, parser_options):
         options = ' '.join(parser_options)
         if options: options = ' ' + options
