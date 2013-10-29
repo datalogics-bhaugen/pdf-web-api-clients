@@ -9,40 +9,17 @@ internet developer community that currently provides:
 
 To use this service, first get an application ID and key from our
 [developer portal](http://api.datalogics-cloud.com/).
-Then, you may address requests to our service:
 
-    https://pdfprocess.datalogics-cloud.com/api
+### Request Types
 
-### Service Interface
+* [FlattenForm](classpdfclient_1_1_flatten_form.html)
+* [RenderPages](classpdfclient_1_1_render_pages.html)
 
-This is a summary of the interface. For a detailed description, please visit our
-<a href="https://api.datalogics-cloud.com/">developer portal</a>.
+### Service Response
 
-#### Request Types
-
-A request type is two words separated by a slash, e.g. `flatten/form`.
-There is one service URL per request type, e.g.
-
-    https://pdfprocess.datalogics-cloud.com/api/actions/flatten/form
-
-#### Request Form
-
-A request is a POST method with form data:
-
-* [application](https://api.datalogics-cloud.com/#application) is a JSON value identifying your application, e.g. {"id": yourID, "key": yourKey}
-* _Optional values:_
-    - [inputURL](https://api.datalogics-cloud.com/#inputURL) identifies the input document that the server should process
-    - If there is no inputURL, put the input document in the request body (Content-Type: application/pdf)
-    - [inputName](https://api.datalogics-cloud.com/#inputName) helps identify the request in the service's request log
-    - [password](https://api.datalogics-cloud.com/#password) must be supplied if the document is password-protected
-    - [options](https://api.datalogics-cloud.com/#options) is a JSON value containing options for the request type specified by the service URL
-
-#### Service Response
-
-If the request was successful, the message body of the HTTP response is the requested document or image. Otherwise, the message body is a JSON value:
-
-* [errorCode](https://api.datalogics-cloud.com/#errorCode) is an integer code identifying the error
-* [errorMessage](https://api.datalogics-cloud.com/#errorMessage) is a string describing the error
+If the request was successful, the message body of the
+[response](classpdfclient_1_1_response.html) is the requested document or image.
+Otherwise, the message body is a JSON value.
 
 ### Sample Clients
 
