@@ -71,8 +71,8 @@ def smaller_thumbnail(request, input_file):
     del request.options[str(IMAGE_HEIGHT)]
     request.options[str(IMAGE_WIDTH)] = MAX_THUMBNAIL_DIMENSION
     landscape_response = request(input_file)
-    if landscape_response: return response(portrait_response)
-    if portrait_response: return response(landscape_response)
+    if not landscape_response: return response(portrait_response)
+    if not portrait_response: return response(landscape_response)
     return response(smaller_response(portrait_response, landscape_response))
 
 def smaller_response(api_response_1, api_response_2):
