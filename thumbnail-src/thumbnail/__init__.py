@@ -81,7 +81,8 @@ def smaller_response(api_response_1, api_response_2):
 
 def response(api_response):
     if api_response:
-        return api_response.output
+        content_type = api_response.headers['Content-type']
+        return flask.Response(api_response.output, content_type=content_type)
     else:
         code, message = api_response.error_code, api_response.error_message
         json = flask.jsonify(errorCode=code, errorMessage=message)

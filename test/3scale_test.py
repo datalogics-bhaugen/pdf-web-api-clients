@@ -13,6 +13,11 @@ from nose.tools import assert_equal, assert_is_none
 def test_authorize_ok():
     client(THREE_SCALE.test_id, THREE_SCALE.test_key).authorize()
 
+def test_jquery_syntax():
+    id, key = THREE_SCALE.test_id, THREE_SCALE.test_key
+    request_form = {'application[id]': id, 'application[key]': key}
+    Client('127.0.0.1', request_form).authorize()
+
 def test_no_application_id():
     authorize_error(client(''), 'AuthorizationError: App Id not defined')
 

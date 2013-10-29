@@ -113,9 +113,8 @@ class Request(object):
         if input_name: data['inputName'] = input_name
         if password: data['password'] = password
         if self.options: data['options'] = json.dumps(self.options)
-        request_response =\
-            requests.post(self.url, verify=False, data=data, files=files)
-        return Response(request_response)
+        return Response(
+            requests.post(self.url, verify=False, data=data, files=files))
 
     @property
     ## %Request options (dict)
@@ -131,9 +130,8 @@ class Request(object):
 ## Service response
 class Response(object):
     def __init__(self, request_response):
-        self._http_code = request_response.status_code
+        self._response = request_response
         self._error_code, self._error_message = None, None
-        self._output = request_response.content if self else None
         if not self:
             try:
                 json = request_response.json()
@@ -147,17 +145,21 @@ class Response(object):
     def __bool__(self):
         return self.http_code == requests.codes.ok
     __nonzero__ = __bool__
+    def __getattr__(self, key):
+        return getattr(self._response, key)
     @property
     ## HTTP status code (int)
-    def http_code(self): return self._http_code
+    def http_code(self): return self._response.status_code
     @property
     ## Document or image data (bytes) if request was successful, otherwise None
-    def output(self): return self._output
+    def output(self): return self._response.content if self else None
     @property
-    ## None if successful, otherwise API error code (int)
+    ## None if successful, otherwise API
+    #   [error code](https://api.datalogics-cloud.com/#errorCode) (int)
     def error_code(self): return self._error_code
     @property
-    ## None if successful, otherwise information (string) about error
+    ## None if successful, otherwise information (string) about the error
+    #   [error](https://api.datalogics-cloud.com/#errorMessage)
     def error_message(self): return self._error_message
 
 
