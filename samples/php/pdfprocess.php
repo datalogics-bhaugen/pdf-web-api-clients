@@ -51,7 +51,7 @@
 include 'phpclient.php';
 
 error_reporting(E_ALL);
-class PDF2IMG 
+class PDF2IMG
 {
     var $base_url;
     var $application_id = 'TODO: Add Application ID';
@@ -61,14 +61,14 @@ class PDF2IMG
     var $output_format = 'png';
     var $print_preview = FALSE;
     var $options;
-  
-    public function __construct() 
-    { 
+
+    public function __construct()
+    {
         $this->base_url = "https://pdfprocess.datalogics-cloud.com/api/"
                             ."actions/render/pages";
-    }  
-  
-    public function parse_arguments($args) 
+    }
+
+    public function parse_arguments($args)
     {
         $scriptName = $args[0];
         $options = array();
@@ -87,7 +87,7 @@ class PDF2IMG
                 {
                     throw new Exception('Usage: ' .$scriptName. ' [options] inputFile');
                 }
-                
+
                 $index = ltrim($index, '-');
 
                 if (strpos($index, '=') !== false)
@@ -105,12 +105,12 @@ class PDF2IMG
                 if ($index === $lastElement)
                 {
                     $this->source_file_name = $index;
-                    list($this->destination_file_name, $type) 
+                    list($this->destination_file_name, $type)
                         = explode('.', $index);
                     if (array_key_exists('outputFormat', $options))
                     {
                         $this->destination_file_name
-                            .= '.'.$options[outputFormat]; 
+                            .= '.'.$options[outputFormat];
                     }
                     else
                     {

@@ -70,7 +70,7 @@ class Request
         return $response;
     }
 
-    public function prepare_request($file_name, $options, $app_id, $app_key)  
+    public function prepare_request($file_name, $options, $app_id, $app_key)
     {
         $fields = array(
           'application' => $this->prepare_application_json($app_id, $app_key),
@@ -110,7 +110,7 @@ class Response
         fwrite($file, $output);
         fclose($file);
     }
-    
+
 }
 
 ?>
