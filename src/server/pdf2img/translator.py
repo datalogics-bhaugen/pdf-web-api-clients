@@ -1,10 +1,15 @@
 "WebAPI pdf2img action option translator"
 
+import sys
 import simplejson as json
 
 from server import logger
 from errors import Error, ErrorCode
 from options import Option
+
+
+INVALID_OPTION_VALUE = "{} is not a valid '{}' value"
+STRING_TYPES = (str, unicode) if sys.version_info.major < 3 else (str,)
 
 
 class Translator(object):
@@ -15,7 +20,7 @@ class Translator(object):
             if key in type(self).OPTIONS: self.set_option(value)
         return self.validate(*args)
     def set_option(self, value):
-        self._option = value.lower()
+        self._option = value.lower() if type(value) in STRING_TYPES else value
     def validate(self, *args):
         return self.options
     @property
@@ -53,7 +58,7 @@ class OutputFormat(Translator):
     def validate(self, *args):
         if self.option == 'jpeg': self._option = 'jpg'
         if self.option == 'tiff': self._option = 'tif'
-        if not self.option: self._option = 'png'
+        if self.option is None: self._option = 'png'
         output_formats = ('gif', 'jpg', 'png', 'tif')
         if self.option not in output_formats:
             error = 'outputFormat must be one of ' + str(output_formats)
@@ -65,7 +70,11 @@ class Pages(Translator):
     def __init__(self):
         Translator.__init__(self, 'pages')
     def validate(self, *args):
-        if not self.option: self._option = '1'
+        if self.option is None: self._option = '1'
+        if type(self.option) == int: self._option = str(self.option)
+        if type(self.option) not in STRING_TYPES:
+            error = INVALID_OPTION_VALUE.format(self.option, self._name)
+            raise Error(ErrorCode.InvalidPage, error)
         multipage_request = '-' in self.option or ',' in self.option
         if not multipage_request: return self.options
         if args[0] == 'tif': return self.options + ['-multipage']
@@ -77,9 +86,13 @@ class Resolution(Translator):
     def __init__(self):
         Translator.__init__(self, 'resolution')
     def validate(self, *args):
-        if not self.option: self._option = '150'
-        if 'x' not in self.option: return self.options
-        error = 'No support for non-square pixel rendering.'
+        if self.option is None: self._option = 150
+        try:
+            if int(self.option) and not isinstance(self.option, bool):
+                return self.options
+        except ValueError:
+            pass
+        error = INVALID_OPTION_VALUE.format(self.option, self._name)
         raise Error(ErrorCode.InvalidResolution, error)
 
 class Smoothing(Translator):
@@ -87,7 +100,7 @@ class Smoothing(Translator):
     def __init__(self):
         Translator.__init__(self, 'smoothing')
     def validate(self, *args):
-        if not self.option: self._option = 'all'
+        if self.option is None: self._option = 'all'
         if self.option == 'none': self._option = None
         return self.options
 
