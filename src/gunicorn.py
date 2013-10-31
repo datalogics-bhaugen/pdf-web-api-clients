@@ -71,7 +71,7 @@ backlog = 2048
 #
 
 workers = 4
-worker_class = 'egg:gunicorn#gevent'
+worker_class = 'egg:gunicorn#eventlet'
 worker_connections = 1000
 timeout = 30
 keepalive = 2
@@ -153,7 +153,7 @@ tmp_upload_dir = None
 #       A string of "debug", "info", "warning", "error", "critical"
 #
 
-errorlog = '-'
+errorlog = ERROR_LOG  # noqa
 loglevel = 'info'
 accesslog = '-'
 
