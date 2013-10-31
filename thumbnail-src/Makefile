@@ -2,7 +2,7 @@ LOG_NAME = thumbnail.log
 APP_LOG = ../var/log/$(LOG_NAME)
 AUX_LOG = ../var/log/server/$(LOG_NAME)
 
-build: eggs $(APP_LOG) $(SERVER_LOG)
+build: eggs $(APP_LOG) $(AUX_LOG)
 	../bin/buildout -c buildout.cfg
 	@make qa
 
