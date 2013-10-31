@@ -1,12 +1,14 @@
-LOG_FILE = ../var/log/thumbnail.log
+LOG_NAME = thumbnail.log
+APP_LOG = ../var/log/$(LOG_NAME)
+AUX_LOG = ../var/log/server/$(LOG_NAME)
 
-build: eggs $(LOG_FILE)
+build: eggs $(APP_LOG) $(SERVER_LOG)
 	../bin/buildout -c buildout.cfg
 	@make qa
 
 clean:
 	@rm -rf .installed.cfg bin develop-eggs parts
-	@printf '' > $(LOG_FILE)
+	@printf '' > $(APP_LOG); printf '' > $(AUX_LOG)
 
 qa:
 	../bin/flake8 scripts test thumbnail
@@ -16,6 +18,6 @@ qa:
 eggs:
 	mkdir -p $@
 
-$(LOG_FILE):
+$(APP_LOG) $(AUX_LOG):
 	touch $@
 

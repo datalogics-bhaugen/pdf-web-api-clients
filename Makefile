@@ -1,18 +1,21 @@
 DOXYGEN = doc/html/index.html
 ERASE = printf '' >
 GIT_HOOK = .git/hooks/pre-commit
-LOG_FILE = $(VAR_LOG)/pdfprocess.log
+QA = bin/flake8 --max-complexity 10
 MAKE_THUMBNAIL = make --directory thumbnail-src
 PLATFORM = $(shell uname -s)
-QA = bin/flake8 --max-complexity 10
 VAR_LOG = var/log
 VENV = eggs/virtualenv-*.egg/virtualenv.py
 
-build: $(GIT_HOOK) $(LOG_FILE) Resource eggs tmp html
+LOG_NAME = pdfprocess.log
+APP_LOG = $(VAR_LOG)/$(LOG_NAME)
+SERVER_LOG = $(VAR_LOG)/server
+AUX_LOG = $(SERVER_LOG)/$(LOG_NAME)
+
+build: $(GIT_HOOK) $(APP_LOG) $(AUX_LOG) Resource eggs tmp venv html
 ifeq ($(PLATFORM), Darwin)
 	$(ERASE) versions.cfg
 endif
-	python virtualenv.py --never-download venv
 	venv/bin/python bootstrap.py
 	scripts/make_server_cfg > cfg/versions
 	bin/buildout | scripts/make_versions_cfg > versions.cfg
@@ -22,8 +25,8 @@ endif
 	@make qa
 
 clean: html-clean
-	rm -rf .installed.cfg $(GIT_HOOK) bin develop-eggs parts
-	$(ERASE) $(LOG_FILE)
+	rm -rf .installed.cfg $(GIT_HOOK) bin develop-eggs parts venv
+	$(ERASE) $(APP_LOG); $(ERASE) $(AUX_LOG)
 	@$(MAKE_THUMBNAIL) clean
 
 qa: bin/segfault
@@ -37,14 +40,14 @@ html-clean:
 
 .PHONY: build clean qa html html-clean
 
-eggs tmp $(VAR_LOG):
-	mkdir -p $@
+$(APP_LOG): $(VAR_LOG)
+	touch $@
+
+$(AUX_LOG): $(SERVER_LOG)
+	touch $@
 
 $(GIT_HOOK): scripts/pre-commit
 	ln -s ../../$^ $@
-
-$(LOG_FILE): $(VAR_LOG)
-	touch $@
 
 Resource:
 ifeq ($(PLATFORM), Linux)
@@ -53,6 +56,12 @@ endif
 
 bin/segfault: test/src/segfault.c
 	gcc $^ -o $@
+
+eggs tmp $(VAR_LOG) $(SERVER_LOG):
+	mkdir -p $@
+
+venv:
+	python virtualenv.py $@
 
 $(DOXYGEN): doxygen doc/Doxyfile samples/* samples/python/*
 	@make html-clean
