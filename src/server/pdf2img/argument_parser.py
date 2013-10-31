@@ -2,6 +2,7 @@
 
 import argparse
 import translator
+from server import logger  # TODO
 from options import Option, Flag, OPTIONS
 from translator import ImageSize, OutputFormat, Pages, Resolution, Smoothing
 
@@ -36,16 +37,16 @@ class ArgumentParser(argparse.ArgumentParser):
     def _set_options(self, options):
         self._options, self._pdf2img_options = [], []
         for key, value in options.iteritems():
-            if key in OPTIONS:
+            if key in OPTIONS and value:
                 option = OPTIONS[OPTIONS.index(key)]
-                self.pdf2img_options.append(option.format(value, True))
                 self.options.append(option.format(value))
+                self.pdf2img_options.append(option.format(value, True))
             elif key in translator.OPTIONS:
                 option = translator.OPTIONS[translator.OPTIONS.index(key)]
                 self.options.append(option.format(value))
             elif value is True:
                 self.options.append(Flag.FORMAT.format(key))
-            else:
+            elif value:
                 self.options.append(Option.FORMAT.format(key, value))
     @property
     def options(self): return self._options
