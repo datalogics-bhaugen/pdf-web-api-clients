@@ -1,7 +1,7 @@
 <?php
 # Copyright (c) 2013, Datalogics, Inc. All rights reserved.
 #
-#"Sample pdfprocess client module"
+# Sample pdfprocess client module
 #
 # This agreement is between Datalogics, Inc. 101 N. Wacker Drive, Suite 1800,
 # Chicago, IL 60606 ("Datalogics") and you, an end user who downloads
@@ -70,7 +70,7 @@ class Request
         return $response;
     }
 
-    public function prepare_request($file_name, $options, $app_id, $app_key)  
+    public function prepare_request($file_name, $options, $app_id, $app_key)
     {
         $fields = array(
           'application' => $this->prepare_application_json($app_id, $app_key),
@@ -110,7 +110,7 @@ class Response
         fwrite($file, $output);
         fclose($file);
     }
-    
+
 }
 
 ?>

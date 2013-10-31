@@ -3,9 +3,10 @@
 import simplejson as json
 from test import Result, Test
 from test_client import HTTPCode, RenderPages
-from nose.tools import assert_in
+from nose.tools import assert_equal
 
 
+ERROR = "{} is not a valid '{}' value"
 ErrorCode = RenderPages.ErrorCode
 
 class SyntaxFixture(object):
@@ -29,11 +30,11 @@ class TestInvalidSyntax(SyntaxFixture):
     def test_invalid_flag_value(self):
         test_result = self.validate({'printPreview': 'true'})
         error = 'invalid printPreview value: true'
-        assert_in(error, test_result.error_message)
+        assert_equal(error, test_result.error_message)
     def test_another_invalid_flag_value(self):
         test_result = self.validate({'printPreview': 'True'})
         error = 'invalid printPreview value: True'
-        assert_in(error, test_result.error_message)
+        assert_equal(error, test_result.error_message)
     def test_invalid_option(self):
         return  # TODO: restore when test drives server directly
         self.validate({'spam': 'spam'})
@@ -41,8 +42,6 @@ class TestInvalidSyntax(SyntaxFixture):
         self.validate({'compression': 'spam'}, ErrorCode.InvalidCompression)
     def test_invalid_region(self):
         self.validate({'pdfRegion': 'spam'}, ErrorCode.InvalidRegion)
-    def test_invalid_resolution(self):
-        self.validate({'resolution': '300x300'}, ErrorCode.InvalidResolution)
     @property
     def result(self): return Result(ErrorCode.InvalidSyntax)
 
@@ -59,6 +58,9 @@ class TestOutputFormat(SyntaxFixture):
 class TestPagesInvalid(SyntaxFixture):
     def test_invalid_pages(self):
         self.validate({'pages': 'spam'})
+    def test_invalid_pages_type(self):
+        error_message = self.validate({'pages': True}).error_message
+        assert_equal(ERROR.format(True, 'pages'), error_message)
     def test_invalid_page_range(self):
         self.validate({'outputFormat': 'tif', 'pages': '1-2-3'})
     def test_inverted_page_range(self):
@@ -74,16 +76,27 @@ class TestPagesInvalid(SyntaxFixture):
     @property
     def result(self): return Result(ErrorCode.InvalidPage)
 
-class TestPagesOK(SyntaxFixture):
+class TestResolutionInvalid(SyntaxFixture):
+    def test_invalid_resolution_type(self): self._validate(False)
+    def test_nonsquare_pixel(self): self._validate('300x300')
+    def _validate(self, resolution):
+        error_message = self.validate({'resolution': resolution}).error_message
+        assert_equal(ERROR.format(resolution, 'resolution'), error_message)
+    @property
+    def result(self): return Result(ErrorCode.InvalidResolution)
+
+class TestResultOK(SyntaxFixture):
     def test_last_page(self):
         self.validate({'pages': 'last'})
     def test_valid_page(self):
-        self.validate({'pages': '2'})
+        self.validate({'pages': 2})
     def test_valid_page_list(self):
         self.validate({'outputFormat': 'tif', 'pages': '1,2,3'})
     def test_another_valid_page_list(self):
         self.validate({'outputFormat': 'tif', 'pages': '3,2,1'})
     def test_valid_page_range(self):
         self.validate({'outputFormat': 'tif', 'pages': '1-2'})
+    def test_valid_resolution(self):
+        self.validate({'resolution': 200})
     @property
     def result(self): return Result()
