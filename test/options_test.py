@@ -42,7 +42,6 @@ class TestAliases(TestFixture):
 
 class TestDefaults(TestFixture):
     def test_false_flag_value(self):
-        return  # TODO: failure is probably related to another bool option bug
         self.validate({'printPreview': False}, None, '-asprinted')
     def test_multipage(self):
         self.validate({'outputFormat': 'tif', 'pages': '1-2'}, '-multipage')
