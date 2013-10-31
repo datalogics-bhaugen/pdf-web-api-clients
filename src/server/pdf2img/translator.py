@@ -3,7 +3,6 @@
 import sys
 import simplejson as json
 
-from server import logger
 from errors import Error, ErrorCode
 from options import Option
 
