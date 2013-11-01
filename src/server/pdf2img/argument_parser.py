@@ -2,7 +2,6 @@
 
 import argparse
 import translator
-from server import logger  # TODO
 from options import Option, Flag, OPTIONS
 from translator import ImageSize, OutputFormat, Pages, Resolution, Smoothing
 

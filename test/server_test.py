@@ -1,5 +1,7 @@
 "server regression tests"
 
+import platform
+
 import mock
 import test
 from test import Result, Test
@@ -17,10 +19,6 @@ def test_bad_url():
 def max_retry_error(url):
     return 'Max retries exceeded with url: {}'.format(url)
 
-def test_flatten_form():
-    args = ['data/annotated_form.pdf', 'input_name=annotated_form.pdf']
-    Test(args, Result())('http://127.0.0.1:8080', 'flatten/form')
-
 def test_good_url():
     Test(['http://www.datalogics.com/pdf/doc/pdf2img.pdf'], Result())()
 
@@ -32,13 +30,21 @@ def test_truncated_pdf():
     result = Result(ErrorCode.InvalidInput, HTTPCode.BadRequest)
     Test(['data/truncated.pdf'], result)()
 
-def test_missing_password():
+def test_missing_owner_password():
     result = Result(ErrorCode.MissingPassword, HTTPCode.Forbidden)
-    Test(['data/protected.pdf'], result)()
+    Test(['data/owner_protected.pdf'], result)()
 
-def test_invalid_password():
+def test_invalid_owner_password():
     result = Result(ErrorCode.InvalidPassword, HTTPCode.Forbidden)
-    Test(['data/protected.pdf', 'password=spam'], result)()
+    Test(['data/owner_protected.pdf', 'password=spam'], result)()
+
+def test_missing_user_password():
+    result = Result(ErrorCode.MissingPassword, HTTPCode.Forbidden)
+    Test(['data/user_protected.pdf'], result)()
+
+def test_invalid_user_password():
+    result = Result(ErrorCode.InvalidPassword, HTTPCode.Forbidden)
+    Test(['data/user_protected.pdf', 'password=spam'], result)()
 
 def test_adept_drm():
     result = Result(ErrorCode.AdeptDRM, HTTPCode.Forbidden)
@@ -57,3 +63,8 @@ def test_pdf2img_crash():
     result = Result(ErrorCode.UnknownError, HTTPCode.InternalServerError)
     with mock.Client('../bin/segfault'):
         Test(['data/bad.pdf'], result)()
+
+if platform.system() == 'Linux':
+    def test_flatten_form():
+        args = ['data/annotated_form.pdf', 'input_name=annotated_form.pdf']
+        Test(args, Result())('http://127.0.0.1:8080', 'flatten/form')
