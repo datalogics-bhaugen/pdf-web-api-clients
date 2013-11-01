@@ -63,6 +63,9 @@ APDFL_ERRORS = [
           'The file is damaged and could not be repaired'),
     Error(ErrorCode.InvalidPassword, 'This document requires authentication',
           HTTPCode.Forbidden),
+    Error(ErrorCode.InvalidPassword,
+          "The document's security settings do not permit this operation",
+          HTTPCode.Forbidden),
     Error(ErrorCode.AdeptDRM,
           'The security plug-in required by this command is unavailable',
           HTTPCode.Forbidden)]
