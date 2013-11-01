@@ -224,7 +224,7 @@ class RenderPages(Request):
     #     all (default), none, or text
     #  * [suppressAnnotations]
     #     (https://api.datalogics-cloud.com/docs#suppressAnnotations):
-    #     default = False
+    #     draw only actual page contents
     OPTIONS = ['colorModel', 'compression',
                'disableColorManagement', 'disableThinLineEnhancement',
                'imageHeight', 'imageWidth',
