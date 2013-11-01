@@ -58,14 +58,19 @@ from pdfclient import Application
 
 OPTIONS = ('input_name', 'password', 'options')
 USAGE_OPTIONS = '[{}=name] [{}=pwd] [{}=json]'.format(*OPTIONS)
-USAGE = 'usage: {} requestType input ' + USAGE_OPTIONS
+USAGE = 'usage: {0} request_type input ' + USAGE_OPTIONS + '\n' +\
+        'example: {0} render/pages hello_world.pdf'
 
 
-## Sample pdfclient driver
+## Sample pdfclient driver: execute pdfprocess.py with no arguments
+#  for usage information
 class Client(Application):
-    ## @param argv e.g.['%pdfprocess.py', 'render/pages', 'hello_world.pdf']
+    ## Create a pdfclient.Request from command-line arguments and execute it
+    #  @return a Response object
+    #  @param argv e.g.['%pdfprocess.py', 'render/pages', 'hello_world.pdf']
     #  @param base_url
     def __call__(self, argv, base_url=Application.BASE_URL):
+        if len(argv) < 3: self._exit(argv)
         self._request = self.make_request(argv[1], base_url)
         input, args, options = self._initialize(argv)
         url_input = input.lower().startswith('http')
@@ -74,6 +79,8 @@ class Client(Application):
         send_method = self._send_url if url_input else self._send_file
         return Response(send_method(input, args), self.output_filename)
 
+    def _exit(self, argv):
+        sys.exit(USAGE.format(argv[0]))
     def _initialize(self, argv):
         try:
             input, args, options = self._parse_args(argv)
@@ -85,7 +92,7 @@ class Client(Application):
             return input, args, options
         except Exception as exception:
             print(exception)
-            sys.exit(USAGE.format(argv[0]))
+            self._exit(argv)
     def _parse_args(self, argv):
         input, args, options = argv[2], {}, {}
         for arg in argv[3:]:
@@ -106,13 +113,17 @@ class Client(Application):
     def _invalid_option(cls, option):
         raise Exception('invalid option: {}'.format(option))
     @property
-    ## Output filename
+    ## Explicitly specified or derived from the input name
+    def input_name(self):
+        return self._input_name
+    @property
+    ## #input_name with extension replaced by requested output format
     def output_filename(self):
         input_name = os.path.splitext(self._input_name)[0]
         return '{}.{}'.format(input_name, self._request.output_format)
 
 
-## #pdfclient.Response wrapper
+## #pdfclient.Response wrapper saves output to a file specified by the request
 class Response(object):
     def __init__(self, response, output_filename):
         self._response, self._output_filename = response, output_filename
@@ -129,7 +140,7 @@ class Response(object):
             output.write(self.output)
 
     @property
-    ## Output filename
+    ## Derived from Client.input_name and requested output format
     def output_filename(self):
         if self: return self._output_filename
 
