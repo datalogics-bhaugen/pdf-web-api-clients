@@ -153,7 +153,7 @@ tmp_upload_dir = None
 #       A string of "debug", "info", "warning", "error", "critical"
 #
 
-errorlog = ERROR_LOG  # noqa
+errorlog = ERROR_LOG  # noqa (defined by the file that execfile's this one)
 loglevel = 'info'
 accesslog = '-'
 
