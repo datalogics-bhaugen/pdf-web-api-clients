@@ -1,26 +1,21 @@
-POST /api/actions/render/pages HTTP/1.1
+POST /api/actions/flatten/form HTTP/1.1
 Host: pdfprocess.datalogics-cloud.com
-Content-Length: 1313
-Content-Type: multipart/form-data; boundary=3894baa03a534badbe7329ef33e3a026
+Content-Length: 1149
+Content-Type: multipart/form-data; boundary=92055293d09e4b459cc17519a156cf5c
 Accept-Encoding: gzip, deflate, compress
 Accept: */*
-User-Agent: python-requests/2.0.0 CPython/2.7.2 Darwin/12.5.0
+User-Agent: python-requests/2.0.1 CPython/2.7.5 Darwin/13.0.0
 
---3894baa03a534badbe7329ef33e3a026
+--92055293d09e4b459cc17519a156cf5c
 Content-Disposition: form-data; name="application"
 
-{"id": "********", "key": "********************************"}
---3894baa03a534badbe7329ef33e3a026
+{"id": "12345678", "key": "12345678901234567890123456789012"}
+--92055293d09e4b459cc17519a156cf5c
 Content-Disposition: form-data; name="inputName"
 
 hello_world.pdf
---3894baa03a534badbe7329ef33e3a026
-Content-Disposition: form-data; name="options"
-
-{"outputFormat": "jpg", "printPreview": true}
---3894baa03a534badbe7329ef33e3a026
+--92055293d09e4b459cc17519a156cf5c
 Content-Disposition: form-data; name="input"; filename="hello_world.pdf"
-Content-Type: application/pdf
 
 %PDF-1.1\n%\xc2\xa5\xc2\xb1\xc3\xab\n\n1 0 obj\n  << /Type /Catalog\n     /Pages 2 0 R\n  >>\nendobj\n\n2 0 obj\n  << /Type /Pages\n     /Kids [3 0 R]\n     /Count 1\n     /MediaBox [0 0 300 144]\n  >>\nendobj\n\n3 0 obj\n  <<  /Type /Page\n      /Parent 2 0 R\n      /Resources\n       << /Font\n           << /F1\n               << /Type /Font\n                  /Subtype /Type1\n                  /BaseFont /Times-Roman\n               >>\n           >>\n       >>\n      /Contents 4 0 R\n  >>\nendobj\n\n4 0 obj\n  << /Length 55 >>\nstream\n  BT\n    /F1 18 Tf\n    0 0 Td\n    (Hello World) Tj\n  ET\nendstream\nendobj\n\nxref\n0 5\n0000000000 65535 f \n0000000018 00000 n \n0000000077 00000 n \n0000000178 00000 n \n0000000457 00000 n \ntrailer\n  <<  /Root 1 0 R\n      /Size 5\n  >>\nstartxref\n565\n%%EOF\n
---3894baa03a534badbe7329ef33e3a026--
+--92055293d09e4b459cc17519a156cf5c--
