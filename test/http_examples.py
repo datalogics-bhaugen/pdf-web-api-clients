@@ -28,7 +28,7 @@ OPTIONS = 'options={}'.format(json.dumps(RENDER_PAGES_OPTIONS))
 
 BASE_URL = 'http://pdfprocess.datalogics-cloud.com'
 FAKE_ID = '12345678'
-FAKE_KEY = '12345678901234567890123456789012'
+FAKE_KEY = '1234567890abcdef1234567890abcdef'
 
 client = test_client.client(FAKE_ID, FAKE_KEY)
 client(['test', 'FlattenForm', INPUT_FILE, INPUT_NAME], BASE_URL)
