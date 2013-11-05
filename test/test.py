@@ -32,9 +32,9 @@ class Test(object):
     def __init__(self, args, result, client=None):
         self._args, self._result = args, result
         self._client = client or Test.client()
-    def __call__(self, base_url=BASE_URL, request_type='render/pages'):
+    def __call__(self, base_url=BASE_URL, request_type='RenderPages'):
         return self._result.validate(self.post(base_url, request_type))
-    def post(self, base_url, request_type='render/pages'):
+    def post(self, base_url, request_type='RenderPages'):
         return self._client(['test', request_type] + self._args, base_url)
     @classmethod
     def client(cls, id=THREE_SCALE.test_id, key=THREE_SCALE.test_key):
