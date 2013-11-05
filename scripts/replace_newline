@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+
+import fileinput
+
+for line in [line for line in fileinput.input()]:
+    print(line.rstrip().replace('\\r\\n', '\n'))
+
