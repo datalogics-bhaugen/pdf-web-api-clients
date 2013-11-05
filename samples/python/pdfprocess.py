@@ -51,15 +51,16 @@
 
 import os
 import sys
-import simplejson as json
 
+import simplejson as json
 from pdfclient import Application
 
 
-OPTIONS = ('input_name', 'password', 'options')
+JSON_OPTIONS = ('options',)
+OPTIONS = ('input_name', 'password') + JSON_OPTIONS
 USAGE_OPTIONS = '[{}=name] [{}=pwd] [{}=json]'.format(*OPTIONS)
 USAGE = 'usage: {0} request_type input ' + USAGE_OPTIONS + '\n' +\
-        'example: {0} render/pages hello_world.pdf'
+        'example: {0} RenderPages hello_world.pdf'
 
 
 ## Sample pdfclient driver: execute pdfprocess.py with no arguments
@@ -67,51 +68,40 @@ USAGE = 'usage: {0} request_type input ' + USAGE_OPTIONS + '\n' +\
 class Client(Application):
     ## Create a pdfclient.Request from command-line arguments and execute it
     #  @return a Response object
-    #  @param argv e.g.['%pdfprocess.py', 'render/pages', 'hello_world.pdf']
+    #  @param args e.g.['%pdfprocess.py', 'FlattenForm', 'hello_world.pdf']
     #  @param base_url
-    def __call__(self, argv, base_url=Application.BASE_URL):
-        if len(argv) < 3: self._exit(argv)
-        self._request = self.make_request(argv[1], base_url)
-        input, args, options = self._initialize(argv)
+    def __call__(self, args, base_url=Application.BASE_URL):
+        if len(args) < 3: self._exit(args)
+        input, data = self._initialize(args)
         url_input = input.lower().startswith('http')
+        self._request = self.make_request(args[1], base_url)
         input_name = os.path.basename(input) if url_input else input
-        self._input_name = args.get('input_name', input_name)
+        self._input_name = data.get('input_name', input_name)
         send_method = self._send_url if url_input else self._send_file
-        return Response(send_method(input, args), self.output_filename)
+        return Response(send_method(input, data), self.output_filename)
 
-    def _exit(self, argv):
-        sys.exit(USAGE.format(argv[0]))
-    def _initialize(self, argv):
+    def _exit(self, args):
+        sys.exit(USAGE.format(args[0]))
+    def _initialize(self, args):
         try:
-            input, args, options = self._parse_args(argv)
-            for option, value in options.iteritems():
-                if option in self._request.OPTIONS:
-                    self._request.options[option] = value
-                else:
-                    Client._invalid_option(option)
-            return input, args, options
+            return args[2], self._parse_args(args[3:])
         except Exception as exception:
             print(exception)
-            self._exit(argv)
-    def _parse_args(self, argv):
-        input, args, options = argv[2], {}, {}
-        for arg in argv[3:]:
+            self._exit(args)
+    def _parse_args(self, args):
+        result = {}
+        for arg in args:
             option, value = arg.split('=')
-            if option not in OPTIONS:
-                Client._invalid_option(option)
-            if option == 'options':
-                options = json.loads(value)
-            else:
-                args[option] = value
-        return input, args, options
-    def _send_file(self, input, args):
+            if option in OPTIONS:
+                result[option] =\
+                    json.loads(value) if option in JSON_OPTIONS else value
+            else: raise Exception('invalid option: {}'.format(option))
+        return result
+    def _send_file(self, input, data):
         with open(input, 'rb') as input_file:
-            return self._request(input_file, **args)
-    def _send_url(self, input, args):
-        return self._request(input, **args)
-    @classmethod
-    def _invalid_option(cls, option):
-        raise Exception('invalid option: {}'.format(option))
+            return self._request(input_file, **data)
+    def _send_url(self, input, data):
+        return self._request(input, **data)
     @property
     ## Explicitly specified or derived from the input name
     def input_name(self):
@@ -145,8 +135,8 @@ class Response(object):
         if self: return self._output_filename
 
 
-def run(argv, app_id='TODO: Application ID', app_key='TODO: Application key'):
-    return Client(app_id, app_key)(argv, Application.BASE_URL)
+def run(args, app_id='TODO: Application ID', app_key='TODO: Application key'):
+    return Client(app_id, app_key)(args, Application.BASE_URL)
 
 if __name__ == '__main__':
     response = run(sys.argv)

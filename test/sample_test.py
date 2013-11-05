@@ -31,7 +31,7 @@ def test_pdfprocess_sample_perl():
 
 def test_pdfprocess_sample_python(python3=False):
     set_python_path()
-    args = ['../samples/python/pdfprocess.py', 'render/pages', 'data/bad.pdf']
+    args = ['../samples/python/pdfprocess.py', 'RenderPages', 'data/bad.pdf']
     if python3: args[0:0] = ['python3']
     with Stdout() as stdout:
         assert_equal(subprocess.call(args, stdout=stdout), 0)

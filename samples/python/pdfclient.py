@@ -69,14 +69,13 @@ class Application(object):
 
     ## Create a request for the specified request type
     # @return a Request object
-    # @param request_type e.g. 'render/pages'
+    # @param request_type e.g. 'FlattenForm'
     def make_request(self, request_type, base_url=BASE_URL):
         return Application._request_class(request_type)(self, base_url)
 
     @classmethod
     def _request_class_predicate(cls, request_type):
-        return lambda m: inspect.isclass(m) and 'REQUEST_TYPE' in dir(m) \
-            and m.REQUEST_TYPE == request_type
+        return lambda m: inspect.isclass(m) and m.__name__ == request_type
     @classmethod
     def _request_class(cls, request_type):
         is_request_class = cls._request_class_predicate(request_type)
@@ -94,31 +93,33 @@ class Application(object):
 class Request(object):
     def __init__(self, application, base_url):
         self._data = {'application': str(application)}
-        self._options, self._output_format = {}, None
-        self._url = '{}/api/actions/{}'.format(base_url, self.REQUEST_TYPE)
+        self._output_format = None
+        self._url = '{}/api/actions{}'.format(base_url, self._url_suffix())
 
     ## Send request
     #  @return a Response object
     #  @param input input document URL or file object
-    #  @param input_name input name for service log
-    #  @param password document password
-    def __call__(self, input, input_name=None, password=None):
-        data, files = self._data.copy(), None
+    #  @param data dict with keys in ('inputName', 'password', 'options')
+    def __call__(self, input, **data):
+        files = None
+        data.update(self._data)
         if type(input) in STRING_TYPES:
             data['inputURL'] = input
         else:
             input.seek(0)
             files = {'input': input}
             data['inputName'] = input.name
-        if input_name: data['inputName'] = input_name
-        if password: data['password'] = password
-        if self.options: data['options'] = json.dumps(self.options)
+        if 'options' in data:
+            data['options'] = json.dumps(data['options'])
         return Response(
             requests.post(self.url, verify=False, data=data, files=files))
 
-    @property
-    ## %Request options (dict)
-    def options(self): return self._options
+    def _url_suffix(self):
+        result = ''
+        for char in self.__class__.__name__:
+            if char.isupper(): result += '/'
+            result += char.lower()
+        return result
     @property
     ## Output filename extension property (string)
     def output_format(self): return self._output_format
@@ -180,7 +181,6 @@ class ErrorCode:
 
 ## Flatten form fields and other annotations
 class FlattenForm(Request):
-    REQUEST_TYPE = 'flatten/form'
     ## %FlattenForm has no request options
     OPTIONS = []
     ## Error codes for %FlattenForm requests
@@ -193,7 +193,6 @@ class FlattenForm(Request):
 
 ## Create raster image representation
 class RenderPages(Request):
-    REQUEST_TYPE = 'render/pages'
     ## %RenderPages request options:
     #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel):
     #     rgb (default), gray, rgba, or cmyk
@@ -241,8 +240,7 @@ class RenderPages(Request):
     ## Send request
     #  @return a Response object
     #  @param input input document URL or file object
-    #  @param input_name input name for service log
-    #  @param password document password
-    def __call__(self, input, input_name=None, password=None):
-        self._output_format = self.options.get('outputFormat', 'png')
-        return Request.__call__(self, input, input_name, password)
+    #  @param data dict with keys in ('inputName', 'password', 'options')
+    def __call__(self, input, **data):
+        self._output_format = data.get('outputFormat', 'png')
+        return Request.__call__(self, input, **data)
