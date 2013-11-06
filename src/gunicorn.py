@@ -20,7 +20,7 @@
 #       range.
 #
 
-bind = BIND  # noqa (defined by the file that execfile's this one)
+bind = '0.0.0.0:{}'.format(PORT)  # noqa (defined by file that execfile's this)
 backlog = 2048
 
 #
@@ -153,7 +153,7 @@ tmp_upload_dir = None
 #       A string of "debug", "info", "warning", "error", "critical"
 #
 
-errorlog = ERROR_LOG  # noqa (defined by the file that execfile's this one)
+errorlog = ERROR_LOG  # noqa (defined by file that execfile's this)
 loglevel = 'info'
 accesslog = '-'
 
@@ -170,7 +170,7 @@ accesslog = '-'
 #       A string or None to choose a default of something like 'gunicorn'.
 #
 
-proc_name = PROC_NAME  # noqa (defined by the file that execfile's this one)
+proc_name = PROC_NAME  # noqa (defined by file that execfile's this)
 
 #
 # Server hooks
