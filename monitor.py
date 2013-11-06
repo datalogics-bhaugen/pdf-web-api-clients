@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
-"usage: monitor.py request_type input_filename output_filename"
+'''
+usage: monitor.py request_type input_filename output_filename
+example: monitor.py flatten/form test/data/annotated_form.pdf flattened.pdf
+'''
+
 
 import os
 import sys
