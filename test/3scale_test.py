@@ -1,5 +1,6 @@
 "server regression tests, 3scale"
 
+import json
 import uuid
 import test
 
@@ -58,7 +59,8 @@ def authorize_error(client, message):
         validate_error(error, error_code, HTTPCode.Forbidden, message)
 
 def client(id=THREE_SCALE.public_id, key=THREE_SCALE.public_key):
-    return Client('127.0.0.1', {'application': {'id': id, 'key': key}})
+    application = json.dumps({'id': id, 'key': key})
+    return Client('127.0.0.1', {'application': application})
 
 def validate_error(error, error_code, http_code, message):
     assert_equal(error_code, error.code)

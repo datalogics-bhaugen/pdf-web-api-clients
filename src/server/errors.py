@@ -76,6 +76,15 @@ UNKNOWN = Error(ErrorCode.UnknownError, 'Internal server error',
 
 class JSON:
     @classmethod
+    def get(cls, request_form, part_name, json_name, default_value=''):
+        "support jQuery encoding of JSON form values"
+        part = request_form.get(part_name, None)
+        if part is None:
+            jquery_part_name = '{}[{}]'.format(part_name, json_name)
+            return request_form.get(jquery_part_name, default_value)
+        else:
+            return JSON.parse(part).get(json_name, default_value)
+    @classmethod
     def parse(cls, json):
         try:
             return simplejson.loads(json)

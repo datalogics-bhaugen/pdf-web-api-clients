@@ -58,13 +58,16 @@ from pdfclient import Application
 
 JSON_OPTIONS = ('options',)
 OPTIONS = ('input_name', 'password') + JSON_OPTIONS
+PDF2IMG_GUIDE = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
 USAGE_OPTIONS = '[{}=name] [{}=pwd] [{}=json]'.format(*OPTIONS)
 USAGE = 'usage: {0} request_type input ' + USAGE_OPTIONS + '\n' +\
-        'example: {0} RenderPages hello_world.pdf'
+        'example: {0} FlattenForm hello_world.pdf' +\
+        'example: {0} RenderPages ' + PDF2IMG_GUIDE +\
+        ' options={"printPreview": True, "outputFormat": "jpg"}'
 
 
-## Sample pdfclient driver: execute pdfprocess.py with no arguments
-#  for usage information
+## Sample pdfclient driver:
+#  execute pdfprocess.py with no arguments for usage information
 class Client(Application):
     ## Create a pdfclient.Request from command-line arguments and execute it
     #  @return a Response object
@@ -103,7 +106,7 @@ class Client(Application):
     def _send_url(self, input, data):
         return self._request(input, **data)
     @property
-    ## Explicitly specified or derived from the input name
+    ## Derived from the input name or explicitly specified
     def input_name(self):
         return self._input_name
     @property
@@ -113,7 +116,8 @@ class Client(Application):
         return '{}.{}'.format(input_name, self._request.output_format)
 
 
-## #pdfclient.Response wrapper saves output to a file specified by the request
+## #pdfclient.Response wrapper
+#  saves output to the file specified by the request
 class Response(object):
     def __init__(self, response, output_filename):
         self._response, self._output_filename = response, output_filename

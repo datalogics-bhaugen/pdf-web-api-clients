@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
-"usage: monitor.py output_filename"
+'''
+usage: monitor.py output_filename
+example: monitor.py pdf2img.png
+'''
+
 
 import os
 import sys
