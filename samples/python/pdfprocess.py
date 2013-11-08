@@ -57,7 +57,7 @@ from pdfclient import Application
 
 
 JSON_OPTIONS = ('options',)
-OPTIONS = ('input_name', 'password') + JSON_OPTIONS
+OPTIONS = ('inputName', 'password') + JSON_OPTIONS
 PDF2IMG_GUIDE = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
 USAGE_OPTIONS = '[{}=name] [{}=pwd] [{}=json]'.format(*OPTIONS)
 USAGE = 'usage: {0} request_type input ' + USAGE_OPTIONS + '\n' +\
@@ -79,7 +79,7 @@ class Client(Application):
         url_input = input.lower().startswith('http')
         self._request = self.make_request(args[1], base_url)
         input_name = os.path.basename(input) if url_input else input
-        self._input_name = data.get('input_name', input_name)
+        self._input_name = data.get('inputName', input_name)
         send_method = self._send_url if url_input else self._send_file
         return Response(send_method(input, data), self.output_filename)
 
