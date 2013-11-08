@@ -63,8 +63,3 @@ def test_pdf2img_crash():
     result = Result(ErrorCode.UnknownError, HTTPCode.InternalServerError)
     with mock.Client('../bin/segfault'):
         Test(['data/bad.pdf'], result)()
-
-if platform.system() == 'Linux':
-    def test_flatten_form():
-        args = ['data/annotated_form.pdf', 'input_name=annotated_form.pdf']
-        Test(args, Result())('http://127.0.0.1:8080', 'flatten/form')
