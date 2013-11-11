@@ -1,7 +1,7 @@
 <?php
 # Copyright (c) 2013, Datalogics, Inc. All rights reserved.
 #
-# Sample pdfprocess client module
+#"Sample pdfprocess client module"
 #
 # This agreement is between Datalogics, Inc. 101 N. Wacker Drive, Suite 1800,
 # Chicago, IL 60606 ("Datalogics") and you, an end user who downloads
@@ -48,17 +48,22 @@
 # NEITHER DATALOGICS WARRANT AGAINST ANY BUG, ERROR, OMISSION, DEFECT,
 # DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
 
-//actually call the server
-
 error_reporting(E_ALL);
+
+/**
+ * Class for preparing and sending a request to the WebAPI server
+ */
 class Request
 {
-    public function __construct()
-    {}
-
-    public function make_request($base_url, $prepared_request)
+    /**
+     * Make the request to the server
+     * @param string $full_url Complete URL for server request
+     * @param string[] $prepared_request JSON encoded array with request data
+     * @return string|string[] $response Response from the server
+     */
+    public function make_request($full_url, $prepared_request)
     {
-        $ch = curl_init($base_url);
+        $ch = curl_init($full_url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $prepared_request);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -70,17 +75,34 @@ class Request
         return $response;
     }
 
-    public function prepare_request($file_name, $options, $app_id, $app_key)
+    /**
+     * Prepare the data to be sent in the server request
+     * @param string $file The name of the input file
+     * @param string[] $options JSON encoded array of user options
+     * @param string $app_id Application ID
+     * @param string $app_key Application Key
+     * @param int $argc Count of number of arguments entered by user
+     */
+    public function prepare_request($file, $options, $app_id, $app_key, $argc)  
     {
         $fields = array(
           'application' => $this->prepare_application_json($app_id, $app_key),
-          'inputName' => basename($file_name),
-          'options' => $options,
-          'input' => "@$file_name"
+          'inputName' => $file,
+          'input' => "@$file"
         );
+	if ($argc > 3)
+	{
+	    $fields['options'] = $options;
+	}
         return $fields;
     }
 
+    /**
+     * Puts the application ID and key into JSON Format
+     * @param string $app_id Application ID
+     * @param string $app_key Application Key
+     * @return string[] $application JSON encoded array with ID and Key data
+     */
     private function prepare_application_json($app_id, $app_key)
     {
         $application = array('id' => $app_id,
@@ -88,29 +110,42 @@ class Request
         return json_encode($application);
     }
 }
+
+/**
+ * Class to deal with the response sent by the WebApi server
+ */
 class Response
 {
-    public function __construct()
-    {}
-
-    public function handle_response($response, $destination_file)
+    /**
+     * Process the response from the WebAPI server
+     * @param string|string[] $response Response from the Server
+     * @param string $destination_file File to write output to
+     * @param string $service Request type requested from the server
+     * @param string $input_file File that was sent to the server
+     */
+    public function handle_response($response, $destination_file, $service, $input_file)
     {
         $json_decoded = json_decode($response);
-        $output = base64_decode($json_decoded->output);
-        $process_code = base64_decode($json_decoded->processCode);
-
-        if ($process_code != 0)
+        if(json_last_error() == JSON_ERROR_NONE)
         {
-            printf('ERROR: '.$process_code."\n");
-            printf('Error Message: '.$output."\n");
-            exit($process_code);
+            $error_code = $json_decoded->errorCode;
+            $error_message = $json_decoded->errorMessage;
+            printf('ERROR: '.$error_code."\n");
+            printf($error_message."\n");
+            exit($error_code);
         }
-
-        $file = fopen($destination_file, "wb");
-        fwrite($file, $output);
+        elseif($service === '/flatten/form')
+        {
+            $file = fopen($input_file, "wb");
+        }
+        else
+        {
+            $file = fopen($destination_file, "wb");
+        }
+        fwrite($file, $response);
         fclose($file);
     }
-
+    
 }
 
 ?>
