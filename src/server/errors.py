@@ -82,7 +82,11 @@ class JSON:
             for key, value in request_form.items():
                 if key.startswith(prefix): self[key[len(prefix):-1]] = value
             self.update(JSON.parse(request_form.get(part_name, '{}')))
-            return self
+    @classmethod
+    def request_form_parser(cls, request_form, part_name):
+        result = JSON.RequestFormParser()
+        result.parse(request_form, part_name)
+        return result
     @classmethod
     def parse(cls, json):
         try:

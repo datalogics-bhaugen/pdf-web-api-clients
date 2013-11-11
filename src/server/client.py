@@ -10,8 +10,7 @@ from errors import Error, ErrorCode, HTTPCode, JSON, UNKNOWN
 
 class Client(ThreeScaleAuthRep):
     def __init__(self, address, request_form):
-        form_parser = JSON.RequestFormParser()
-        form_parser.parse(request_form, 'application')
+        form_parser = JSON.request_form_parser(request_form, 'application')
         app_id = form_parser.get('id', None)
         app_key = form_parser.get('key', None)
         logger.info("{}: id='{}', key='{}'".format(address, app_id, app_key))
