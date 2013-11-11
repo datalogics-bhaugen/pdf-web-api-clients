@@ -53,31 +53,30 @@ use HTTP::Request::Common qw(POST);
 use JSON;
 use LWP::UserAgent;
 
+my $usage_options = '[inputName=name] [password=pwd] [options=json]';
+my $usage =
+    'Usage: pdfprocess.pl request_type input output_file '.$usage_options."\n".
+    'pdfprocess.pl flatten/form hello_world.pdf flattened.pdf';
+
+my $request_type = shift or die $usage;
+my $input = shift or die $usage;
+my $output_file = shift or die $usage;
+
 my $application_id = 'TODO: Application ID';
 my $application_key = 'TODO: Application key';
-
 my $application = {'id' => $application_id, 'key' => $application_key};
-my $options = {'outputFormat' => 'jpg', 'printPreview' => JSON::true};
-my $input_file = $ARGV[$#ARGV];
 
-my $content = [
-    'application' => encode_json($application),
-    'input' => [$input_file],
-    'inputName' => $input_file,
-    'options' => encode_json($options)];
-
+my $content = request_content($input, $application);
 my $base_url = 'https://pdfprocess.datalogics-cloud.com';
-my $url = $base_url.'/api/actions/'.$ARGV[0];
-my $request = POST($url, Content_Type => 'form-data', Content => $content);
+my $request = post_request($base_url, $request_type, $content);
 
 my $user_agent = LWP::UserAgent->new(ssl_opts => {verify_hostname => 0});
 my $response = $user_agent->request($request);
 
 #
-# If request was successful, response body is image data
+# If request was successful, response body is document or image
 #
 if ($response->is_success) {
-    (my $output_file = $input_file) =~ s/.pdf/.jpg/;
     open(FILE, '>', $output_file) or die "cannot open file: $!";
     binmode FILE;
     print FILE $response->decoded_content;
@@ -94,3 +93,30 @@ my $error_code = $error->{'errorCode'};
 print $error_code.': '.$error->{'errorMessage'}."\n";
 exit $error_code;
 
+sub post_request {
+    my $url = shift.'/api/actions/'.shift;
+    return POST($url, Content_Type => 'form-data', Content => shift);
+}
+
+sub request_content {
+    my ($input, $result) = (shift, ['application' => encode_json(shift)]);
+
+    my @options = ('inputName', 'password', 'options');
+    foreach my $option_value (@ARGV) {
+        my ($option, $value) = split(/=/, $option_value); 
+        if (!($option ~~ @options)) { die $usage; }
+        push $result, $option => $value;
+    }
+
+    if ($input =~ /^http/) {
+        push $result, 'inputURL' => $input;
+    }
+    else {
+        push $result, 'input' => [$input];
+        if (!('inputName' ~~ $result)) {
+            push $result, 'inputName' => $input;
+        }
+    }
+
+    return $result;
+}
