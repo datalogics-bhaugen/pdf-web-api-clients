@@ -9,7 +9,7 @@ from errors import APDFL_ERRORS, Error, ErrorCode, JSON, UNKNOWN
 class Action(object):
     def __init__(self, request):
         self._client = Client(request.remote_addr, request.form)
-        self._options = JSON.parse(request.form.get('options', '{}'))
+        self._options = JSON.request_form_parser(request.form, 'options')
         self._request_form = request.form
         self._set_input(request)
     def raise_error(self, error):

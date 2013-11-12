@@ -78,3 +78,8 @@ These scripts facilitate testing:
 * `test/app_test.py` tests this Flask application directly
 * `test/test_client.py` runs `samples/pdfprocess.py` with test settings
 
+## Issues
+
+* API options differ from the ones offered by PDF2IMG, so the Flask application has a significant amount of option translation code.
+* The base Action class handles features supported by all requests, whereas the pdf2img.Action subclass handles features specific to PDF2IMG requests. The boundary between these classes probably needs refactoring.
+* The _server_ namespace implements utilities on behalf of its pdf2img package, e.g. a logger module. This introduces circular dependencies that should be removed.

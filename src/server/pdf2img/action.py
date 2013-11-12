@@ -5,13 +5,17 @@ import subprocess
 
 import flask
 import requests
+
 import server
+import options
+import translator
 from server import Error, ErrorCode, UNKNOWN, logger
 from argument_parser import ArgumentParser
 from output_file import OutputFile
 
 
 class Action(server.Action):
+    OPTIONS = options.OPTIONS + translator.OPTIONS
     def __init__(self, request):
         server.Action.__init__(self, request)
         self._parser = ArgumentParser(self._log_request)

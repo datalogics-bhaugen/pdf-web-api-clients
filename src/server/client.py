@@ -10,8 +10,9 @@ from errors import Error, ErrorCode, HTTPCode, JSON, UNKNOWN
 
 class Client(ThreeScaleAuthRep):
     def __init__(self, address, request_form):
-        app_id = JSON.get(request_form, 'application', 'id')
-        app_key = JSON.get(request_form, 'application', 'key')
+        form_parser = JSON.request_form_parser(request_form, 'application')
+        app_id = form_parser.get('id', None)
+        app_key = form_parser.get('key', None)
         logger.info("{}: id='{}', key='{}'".format(address, app_id, app_key))
         provider_key = cfg.Configuration.three_scale.provider_key
         ThreeScaleAuthRep.__init__(self, provider_key, app_id, app_key)
