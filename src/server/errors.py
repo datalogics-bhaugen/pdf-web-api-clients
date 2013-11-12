@@ -20,7 +20,7 @@ class ErrorCode(object):
     InvalidInput = EnumValue('InvalidInput', 3)
     InvalidPassword = EnumValue('InvalidPassword', 4)
     MissingPassword = EnumValue('MissingPassword', 5)
-    AdeptDRM = EnumValue('AdeptDRM', 6)
+    UnsupportedSecurityProtocol = EnumValue('UnsupportedSecurityProtocol', 6)
     InvalidOutputFormat = EnumValue('InvalidOutputFormat', 7)
     InvalidPage = EnumValue('InvalidPage', 8)
     RequestTooLarge = EnumValue('RequestTooLarge', 9)
@@ -66,7 +66,7 @@ APDFL_ERRORS = [
     Error(ErrorCode.InvalidPassword,
           "The document's security settings do not permit this operation",
           HTTPCode.Forbidden),
-    Error(ErrorCode.AdeptDRM,
+    Error(ErrorCode.UnsupportedSecurityProtocol,
           'The security plug-in required by this command is unavailable',
           HTTPCode.Forbidden)]
 

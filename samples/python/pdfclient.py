@@ -171,7 +171,7 @@ class ErrorCode:
     InvalidInput = 3
     InvalidPassword = 4
     MissingPassword = 5
-    AdeptDRM = 6
+    UnsupportedSecurityProtocol = 6
     InvalidOutputFormat = 7
     InvalidPage = 8
     RequestTooLarge = 9
