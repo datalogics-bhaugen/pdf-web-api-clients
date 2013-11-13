@@ -56,7 +56,7 @@ use LWP::UserAgent;
 my $usage_options = '[inputName=name] [password=pwd] [options=json]';
 my $usage =
     'Usage: pdfprocess.pl request_type input output_file '.$usage_options."\n".
-    'pdfprocess.pl flatten/form hello_world.pdf flattened.pdf';
+    'pdfprocess.pl FlattenForm hello_world.pdf flattened.pdf';
 
 my $request_type = shift or die $usage;
 my $input = shift or die $usage;
@@ -94,8 +94,10 @@ print $error_code.': '.$error->{'errorMessage'}."\n";
 exit $error_code;
 
 sub post_request {
-    my $url = shift.'/api/actions/'.shift;
-    return POST($url, Content_Type => 'form-data', Content => shift);
+    my ($base_url, $request_type, $content) = @_;
+    (my $action_type = $request_type) =~ s{(\p{Upper})}{'/'.lc($1)}ge;
+    my $url = $base_url.'/api/actions'.$action_type;
+    return POST($url, Content_Type => 'form-data', Content => $content);
 }
 
 sub request_content {
