@@ -47,11 +47,12 @@
 # NEITHER DATALOGICS WARRANT AGAINST ANY BUG, ERROR, OMISSION, DEFECT,
 # DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
 
-import sys
 import inspect
+import json
+import re
+import sys
 
 import requests
-import simplejson as json
 
 
 STRING_TYPES = (str, unicode) if sys.version_info.major < 3 else (str,)
@@ -94,7 +95,8 @@ class Request(object):
     def __init__(self, application, base_url):
         self._data = {'application': str(application)}
         self._output_format = None
-        self._url = '{}/api/actions{}'.format(base_url, self._url_suffix())
+        action = re.sub('([A-Z]+)', r'/\1', self.__class__.__name__).lower()
+        self._url = '{}/api/actions{}'.format(base_url, action)
 
     ## Send request
     #  @return a Response object
@@ -114,12 +116,6 @@ class Request(object):
         return Response(
             requests.post(self.url, verify=False, data=data, files=files))
 
-    def _url_suffix(self):
-        result = ''
-        for char in self.__class__.__name__:
-            if char.isupper(): result += '/'
-            result += char.lower()
-        return result
     @property
     ## Output filename extension property (string)
     def output_format(self): return self._output_format
@@ -159,8 +155,9 @@ class Response(object):
     #   [error code](https://api.datalogics-cloud.com/#errorCode) (int)
     def error_code(self): return self._error_code
     @property
-    ## None if successful, otherwise information (string) about the error
-    #   [error](https://api.datalogics-cloud.com/#errorMessage)
+    ## None if successful, otherwise an
+    #   [error message](https://api.datalogics-cloud.com/#errorMessage)
+    #   (string)
     def error_message(self): return self._error_message
 
 

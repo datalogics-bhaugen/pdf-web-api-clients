@@ -7,10 +7,10 @@ e.g.: stress.py FlattenForm test_set.cfg 66
 
 import os
 import sys
+import json
 import time
 import random
 import ConfigParser
-import simplejson as json
 
 import test_client
 

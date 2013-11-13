@@ -1,6 +1,6 @@
 "server regression tests, syntax"
 
-import simplejson as json
+import json
 from test import Result, Test
 from test_client import HTTPCode, RenderPages
 from nose.tools import assert_equal
