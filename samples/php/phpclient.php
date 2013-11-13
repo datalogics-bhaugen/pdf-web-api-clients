@@ -1,52 +1,71 @@
 <?php
-# Copyright (c) 2013, Datalogics, Inc. All rights reserved.
-#
-#"Sample pdfprocess client module"
-#
-# This agreement is between Datalogics, Inc. 101 N. Wacker Drive, Suite 1800,
-# Chicago, IL 60606 ("Datalogics") and you, an end user who downloads
-# source code examples for integrating to the Datalogics (R) PDF WebAPI (TM)
-# ("the Example Code"). By accepting this agreement you agree to be bound
-# by the following terms of use for the Example Code.
-#
-# LICENSE
-# -------
-# Datalogics hereby grants you a royalty-free, non-exclusive license to
-# download and use the Example Code for any lawful purpose. There is no charge
-# for use of Example Code.
-#
-# OWNERSHIP
-# ---------
-# The Example Code and any related documentation and trademarks are and shall
-# remain the sole and exclusive property of Datalogics and are protected by
-# the laws of copyright in the U.S. and other countries.
-#
-# Datalogics and Datalogics PDF WebAPI are trademarks of Datalogics, Inc.
-#
-# TERM
-# ----
-# This license is effective until terminated. You may terminate it at any
-# other time by destroying the Example Code.
-#
-# WARRANTY DISCLAIMER
-# -------------------
-# THE EXAMPLE CODE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
-# EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES
-# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-#
-# DATALOGICS DISCLAIM ALL OTHER WARRANTIES, CONDITIONS, UNDERTAKINGS OR
-# TERMS OF ANY KIND, EXPRESS OR IMPLIED, WRITTEN OR ORAL, BY OPERATION OF
-# LAW, ARISING BY STATUTE, COURSE OF DEALING, USAGE OF TRADE OR OTHERWISE,
-# INCLUDING, WARRANTIES OR CONDITIONS OF MERCHANTABILITY, FITNESS FOR A
-# PARTICULAR PURPOSE, SATISFACTORY QUALITY, LACK OF VIRUSES, TITLE,
-# NON-INFRINGEMENT, ACCURACY OR COMPLETENESS OF RESPONSES, RESULTS, AND/OR
-# LACK OF WORKMANLIKE EFFORT. THE PROVISIONS OF THIS SECTION SET FORTH
-# SUBLICENSEE'S SOLE REMEDY AND DATALOGICS'S SOLE LIABILITY WITH RESPECT
-# TO THE WARRANTY SET FORTH HEREIN. NO REPRESENTATION OR OTHER AFFIRMATION
-# OF FACT, INCLUDING STATEMENTS REGARDING PERFORMANCE OF THE EXAMPLE CODE,
-# WHICH IS NOT CONTAINED IN THIS AGREEMENT, SHALL BE BINDING ON DATALOGICS.
-# NEITHER DATALOGICS WARRANT AGAINST ANY BUG, ERROR, OMISSION, DEFECT,
-# DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
+/**
+ * Copyright (c) 2013, Datalogics, Inc. All rights reserved.
+ *
+ *"Sample pdfprocess client module"
+ *
+ * This agreement is between Datalogics, Inc. 101 N. Wacker Drive, Suite 1800,
+ * Chicago, IL 60606 ("Datalogics") and you, an end user who downloads
+ * source code examples for integrating to the Datalogics (R) PDF WebAPI (TM)
+ * ("the Example Code"). By accepting this agreement you agree to be bound
+ * by the following terms of use for the Example Code.
+ *
+ * LICENSE
+ * -------
+ * Datalogics hereby grants you a royalty-free, non-exclusive license to
+ * download and use the Example Code for any lawful purpose. There is no charge
+ * for use of Example Code.
+ *
+ * OWNERSHIP
+ * ---------
+ * The Example Code and any related documentation and trademarks are and shall
+ * remain the sole and exclusive property of Datalogics and are protected by
+ * the laws of copyright in the U.S. and other countries.
+ *
+ * Datalogics and Datalogics PDF WebAPI are trademarks of Datalogics, Inc.
+ *
+ * TERM
+ * ----
+ * This license is effective until terminated. You may terminate it at any
+ * other time by destroying the Example Code.
+ *
+ * WARRANTY DISCLAIMER
+ * -------------------
+ * THE EXAMPLE CODE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * DATALOGICS DISCLAIM ALL OTHER WARRANTIES, CONDITIONS, UNDERTAKINGS OR
+ * TERMS OF ANY KIND, EXPRESS OR IMPLIED, WRITTEN OR ORAL, BY OPERATION OF
+ * LAW, ARISING BY STATUTE, COURSE OF DEALING, USAGE OF TRADE OR OTHERWISE,
+ * INCLUDING, WARRANTIES OR CONDITIONS OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE, SATISFACTORY QUALITY, LACK OF VIRUSES, TITLE,
+ * NON-INFRINGEMENT, ACCURACY OR COMPLETENESS OF RESPONSES, RESULTS, AND/OR
+ * LACK OF WORKMANLIKE EFFORT. THE PROVISIONS OF THIS SECTION SET FORTH
+ * SUBLICENSEE'S SOLE REMEDY AND DATALOGICS'S SOLE LIABILITY WITH RESPECT
+ * TO THE WARRANTY SET FORTH HEREIN. NO REPRESENTATION OR OTHER AFFIRMATION
+ * OF FACT, INCLUDING STATEMENTS REGARDING PERFORMANCE OF THE EXAMPLE CODE,
+ * WHICH IS NOT CONTAINED IN THIS AGREEMENT, SHALL BE BINDING ON DATALOGICS.
+ * NEITHER DATALOGICS WARRANT AGAINST ANY BUG, ERROR, OMISSION, DEFECT,
+ * DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
+ * 
+ * PHPClient Sample
+ * ----------------
+ * phpclient.php is a sample php file that demonstrates how to request
+ * and respond to data sent and received by the Datalogics PDF WebAPI 
+ * servers.  This script takes data received via the pdfprocess.php
+ * client driver script, request an action from the PDF WebAPI servers
+ * and produces any output received in the response.
+ * 
+ * Samples for additional languages and there documentation can be 
+ * found at the links provided.
+ *
+ * @package php_client
+ * @link ../classes/Request.html Request
+ * @link ../classes/Response.html Response
+ * @link phpclient.php.txt Source
+ * @link ../../../../doc/html/index.html Additional Sample Documentation
+ */
 
 error_reporting(E_ALL);
 
