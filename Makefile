@@ -1,4 +1,5 @@
 DOXYGEN = doc/html/index.html
+PHPDOC = phpdoc
 ERASE = printf '' >
 GIT_HOOK = .git/hooks/pre-commit
 MAKE_THUMBNAIL = make --directory thumbnail-src
@@ -33,11 +34,11 @@ qa: bin/segfault
 	$(QA) cfg samples scripts src test
 	@$(MAKE_THUMBNAIL) $@
 
-html: $(DOXYGEN)
+html: $(DOXYGEN) $(PHPDOC)
 
 html-clean:
 	cd doc/html; rm -rf *.css *.html *.js *.png search
-
+    
 .PHONY: build clean qa html html-clean
 
 $(APP_LOG): $(VAR_LOG)
