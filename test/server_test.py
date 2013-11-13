@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 "server regression tests"
 
 import platform
@@ -30,25 +32,49 @@ def test_truncated_pdf():
     result = Result(ErrorCode.InvalidInput, HTTPCode.BadRequest)
     Test(['data/truncated.pdf'], result)()
 
+def test_ascii_password_ok():
+    password = 'password=Kraftfahrzeughaftpflichtversicherung'
+    Test(['data/user_password.pdf', password], Result())()
+
+def test_utf8_password_ok():
+    return  # TODO: add server support for UTF-8 strings
+    Test(['data/two_passwords.pdf', u'password=紙容量紙容量'], Result())()
+
+def test_windows_1252_password_ok():
+    return  # TODO: add server support for Windows-1252 strings
+    Test(['data/windows_1252_password.pdf', 'password=déjà'], Result())()
+
 def test_missing_owner_password():
     result = Result(ErrorCode.MissingPassword, HTTPCode.Forbidden)
-    Test(['data/owner_protected.pdf'], result)()
+    Test(['data/owner_password.pdf'], result)()
 
 def test_invalid_owner_password():
     result = Result(ErrorCode.InvalidPassword, HTTPCode.Forbidden)
-    Test(['data/owner_protected.pdf', 'password=spam'], result)()
+    Test(['data/owner_password.pdf', 'password=spam'], result)()
 
 def test_missing_user_password():
     result = Result(ErrorCode.MissingPassword, HTTPCode.Forbidden)
-    Test(['data/user_protected.pdf'], result)()
+    Test(['data/user_password.pdf'], result)()
 
 def test_invalid_user_password():
     result = Result(ErrorCode.InvalidPassword, HTTPCode.Forbidden)
-    Test(['data/user_protected.pdf', 'password=spam'], result)()
+    Test(['data/user_password.pdf', 'password=spam'], result)()
+
+def test_user_password_instead_of_owner():
+    result = Result(ErrorCode.InvalidPassword, HTTPCode.Forbidden)
+    return  # TODO: add server support for UTF-8 strings
+    Test(['data/two_passwords.pdf', u'password=紙容量'], result)()
 
 def test_adept_drm():
-    result = Result(ErrorCode.AdeptDRM, HTTPCode.Forbidden)
+    result = Result(ErrorCode.UnsupportedSecurityProtocol, HTTPCode.Forbidden)
     Test(['data/ADEPT-DRM.pdf'], result)()
+
+def test_live_cycle():
+    pass  # TODO: need test data
+
+def test_pki_certificate():
+    result = Result(ErrorCode.UnsupportedSecurityProtocol, HTTPCode.Forbidden)
+    Test(['data/PKI_certificate.pdf'], result)()
 
 def test_insufficient_memory(): _memory_error('scripts/insufficient_memory')
 def test_out_of_memory(): _memory_error('scripts/out_of_memory')

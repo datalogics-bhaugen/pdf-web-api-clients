@@ -1,8 +1,8 @@
 "server regression tests, input file(s)"
 
 import os
+import json
 import subprocess
-import simplejson as json
 from server.tmpdir import Stdout
 from test_client import ErrorCode
 from nose.tools import assert_equal

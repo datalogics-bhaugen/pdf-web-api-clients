@@ -49,10 +49,10 @@
 # NEITHER DATALOGICS WARRANT AGAINST ANY BUG, ERROR, OMISSION, DEFECT,
 # DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
 
+import json
 import os
 import sys
 
-import simplejson as json
 from pdfclient import Application
 
 

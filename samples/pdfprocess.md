@@ -1,37 +1,35 @@
-Datalogics PDF WebAPI provides secure, cloud-based PDF processing using
-Adobe and Datalogics PDF technologies. This is a RESTful service for the
-internet developer community that currently provides:
+Datalogics PDF WebAPI sample clients:
 
-* Flattening PDF form fields and other annotations using the Adobe PDF Java Toolkit
-* Rendering of PDF files using the Adobe PDF Library and Datalogics PDF2IMG technologies
+* Perl [script](pdfprocess_8pl_source.html)
+* Python [client](pdfclient_8py_source.html) module and
+[script](pdfprocess_8py_source.html)
 
 ### Application Key
 
-To use this service, first get an application ID and key from our
+* To use this service, first get an application ID and key from our
 [developer portal](http://api.datalogics-cloud.com/).
+* Copy these values into the script before running it.
 
-### Request Types
+### Request Classes
 
-* [FlattenForm](classpdfclient_1_1_flatten_form.html)
-* [RenderPages](classpdfclient_1_1_render_pages.html)
+* Request Factory
+    - [Application](classpdfclient_1_1_application.html)
+* Request Types
+    - [FlattenForm](classpdfclient_1_1_flatten_form.html)
+    - [RenderPages](classpdfclient_1_1_render_pages.html)
 
 ### Service Response
 
-If the request was successful, the message body of the
-[response](classpdfclient_1_1_response.html) is the requested document or image.
-Otherwise, the message body is a JSON value.
+* Success
+    - [Response.output](classpdfclient_1_1_response.html#pub-methods)
+    is the requested document or image.
+* Failure
+    - [Response.error_code](classpdfclient_1_1_response.html#pub-methods)
+    and error_message describe the error.
 
-### Sample Clients
+### Dependencies
 
-To facilitate using this service, we supply two sample clients:
-
-* For Perl, download this [script](pdfprocess_8pl_source.html). After copying your API key into it, you can use its command-line interface to send requests. This client has the following dependencies:
-    * HTTP::Request::Common
-    * JSON
-    * LWP::UserAgent
-
-* For Python, download this [client](pdfclient_8py_source.html) module and [script](pdfprocess_8py_source.html). After copying your API key into the script, you can use its command-line interface to send requests. This client has the following dependencies:
-    * Python 3.3 or 2.7 (other versions might work, but are not supported)
-    * [Requests](http://docs.python-requests.org/en/latest/): HTTP for Humans
-    * [simplejson](http://simplejson.readthedocs.org/en/latest/): JSON encoder and decoder
+* Python 3.3 or 2.7: Other versions might work, but are not supported.
+* [Requests](http://docs.python-requests.org/en/latest/) (HTTP for Humans):
+Use a new version, e.g. 2.0.1.
 

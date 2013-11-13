@@ -1,6 +1,7 @@
 "server regression tests, options"
 
-import simplejson as json
+import json
+
 import mock
 import test
 from test_client import ErrorCode, HTTPCode
