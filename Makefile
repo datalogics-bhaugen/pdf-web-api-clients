@@ -1,12 +1,12 @@
 DOXYGEN = doc/html/index.html
 ERASE = printf '' >
 GIT_HOOK = .git/hooks/pre-commit
-QA = bin/flake8 --max-complexity 10
 MAKE_THUMBNAIL = make --directory thumbnail-src
 PLATFORM = $(shell uname -s)
-VAR_LOG = var/log
+QA = bin/flake8 --max-complexity 10
 VENV = eggs/virtualenv-*.egg/virtualenv.py
 
+VAR_LOG = var/log
 LOG_NAME = pdfprocess.log
 APP_LOG = $(VAR_LOG)/$(LOG_NAME)
 SERVER_LOG = $(VAR_LOG)/server
@@ -27,11 +27,11 @@ endif
 clean: html-clean
 	rm -rf .installed.cfg $(GIT_HOOK) bin develop-eggs parts venv
 	$(ERASE) $(APP_LOG); $(ERASE) $(AUX_LOG)
-	@$(MAKE_THUMBNAIL) clean
+	@$(MAKE_THUMBNAIL) $@
 
 qa: bin/segfault
 	$(QA) cfg samples scripts src test
-	@$(MAKE_THUMBNAIL) qa
+	@$(MAKE_THUMBNAIL) $@
 
 html: $(DOXYGEN)
 
@@ -51,8 +51,12 @@ $(GIT_HOOK): scripts/pre-commit
 
 Resource:
 ifeq ($(PLATFORM), Linux)
-	ls -d ../Resource/CMap
+	ls -d ../$@/CMap
 endif
+
+bin/phpDocumentor.phar:
+	curl --output $@ http://phpdoc.org/$(@F)
+	chmod 755 $@
 
 bin/segfault: test/src/segfault.c
 	gcc $^ -o $@
@@ -63,10 +67,10 @@ eggs tmp $(VAR_LOG) $(SERVER_LOG):
 venv:
 	python virtualenv.py $@
 
-$(DOXYGEN): doxygen doc/Doxyfile samples/* samples/python/*
+$(DOXYGEN): doxygen samples/python/*
 	@make html-clean
-	doxygen/bin/doxygen doc/Doxyfile
+	doxygen/bin/doxygen samples/python/Doxyfile
 
 doxygen:
-	git clone https://github.com/doxygen/doxygen.git
-	cd doxygen; ./configure; make
+	git clone https://github.com/doxygen/$@.git
+	cd $@; ./configure; make

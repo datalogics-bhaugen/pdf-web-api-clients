@@ -63,10 +63,9 @@ class Application(object):
     ## @param id from our [developer portal](http://api.datalogics-cloud.com/)
     #  @param key from our [developer portal](http://api.datalogics-cloud.com/)
     def __init__(self, id, key):
-        self._id, self._key = id, key
+        self._json = json.dumps({'id': id, 'key': key})
 
-    def __str__(self):
-        return json.dumps({'id': self.id, 'key': self.key})
+    def __str__(self): return self._json
 
     ## Create a request for the specified request type
     # @return a Request object
@@ -82,12 +81,6 @@ class Application(object):
         is_request_class = cls._request_class_predicate(request_type)
         members = inspect.getmembers(sys.modules[__name__], is_request_class)
         return members[0][1]
-    @property
-    ## ID property (string)
-    def id(self): return self._id
-    @property
-    ## Key property (string)
-    def key(self): return self._key
 
 
 ## Service request
@@ -110,7 +103,7 @@ class Request(object):
         else:
             input.seek(0)
             files = {'input': input}
-            data['inputName'] = input.name
+            if 'inputName' not in data: data['inputName'] = input.name
         if 'options' in data:
             data['options'] = json.dumps(data['options'])
         return Response(
@@ -140,10 +133,13 @@ class Response(object):
         return self.output or \
             '{}: {}'.format(self.error_code, self.error_message)
     def __bool__(self):
-        return self.http_code == requests.codes.ok
+        return self.ok
     __nonzero__ = __bool__
     def __getattr__(self, key):
         return getattr(self._response, key)
+    @property
+    ## True only if http_code is 200
+    def ok(self): return self.http_code == requests.codes.ok
     @property
     ## HTTP status code (int)
     def http_code(self): return self._response.status_code
@@ -207,7 +203,7 @@ class RenderPages(Request):
     #     pixels
     #  * [OPP](https://api.datalogics-cloud.com/docs#OPP): overprint preview
     #  * [outputFormat](https://api.datalogics-cloud.com/docs#outputFormat):
-    #     png (default), git, jpg, or tif
+    #     png (default), gif, jpg, or tif
     #  * [pages](https://api.datalogics-cloud.com/docs#pages):
     #     default = 1
     #  * [pdfRegion](https://api.datalogics-cloud.com/docs#pdfRegion):

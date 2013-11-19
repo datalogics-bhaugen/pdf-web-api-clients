@@ -56,12 +56,15 @@ import sys
 from pdfclient import Application
 
 
+APPLICATION_ID = 'your app id'  # TODO: paste!
+APPLICATION_KEY = 'your app key'  # TODO: paste!
+
 JSON_OPTIONS = ('options',)
 OPTIONS = ('inputName', 'password') + JSON_OPTIONS
 PDF2IMG_GUIDE = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
 USAGE_OPTIONS = '[{}=name] [{}=pwd] [{}=json]'.format(*OPTIONS)
 USAGE = 'usage: {0} request_type input ' + USAGE_OPTIONS + '\n' +\
-        'example: {0} FlattenForm hello_world.pdf' +\
+        'example: {0} FlattenForm hello_world.pdf\n' +\
         'example: {0} RenderPages ' + PDF2IMG_GUIDE +\
         ' options={{"printPreview": True, "outputFormat": "jpg"}}'
 
@@ -139,7 +142,7 @@ class Response(object):
         if self: return self._output_filename
 
 
-def run(args, app_id='TODO: Application ID', app_key='TODO: Application key'):
+def run(args, app_id=APPLICATION_ID, app_key=APPLICATION_KEY):
     return Client(app_id, app_key)(args, Application.BASE_URL)
 
 if __name__ == '__main__':
