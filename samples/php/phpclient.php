@@ -64,7 +64,7 @@
  * @link ../classes/Request.html Request
  * @link ../classes/Response.html Response
  * @link phpclient.php.txt Source
- * @link ../../../../doc/html/index.html Additional Sample Documentation
+ * @link https://api.datalogics-cloud.com PDF WebAPI Documentation
  */
 
 error_reporting(E_ALL);
@@ -76,6 +76,9 @@ class Request
 {
     /**
      * Make the request to the server
+     *
+     * 
+     *
      * @param string $full_url Complete URL for server request
      * @param string[] $prepared_request JSON encoded array with request data
      * @return string|string[] $response Response from the server
@@ -96,23 +99,44 @@ class Request
 
     /**
      * Prepare the data to be sent in the server request
-     * @param string $file The name of the input file
-     * @param string[] $options JSON encoded array of user options
+     * 
+     * The proper form of a request can be seen under   
+     * <a href="https://api.datalogics-cloud.com/#RequestForm">Request Form</a>
+     * at
+     * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
+     *
      * @param string $app_id Application ID
      * @param string $app_key Application Key
-     * @param int $argc Count of number of arguments entered by user
+     * @param string $file The name of the input file
+     * @param string $password Password for PDF Document
+     * @param string $input_name The name for the file if differnt from $file
+     * @param string[] $options JSON encoded array of user optionsi
      */
-    public function prepare_request($file, $options, $app_id, $app_key, $argc)  
+    public function prepare_request($app_id, $app_key, $file, $password = NULL,
+                                    $input_name = NULL, $options = NULL)  
     {
-        $fields = array(
-          'application' => $this->prepare_application_json($app_id, $app_key),
-          'inputName' => $file,
-          'input' => "@$file"
-        );
-	if ($argc > 3)
-	{
-	    $fields['options'] = $options;
-	}
+
+        printf($app_id);
+        //verify if a different file name is wanted
+        $file_name = ($input_name != NULL ? $input_name : $file);
+        
+        //add fields to output array
+        $fields = array();
+        $fields['application'] = $this->prepare_application_json($app_id, 
+                                                                  $app_key);
+        $fields['inputName'] = $file_name;
+        $fields['input'] = "@$file";
+        
+        //verify these were requested before adding
+        if($options != NULL) 
+        { 
+            $field['options'] = $options; 
+        }
+        if($password != NULL) 
+        { 
+            $fields['password'] = $password; 
+        }
+         
         return $fields;
     }
 
@@ -121,11 +145,11 @@ class Request
      * @param string $app_id Application ID
      * @param string $app_key Application Key
      * @return string[] $application JSON encoded array with ID and Key data
+     * @link https://api.datalogics-cloud.com/#application API Application
      */
     private function prepare_application_json($app_id, $app_key)
     {
-        $application = array('id' => $app_id,
-                             'key' => $app_key);
+        $application = array('id' => $app_id, 'key' => $app_key);
         return json_encode($application);
     }
 }
@@ -141,8 +165,10 @@ class Response
      * @param string $destination_file File to write output to
      * @param string $service Request type requested from the server
      * @param string $input_file File that was sent to the server
+     * @see https://api.datalogics-cloud.com
      */
-    public function handle_response($response, $destination_file, $service, $input_file)
+    public function handle_response($response, $destination_file, 
+                                    $service, $input_file)
     {
         $json_decoded = json_decode($response);
         if(json_last_error() == JSON_ERROR_NONE)

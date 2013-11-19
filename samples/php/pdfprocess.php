@@ -64,7 +64,7 @@
  *
  * @link ../classes/PDFProcess.html PDFProcess
  * @link pdfprocess.php.txt Source 
- * @link ../../../../doc/html/index.html Additional Sample Documentation
+ * @link https://api.datalogics-cloud.com PDF WebAPI Documentation
  * 
  */
 
@@ -92,7 +92,7 @@ class PDFProcess
      * @var string $application_id Application ID at api.datalogics-cloud.com 
      */
     var $application_id = '123456789';
-   
+    
     /**
      * @var string $application_key Application Key at api.datalogics-cloud.com 
      */
@@ -131,7 +131,7 @@ class PDFProcess
     /**
      * @var JSONArray $options holds options for server request call
      */
-    var $options;
+    var $options = NULL;
 
     /**
      * Service request to be used on the uploaded document
@@ -142,14 +142,19 @@ class PDFProcess
     /**
      * @var string $password User provided password for given PDf file
      */
-    var $password;
+    var $password = NULL;
+
+    /**
+     * @var string $input_name input name if provded by user
+     */
+    var $input_name = NULL;
   
     /**
      * Format request type given on the command line
      * for use in request URL.
      * @param string $request_type the request type argument
      * @return string $return_string the URL formatted request type
-     * @source
+     * @link https://api.datalogics-cloud.com/#RequestTypes Request Types
      */ 
     public function set_request_type($request_type)
     {
@@ -173,11 +178,12 @@ class PDFProcess
      * Parses through arguments to create JSON formatted array for request
      * @param string[]  $args The user provided arguments
      * @return string[]  $json_array The JSON formatted array
-     * @throws Exception If arguments provided are not formatted correctly 
+     * @throws Exception If arguments provided are not formatted correctly
+     * @link https://api.datalogics-cloud.com/docs/#RenderPagesOptions RenderPages Options
+     * @link https://api.datalogics-cloud.com/#RequestForm Request Form 
      */
     private function set_options($args)
     {   
-        $input = array();
         $options = array();
         $scriptName = $args[0];
 
@@ -194,11 +200,11 @@ class PDFProcess
                 list($opt, $value) = explode('=', $index, 2); 
                 if ($opt === 'password')
                 {   
-                    $input[$opt] = $value;
+                    $this->password = $value;
                 }   
                 else if ($opt === 'input_name')
                 {   
-                    $this->source_file_name = $value;
+                    $this->input_name = $value;
                 }   
                 else if ($opt === 'options')
                 {   
@@ -216,9 +222,15 @@ class PDFProcess
                                      ' request_type input [input_name=name]'
                                      .' [password=pwd] [options=json]');
             }   
-        }   
-        $json_array = array_merge($input, $options);
-        return $json_array;
+        }
+        if(empty($options))
+        {
+            return NULL;
+        }
+        else
+        {   
+            return $options;
+        }
     }   
 
     /**
@@ -235,9 +247,12 @@ class PDFProcess
      */
     private function set_output_format($json_array)
     {
-        if (array_key_exists('outputFormat', $json_array))
+        if ($json_array != NULL)
         {
-            $this->output_format = $json_array['outputFormat'];
+            if (array_key_exists('outputFormat', $json_array))
+            {
+                $this->output_format = $json_array['outputFormat'];
+            }
         }
 
         list($this->destination_file_name, $type)
@@ -264,10 +279,8 @@ class PDFProcess
                                 ' request_type input [input_name=name]'
                                 .' [password=pwd] [options=json]');
 	}
-        
         $json_array = $this->set_options($args);
-        $this->options = json_encode($json_array);
-        
+        $this->options = $json_array;
         $this->set_output_format($json_array);
         $this->set_request_url();
     } 
@@ -288,11 +301,12 @@ catch (Exception $e)
     exit();
 }
 
-$prepared = $requester->prepare_request($pdfprocess->source_file_name,
-                                        $pdfprocess->options,
-                                        $pdfprocess->application_id,
+$prepared = $requester->prepare_request($pdfprocess->application_id,
                                         $pdfprocess->application_key,
-                                        $argc);
+                                        $pdfprocess->source_file_name,
+                                        $pdfprocess->password,
+                                        $pdfprocess->input_name, 
+                                        $pdfprocess->options);
 $response = $requester->make_request($pdfprocess->full_url, $prepared);
 $responder->handle_response($response, 
                             $pdfprocess->destination_file_name, 
