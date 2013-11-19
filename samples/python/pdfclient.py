@@ -63,10 +63,10 @@ class Application(object):
     ## @param id from our [developer portal](http://api.datalogics-cloud.com/)
     #  @param key from our [developer portal](http://api.datalogics-cloud.com/)
     def __init__(self, id, key):
-        self._id, self._key = id, key
+        self._data = {'id': id, 'key': key}
 
     def __str__(self):
-        return json.dumps({'id': self.id, 'key': self.key})
+        return json.dumps(self._data)
 
     ## Create a request for the specified request type
     # @return a Request object
@@ -82,12 +82,6 @@ class Application(object):
         is_request_class = cls._request_class_predicate(request_type)
         members = inspect.getmembers(sys.modules[__name__], is_request_class)
         return members[0][1]
-    @property
-    ## ID property (string)
-    def id(self): return self._id
-    @property
-    ## Key property (string)
-    def key(self): return self._key
 
 
 ## Service request
@@ -207,7 +201,7 @@ class RenderPages(Request):
     #     pixels
     #  * [OPP](https://api.datalogics-cloud.com/docs#OPP): overprint preview
     #  * [outputFormat](https://api.datalogics-cloud.com/docs#outputFormat):
-    #     png (default), git, jpg, or tif
+    #     png (default), gif, jpg, or tif
     #  * [pages](https://api.datalogics-cloud.com/docs#pages):
     #     default = 1
     #  * [pdfRegion](https://api.datalogics-cloud.com/docs#pdfRegion):

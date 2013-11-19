@@ -62,8 +62,8 @@ my $request_type = shift or die $usage;
 my $input = shift or die $usage;
 my $output_file = shift or die $usage;
 
-my $application_id = 'TODO: Application ID';
-my $application_key = 'TODO: Application key';
+my $application_id = 'your app id';  # TODO: paste!
+my $application_key = 'your app key';  # TODO: paste!
 my $application = {'id' => $application_id, 'key' => $application_key};
 
 my $content = request_content($input, $application);
