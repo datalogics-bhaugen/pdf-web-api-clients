@@ -88,13 +88,23 @@ class PDFProcess
      */
     var $full_url;
     
-    /** 
-     * @var string $application_id Application ID at api.datalogics-cloud.com 
+    /**
+     * Application ID needed to utilize service
+     *
+     * Register for an Application ID at
+     * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
+     * 
+     * @var string $application_id Application ID
      */
     var $application_id = '123456789';
     
     /**
-     * @var string $application_key Application Key at api.datalogics-cloud.com 
+     * Application Key need to utilize service
+     *
+     * Register for an Application Key at
+     * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
+     *
+     * @var string $application_key Application Key at api.datalogics-cloud.com
      */
     var $application_key = '123456789abcdefghi';
     
@@ -119,42 +129,90 @@ class PDFProcess
     var $destination_file_name;
 
     /**
+     * Output format of any images created with the Render Pages Service
+     *
+     * See
+     * <a href="https://api.datalogics-cloud.com/docs/#outputFormat">
+     * outputFormat</a> at
+     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>
+     * for more information
+     *
      * @var string $output_format Default format for output file 
      */
-    var $output_format = 'png';
+    var $output_format = 'jpg';
 
     /**
-     * @var boolean $print_preview Default print preview option setting 
+     * Default setting for print preview option 
+     *
+     * See
+     * <a href="https://api.datalogics-cloud.com/docs/#printPreview">
+     * printPreview</a> at
+     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>
+     * for more information
+     *
+     * @var boolean $print_preview Default print preview option setting
      */
     var $print_preview = FALSE;
 
     /**
+     * Options given on the command line for the requested service
+     *
+     * See
+     * <a href="https://api.datalogics-cloud.com/docs/#RenderPagesOptions">
+     * Request Options</a> at
+     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>
+     * for more information
+     *
      * @var JSONArray $options holds options for server request call
      */
     var $options = NULL;
 
     /**
      * Service request to be used on the uploaded document
+     *
+     * See
+     * <a href="https://api.datalogics-cloud.com/#RequestTypes">
+     * Request Types</a> at
+     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a> 
+     *
      * @var string $request_type Service to be used on provided document
      */
     var $request_type;
 
     /**
-     * @var string $password User provided password for given PDf file
+     * User provided password for given PDf file
+     *
+     * See
+     * <a href="https://api.datalogics-cloud.com/#password">
+     * Password</a> at
+     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>
+     *
+     * @var string $password password for loaded PDF
      */
     var $password = NULL;
 
     /**
-     * @var string $input_name input name if provded by user
+     * Input Name specified by the user
+     *
+     * See
+     * <a href="https://api.datalogics-cloud.com/#inputName">
+     * inputName</a> at
+     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>i
+     * 
+     * @var string $input_name input name if provided by user
      */
     var $input_name = NULL;
   
     /**
-     * Format request type given on the command line
-     * for use in request URL.
+     * Format request type given on the command line for use in request URL.
+     *
+     * See
+     * <a href="https://api.datalogics-cloud.com/#RequestTypes">
+     * Request Types</a> at
+     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>
+     *
      * @param string $request_type the request type argument
      * @return string $return_string the URL formatted request type
-     * @link https://api.datalogics-cloud.com/#RequestTypes Request Types
      */ 
     public function set_request_type($request_type)
     {
@@ -176,11 +234,16 @@ class PDFProcess
 
     /** 
      * Parses through arguments to create JSON formatted array for request
+     *
+     * See
+     * <a href="https://api.datalogics-cloud.com/docs/#RenderPagesOptions">
+     * Render Pages Options</a> and
+     * <a href="https://api.datalogics-cloud.com/#RequestForm">
+     * Request Form</a> for more information 
+     *
      * @param string[]  $args The user provided arguments
      * @return string[]  $json_array The JSON formatted array
      * @throws Exception If arguments provided are not formatted correctly
-     * @link https://api.datalogics-cloud.com/docs/#RenderPagesOptions RenderPages Options
-     * @link https://api.datalogics-cloud.com/#RequestForm Request Form 
      */
     private function set_options($args)
     {   
@@ -243,6 +306,13 @@ class PDFProcess
 
     /**
      * Set the format for the name of the output file (if any)
+     *
+     * See
+     * <a href="https://api.datalogics-cloud.com/docs/#outputFormat">
+     * outputformat</a> at
+     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>
+     * for more information
+     *
      * @param string[] $json_array An array of options in JSON format
      */
     private function set_output_format($json_array)

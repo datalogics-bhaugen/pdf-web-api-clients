@@ -77,7 +77,10 @@ class Request
     /**
      * Make the request to the server
      *
-     * 
+     * You can find
+     * <a href="https://api.datalogics-cloud.com/#RequestExamples">
+     * Request Examples</a> at 
+     * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
      *
      * @param string $full_url Complete URL for server request
      * @param string[] $prepared_request JSON encoded array with request data
@@ -100,7 +103,7 @@ class Request
     /**
      * Prepare the data to be sent in the server request
      * 
-     * The proper form of a request can be seen under   
+     * You can find the proper    
      * <a href="https://api.datalogics-cloud.com/#RequestForm">Request Form</a>
      * at
      * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
@@ -142,10 +145,15 @@ class Request
 
     /**
      * Puts the application ID and key into JSON Format
+     * 
+     * For information on preparing the 
+     * <a href="https://api.datalogics-cloud.com/#application">
+     * Application</a> please see
+     * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
+     *
      * @param string $app_id Application ID
      * @param string $app_key Application Key
      * @return string[] $application JSON encoded array with ID and Key data
-     * @link https://api.datalogics-cloud.com/#application API Application
      */
     private function prepare_application_json($app_id, $app_key)
     {
@@ -161,11 +169,20 @@ class Response
 {
     /**
      * Process the response from the WebAPI server
+     *
+     * Please see 
+     * @see <a href="https://api.datalogics-cloud.com/#ServiceResponse">
+     * Service Response</a> at 
+     * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
+     * for more information on responses from the server.
+     *
      * @param string|string[] $response Response from the Server
      * @param string $destination_file File to write output to
      * @param string $service Request type requested from the server
      * @param string $input_file File that was sent to the server
-     * @see https://api.datalogics-cloud.com
+     * <a href="https://api.datalogics-cloud.com/#ServiceResponse">
+     * Service Response</a> at 
+     * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
      */
     public function handle_response($response, $destination_file, 
                                     $service, $input_file)

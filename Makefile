@@ -1,5 +1,4 @@
 DOXYGEN = doc/html/index.html
-PHPDOC = phpdoc
 ERASE = printf '' >
 GIT_HOOK = .git/hooks/pre-commit
 MAKE_THUMBNAIL = make --directory thumbnail-src
@@ -34,11 +33,12 @@ qa: bin/segfault
 	$(QA) cfg samples scripts src test
 	@$(MAKE_THUMBNAIL) $@
 
-html: $(DOXYGEN) $(PHPDOC)
+html: $(DOXYGEN)
+	@make bin/phpDocumentor.phar
 
 html-clean:
 	cd doc/html; rm -rf *.css *.html *.js *.png search
-    
+
 .PHONY: build clean qa html html-clean
 
 $(APP_LOG): $(VAR_LOG)
@@ -58,6 +58,7 @@ endif
 bin/phpDocumentor.phar:
 	curl --output $@ http://phpdoc.org/$(@F)
 	chmod 755 $@
+	php $@ -d samples/php -t doc/html/php --force
 
 bin/segfault: test/src/segfault.c
 	gcc $^ -o $@
@@ -74,4 +75,5 @@ $(DOXYGEN): doxygen samples/python/*
 
 doxygen:
 	git clone https://github.com/doxygen/$@.git
+	cd $@; ./configure; make
 	cd $@; ./configure; make
