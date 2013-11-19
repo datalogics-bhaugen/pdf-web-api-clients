@@ -26,6 +26,9 @@ IMAGE_HEIGHT = Option('imageHeight')
 OPTIONS = Option('options')
 PAGES = Option('pages')
 
+three_scale = Configuration.three_scale
+api_client = Application(three_scale.thumbnail_id, three_scale.thumbnail_key)
+
 app = flask.Flask(__name__)
 logger.start(app.logger, app.name)
 
@@ -35,7 +38,7 @@ def action():
         input = input_url(flask.request)
         options = request_options(flask.request)
         app.logger.info('{}: options = {}'.format(input, options))
-        request = application().make_request('RenderPages', BASE_URL)
+        request = api_client.make_request('RenderPages', BASE_URL)
         if str(IMAGE_WIDTH) in options or str(IMAGE_HEIGHT) in options:
             return response(request(input, options=options))
         with tmpdir.TemporaryFile() as input_file:
@@ -45,10 +48,6 @@ def action():
         error = str(exception)
         app.logger.exception(error)
         return error, HTTPCode.InternalServerError
-
-def application():
-    three_scale = Configuration.three_scale
-    return Application(three_scale.thumbnail_id, three_scale.thumbnail_key)
 
 def input_url(request):
     key = str(INPUT_URL)
