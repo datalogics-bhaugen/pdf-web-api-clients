@@ -133,10 +133,13 @@ class Response(object):
         return self.output or \
             '{}: {}'.format(self.error_code, self.error_message)
     def __bool__(self):
-        return self.http_code == requests.codes.ok
+        return self.ok
     __nonzero__ = __bool__
     def __getattr__(self, key):
         return getattr(self._response, key)
+    @property
+    ## True only if http_code is 200
+    def ok(self): return self.http_code == requests.codes.ok
     @property
     ## HTTP status code (int)
     def http_code(self): return self._response.status_code

@@ -39,9 +39,9 @@ Use a new version, e.g. 2.0.1.
 
 ### 4. Interpret Response
 
-* Response is True or False
+* Response properties are initialized according to returned HTTP status code
 
-        if api_response:
+        if api_response.ok:
             assert_equal(api_response.http_code, requests.codes.ok)
             # api.response.output is the requested document or image.
             assert_is_none(api_response.error_code)
