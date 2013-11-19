@@ -1,4 +1,10 @@
 <!-- do not remove !-->
+### 0. Client Dependencies
+
+* Python 3.3 or 2.7: Other versions might work, but are not supported.
+* [Requests](http://docs.python-requests.org/en/latest/) (HTTP for Humans):
+Use a new version, e.g. 2.0.1.
+
 ### 1. Download Sample Files
 
 * [Client](download/pdfclient.py) module
@@ -45,10 +51,4 @@
             assert_is_none(api_response.output)
             assert_is_not_none(api_response.error_code)
             assert_is_not_none(api_response.error_message)
-
-### 5. Sample Client Dependencies
-
-* Python 3.3 or 2.7: Other versions might work, but are not supported.
-* [Requests](http://docs.python-requests.org/en/latest/) (HTTP for Humans):
-Use a new version, e.g. 2.0.1.
 
