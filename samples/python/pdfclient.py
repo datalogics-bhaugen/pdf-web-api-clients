@@ -63,10 +63,9 @@ class Application(object):
     ## @param id from our [developer portal](http://api.datalogics-cloud.com/)
     #  @param key from our [developer portal](http://api.datalogics-cloud.com/)
     def __init__(self, id, key):
-        self._data = {'id': id, 'key': key}
+        self._json = json.dumps({'id': id, 'key': key})
 
-    def __str__(self):
-        return json.dumps(self._data)
+    def __str__(self): return self._json
 
     ## Create a request for the specified request type
     # @return a Request object
@@ -104,7 +103,7 @@ class Request(object):
         else:
             input.seek(0)
             files = {'input': input}
-            data['inputName'] = input.name
+            if 'inputName' not in data: data['inputName'] = input.name
         if 'options' in data:
             data['options'] = json.dumps(data['options'])
         return Response(
