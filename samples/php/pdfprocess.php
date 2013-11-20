@@ -338,17 +338,17 @@ class PDFProcess
      */
     public function parse_arguments($args, $argc)
     {
-	$this->request_type = $this->set_request_type($args[1]);
+        $this->request_type = $this->set_request_type($args[1]);
         $this->source_file = $args[2];
-	$this->source_file_name = basename($args[2]);
+        $this->source_file_name = basename($args[2]);
 
-	if ($argc < 3)
-	{
-	    throw new Exception('Usage: '
+        if ($argc < 3)
+        {
+            throw new Exception('Usage: '
                                 .$scriptName.
                                 ' request_type input [input_name=name]'
                                 .' [password=pwd] [options=json]');
-	}
+        }
         $json_array = $this->set_options($args);
         $this->options = $json_array;
         $this->set_output_format($json_array);
