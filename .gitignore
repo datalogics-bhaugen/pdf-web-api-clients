@@ -24,6 +24,7 @@ Resource
 
 bin
 develop-eggs
+doc/php
 doxygen
 eggs
 parts
