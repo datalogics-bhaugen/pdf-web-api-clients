@@ -34,6 +34,7 @@ qa: bin/segfault
 	@$(MAKE_THUMBNAIL) $@
 
 html: $(DOXYGEN)
+	@make bin/phpDocumentor.phar
 
 html-clean:
 	cd doc/html; rm -rf *.css *.html *.js *.png search
@@ -57,6 +58,7 @@ endif
 bin/phpDocumentor.phar:
 	curl --output $@ http://phpdoc.org/$(@F)
 	chmod 755 $@
+	php $@ -d samples/php -t doc/html/php --force
 
 bin/segfault: test/src/segfault.c
 	gcc $^ -o $@
@@ -73,4 +75,5 @@ $(DOXYGEN): doxygen samples/python/*
 
 doxygen:
 	git clone https://github.com/doxygen/$@.git
+	cd $@; ./configure; make
 	cd $@; ./configure; make

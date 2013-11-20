@@ -6,6 +6,7 @@ Internet-accessible PDF API, formally known as "PDF WebAPI".
 
 * PDF2IMG
 * Python 2.7
+* PHP 5.3
 * `pdfprocess` login
 
 MacOS (different versions) is the primary development platform, and Ubuntu is the target deployment platform.
