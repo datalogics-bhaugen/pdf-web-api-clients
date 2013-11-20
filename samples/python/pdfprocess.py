@@ -127,7 +127,7 @@ class Response(object):
     def __str__(self):
         return str(self._response)
     def __bool__(self):
-        return bool(self._response)
+        return self.ok
     __nonzero__ = __bool__
     def __getattr__(self, key):
         return getattr(self._response, key)
@@ -136,6 +136,10 @@ class Response(object):
         with open(self.output_filename, 'wb') as output:
             output.write(self.output)
 
+    @property
+    ## True only if request succeeded
+    def ok(self):
+        return self._response.ok
     @property
     ## Derived from Client.input_name and requested output format
     def output_filename(self):
@@ -147,7 +151,7 @@ def run(args, app_id=APPLICATION_ID, app_key=APPLICATION_KEY):
 
 if __name__ == '__main__':
     response = run(sys.argv)
-    if response:
+    if response.ok:
         response.save_output()
         print('created: {}'.format(response.output_filename))
     else:

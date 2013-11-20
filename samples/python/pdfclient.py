@@ -122,7 +122,7 @@ class Response(object):
     def __init__(self, request_response):
         self._response = request_response
         self._error_code, self._error_message = None, None
-        if not self:
+        if not self.ok:
             try:
                 json = request_response.json()
                 self._error_code = json['errorCode']
