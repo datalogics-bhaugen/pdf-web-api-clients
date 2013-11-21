@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 /**
  * Copyright (c) 2013, Datalogics, Inc. All rights reserved.
@@ -96,7 +97,7 @@ class PDFProcess
      *
      * @var string $application_id Application ID
      */
-    var $application_id = '123456789';
+    var $application_id = 'your app id';  # TODO: paste!
 
     /**
      * Application Key need to utilize service
@@ -106,7 +107,7 @@ class PDFProcess
      *
      * @var string $application_key Application Key at api.datalogics-cloud.com
      */
-    var $application_key = '123456789abcdefghi';
+    var $application_key = 'your app key';  # TODO: paste!
 
     /**
      * @var string $source_file Full path to file being uploaded for processing
@@ -216,20 +217,7 @@ class PDFProcess
      */
     public function set_request_type($request_type)
     {
-        $string_array = str_split($request_type);
-        $formatted_string = '';
-        foreach($string_array as $char)
-        {
-            if(ctype_upper($char))
-            {
-                $formatted_string .= '/'. strtolower($char);
-            }
-            else
-            {
-                $formatted_string .= $char;
-            }
-        }
-        return $formatted_string;
+        return strtolower(preg_replace('/([A-Z].)/', '/$1$2', $request_type));
     }
 
     /**
@@ -265,7 +253,7 @@ class PDFProcess
                 {
                     $this->password = $value;
                 }
-                else if ($opt === 'input_name')
+                else if ($opt === 'inputName')
                 {
                     $this->input_name = $value;
                 }
@@ -282,7 +270,7 @@ class PDFProcess
             {
                 throw new Exception('Usage: '
                                      .$scriptName.
-                                     ' request_type input [input_name=name]'
+                                     ' request_type input [inputName=name]'
                                      .' [password=pwd] [options=json]');
             }
         }
@@ -346,7 +334,7 @@ class PDFProcess
         {
             throw new Exception('Usage: '
                                 .$scriptName.
-                                ' request_type input [input_name=name]'
+                                ' request_type input [inputName=name]'
                                 .' [password=pwd] [options=json]');
         }
         $json_array = $this->set_options($args);
@@ -373,7 +361,7 @@ catch (Exception $e)
 
 $prepared = $requester->prepare_request($pdfprocess->application_id,
                                         $pdfprocess->application_key,
-                                        $pdfprocess->source_file_name,
+                                        $pdfprocess->source_file,
                                         $pdfprocess->password,
                                         $pdfprocess->input_name,
                                         $pdfprocess->options);
