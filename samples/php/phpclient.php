@@ -2,7 +2,7 @@
 /**
  * Copyright (c) 2013, Datalogics, Inc. All rights reserved.
  *
- *"Sample pdfprocess client module"
+ * Sample pdfprocess client module
  *
  * This agreement is between Datalogics, Inc. 101 N. Wacker Drive, Suite 1800,
  * Chicago, IL 60606 ("Datalogics") and you, an end user who downloads
@@ -48,16 +48,16 @@
  * WHICH IS NOT CONTAINED IN THIS AGREEMENT, SHALL BE BINDING ON DATALOGICS.
  * NEITHER DATALOGICS WARRANT AGAINST ANY BUG, ERROR, OMISSION, DEFECT,
  * DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
- * 
+ *
  * PHPClient Sample
  * ----------------
  * phpclient.php is a sample php file that demonstrates how to request
- * and respond to data sent and received by the Datalogics PDF WebAPI 
+ * and respond to data sent and received by the Datalogics PDF WebAPI
  * servers.  This script takes data received via the pdfprocess.php
  * client driver script, request an action from the PDF WebAPI servers
  * and produces any output received in the response.
- * 
- * Samples for additional languages and there documentation can be 
+ *
+ * Samples for additional languages and there documentation can be
  * found at the links provided.
  *
  * @package php_client
@@ -79,7 +79,7 @@ class Request
      *
      * You can find
      * <a href="https://api.datalogics-cloud.com/#RequestExamples">
-     * Request Examples</a> at 
+     * Request Examples</a> at
      * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
      *
      * @param string $full_url Complete URL for server request
@@ -102,8 +102,8 @@ class Request
 
     /**
      * Prepare the data to be sent in the server request
-     * 
-     * You can find the proper    
+     *
+     * You can find the proper
      * <a href="https://api.datalogics-cloud.com/#RequestForm">Request Form</a>
      * at
      * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
@@ -116,37 +116,37 @@ class Request
      * @param string[] $options JSON encoded array of user optionsi
      */
     public function prepare_request($app_id, $app_key, $file, $password = NULL,
-                                    $input_name = NULL, $options = NULL)  
+                                    $input_name = NULL, $options = NULL)
     {
 
         printf($app_id);
         //verify if a different file name is wanted
         $file_name = ($input_name != NULL ? $input_name : $file);
-        
+
         //add fields to output array
         $fields = array();
-        $fields['application'] = $this->prepare_application_json($app_id, 
+        $fields['application'] = $this->prepare_application_json($app_id,
                                                                   $app_key);
         $fields['inputName'] = $file_name;
         $fields['input'] = "@$file";
-        
+
         //verify these were requested before adding
-        if($options != NULL) 
-        { 
-            $field['options'] = $options; 
+        if($options != NULL)
+        {
+            $field['options'] = $options;
         }
-        if($password != NULL) 
-        { 
-            $fields['password'] = $password; 
+        if($password != NULL)
+        {
+            $fields['password'] = $password;
         }
-         
+
         return $fields;
     }
 
     /**
      * Puts the application ID and key into JSON Format
-     * 
-     * For information on preparing the 
+     *
+     * For information on preparing the
      * <a href="https://api.datalogics-cloud.com/#application">
      * Application</a> please see
      * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
@@ -170,9 +170,9 @@ class Response
     /**
      * Process the response from the WebAPI server
      *
-     * Please see 
+     * Please see
      * @see <a href="https://api.datalogics-cloud.com/#ServiceResponse">
-     * Service Response</a> at 
+     * Service Response</a> at
      * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
      * for more information on responses from the server.
      *
@@ -181,10 +181,10 @@ class Response
      * @param string $service Request type requested from the server
      * @param string $input_file File that was sent to the server
      * <a href="https://api.datalogics-cloud.com/#ServiceResponse">
-     * Service Response</a> at 
+     * Service Response</a> at
      * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
      */
-    public function handle_response($response, $destination_file, 
+    public function handle_response($response, $destination_file,
                                     $service, $input_file)
     {
         $json_decoded = json_decode($response);
@@ -207,7 +207,7 @@ class Response
         fwrite($file, $response);
         fclose($file);
     }
-    
+
 }
 
 ?>

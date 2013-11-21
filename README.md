@@ -5,8 +5,8 @@ Internet-accessible PDF API, formally known as "PDF WebAPI".
 ## System Requirements
 
 * PDF2IMG
+* PHP 5.3 or newer
 * Python 2.7
-* PHP 5.3
 * `pdfprocess` login
 
 MacOS (different versions) is the primary development platform, and Ubuntu is the target deployment platform.
@@ -17,6 +17,7 @@ MacOS (different versions) is the primary development platform, and Ubuntu is th
 * [Doxygen](http://www.stack.nl/~dimitri/doxygen/)
 * [Flask](http://flask.pocoo.org)
 * [Gunicorn](http://gunicorn.org)
+* [phpDocumentor 2](http://phpdoc.org)
 
 ## Install PDF2IMG
 
@@ -34,26 +35,32 @@ This application must be in the PATH used by pdfprocess. Install it and its asso
 
 We use Buildout, which is a three-step process. These steps are executed by the Makefile's _build_ (default) target:
 
-1. Documentation -- the build begins by cloning the doxygen repository, building a local copy of doxygen, and generating HTML pages for the API.
+1. Documentation -- the build begins by generating HTML pages for our sample clients.
+    * We clone the doxygen repository, build it, and use it to generate HTML for our sample Python client.
+    * We download phpDocumentor 2, and use it to generate HTML for our sample PHP client.
 
 2. Bootstrap -- the repository is initialized by a script that must be compatible with the version of Buildout we use (currently 2.2).
 
 3. Buildout -- the buildout script uses its configuration to download packages, etc.
 
-* For Linux, these packages must be installed
+4. For Linux, these packages must be installed
     * make
     * flex
     * bison
     * g++
+    * php5
     * python-dev
     * for lxml on Ubuntu
         * libxml2-dev
         * libxslt-dev
-* For Mac, Xcode's Command Line Tools must be installed
-* Clone the web-api repository into /home/pdfprocess
+
+5. For Mac, Xcode's Command Line Tools must be installed
+
+6. Clone the web-api repository into /home/pdfprocess
     * To get the password for pdfprocess, send mail to pdfprocess@datalogics.com
     * The pass phrase for the web-api deploy key is the password in lower case
-* make _build_
+
+7. make _build_
 
 ## Run
 
@@ -77,7 +84,7 @@ These scripts facilitate testing:
 * `bin/nose` runs the regression tests that validate this Flask application
 * `bin/server` runs this Flask application with its development server (Werkzeug)
 * `test/app_test.py` tests this Flask application directly
-* `test/test_client.py` runs `samples/pdfprocess.py` with test settings
+* `test/test_client.py` runs `samples/python/pdfprocess.py` with test settings
 
 ## Issues
 
