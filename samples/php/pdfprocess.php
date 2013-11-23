@@ -1,374 +1,214 @@
-#!/usr/bin/env php
-<?php
-/**
- * Copyright (c) 2013, Datalogics, Inc. All rights reserved.
- *
- * Sample pdfclient driver
- *
- * This agreement is between Datalogics, Inc. 101 N. Wacker Drive, Suite 1800,
- * Chicago, IL 60606 ("Datalogics") and you, an end user who downloads
- * source code examples for integrating to the Datalogics (R) PDF WebAPI (TM)
- * ("the Example Code"). By accepting this agreement you agree to be bound
- * by the following terms of use for the Example Code.
- *
- * LICENSE
- * -------
- * Datalogics hereby grants you a royalty-free, non-exclusive license to
- * download and use the Example Code for any lawful purpose. There is no charge
- * for use of Example Code.
- *
- * OWNERSHIP
- * ---------
- * The Example Code and any related documentation and trademarks are and shall
- * remain the sole and exclusive property of Datalogics and are protected by
- * the laws of copyright in the U.S. and other countries.
- *
- * Datalogics and Datalogics PDF WebAPI are trademarks of Datalogics, Inc.
- *
- * TERM
- * ----
- * This license is effective until terminated. You may terminate it at any
- * other time by destroying the Example Code.
- *
- * WARRANTY DISCLAIMER
- * -------------------
- * THE EXAMPLE CODE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
- * EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
- *
- * DATALOGICS DISCLAIM ALL OTHER WARRANTIES, CONDITIONS, UNDERTAKINGS OR
- * TERMS OF ANY KIND, EXPRESS OR IMPLIED, WRITTEN OR ORAL, BY OPERATION OF
- * LAW, ARISING BY STATUTE, COURSE OF DEALING, USAGE OF TRADE OR OTHERWISE,
- * INCLUDING, WARRANTIES OR CONDITIONS OF MERCHANTABILITY, FITNESS FOR A
- * PARTICULAR PURPOSE, SATISFACTORY QUALITY, LACK OF VIRUSES, TITLE,
- * NON-INFRINGEMENT, ACCURACY OR COMPLETENESS OF RESPONSES, RESULTS, AND/OR
- * LACK OF WORKMANLIKE EFFORT. THE PROVISIONS OF THIS SECTION SET FORTH
- * SUBLICENSEE'S SOLE REMEDY AND DATALOGICS'S SOLE LIABILITY WITH RESPECT
- * TO THE WARRANTY SET FORTH HEREIN. NO REPRESENTATION OR OTHER AFFIRMATION
- * OF FACT, INCLUDING STATEMENTS REGARDING PERFORMANCE OF THE EXAMPLE CODE,
- * WHICH IS NOT CONTAINED IN THIS AGREEMENT, SHALL BE BINDING ON DATALOGICS.
- * NEITHER DATALOGICS WARRANT AGAINST ANY BUG, ERROR, OMISSION, DEFECT,
- * DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
- *
- * PDFProcess PHP Client Driver Sample
- * -----------------------------------
- * pdfprocess.php is a sample php client driver for the Datalogics PDF
- * WebAPI. The script takes drives the sample and passes the data from
- * the user on the command line to the phpclient.  That file sends
- * requests and handles responses from the WebAPI server (see links).
- *
- * Samples for additional languages and there documentation can be
- * found at the links provided.
- *
- * @package php_client
- * @filesource
- *
- * @link ../classes/PDFProcess.html PDFProcess
- * @link pdfprocess.php.txt Source
- * @link https://api.datalogics-cloud.com PDF WebAPI Documentation
- *
- */
+<?php namespace pdfprocess;
 
-include 'phpclient.php';
+# Copyright (c) 2013, Datalogics, Inc. All rights reserved.
 
-error_reporting(E_ALL);
+# Sample pdfclient driver
+
+# This agreement is between Datalogics, Inc. 101 N. Wacker Drive, Suite 1800,
+# Chicago, IL 60606 ("Datalogics") and you, an end user who downloads
+# source code examples for integrating to the Datalogics (R) PDF WebAPI (TM)
+# ("the Example Code"). By accepting this agreement you agree to be bound
+# by the following terms of use for the Example Code.
+#
+# LICENSE
+# -------
+# Datalogics hereby grants you a royalty-free, non-exclusive license to
+# download and use the Example Code for any lawful purpose. There is no charge
+# for use of Example Code.
+#
+# OWNERSHIP
+# ---------
+# The Example Code and any related documentation and trademarks are and shall
+# remain the sole and exclusive property of Datalogics and are protected by
+# the laws of copyright in the U.S. and other countries.
+#
+# Datalogics and Datalogics PDF WebAPI are trademarks of Datalogics, Inc.
+#
+# TERM
+# ----
+# This license is effective until terminated. You may terminate it at any
+# other time by destroying the Example Code.
+#
+# WARRANTY DISCLAIMER
+# -------------------
+# THE EXAMPLE CODE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
+# EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES
+# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+#
+# DATALOGICS DISCLAIM ALL OTHER WARRANTIES, CONDITIONS, UNDERTAKINGS OR
+# TERMS OF ANY KIND, EXPRESS OR IMPLIED, WRITTEN OR ORAL, BY OPERATION OF
+# LAW, ARISING BY STATUTE, COURSE OF DEALING, USAGE OF TRADE OR OTHERWISE,
+# INCLUDING, WARRANTIES OR CONDITIONS OF MERCHANTABILITY, FITNESS FOR A
+# PARTICULAR PURPOSE, SATISFACTORY QUALITY, LACK OF VIRUSES, TITLE,
+# NON-INFRINGEMENT, ACCURACY OR COMPLETENESS OF RESPONSES, RESULTS, AND/OR
+# LACK OF WORKMANLIKE EFFORT. THE PROVISIONS OF THIS SECTION SET FORTH
+# SUBLICENSEE'S SOLE REMEDY AND DATALOGICS'S SOLE LIABILITY WITH RESPECT
+# TO THE WARRANTY SET FORTH HEREIN. NO REPRESENTATION OR OTHER AFFIRMATION
+# OF FACT, INCLUDING STATEMENTS REGARDING PERFORMANCE OF THE EXAMPLE CODE,
+# WHICH IS NOT CONTAINED IN THIS AGREEMENT, SHALL BE BINDING ON DATALOGICS.
+# NEITHER DATALOGICS WARRANT AGAINST ANY BUG, ERROR, OMISSION, DEFECT,
+# DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
+
+include 'pdfclient.php';
+
+const APPLICATION_ID = 'your app id';  # TODO: paste!
+const APPLICATION_KEY = 'your app key';  # TODO: paste!
+
+$json_options = array('options');
+$options = array_merge(array('inputName', 'password'), $json_options);
+
+$pdf2img_guide = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf';
+$usage_options = '[inputName=name] [password=pwd] [options=json]';
+
+$usage = "usage: pdfprocess.php request_type input " . $usage_options . "\n" .
+    "example: pdfprocess.php FlattenForm hello_world.pdf\n" .
+    "example: pdfprocess.php RenderPages " . $pdf2img_guide .
+        'options={"printPreview": True, "outputFormat": "jpg"}';
+
 
 /**
- * Class for the purpose of converting user input into
- * data needed for proper server request
+ * Sample pdfclient driver:
+ * execute %pdfprocess.php with no arguments for usage information
  */
-class PDFProcess
+class Client extends \pdfclient\Application
 {
     /**
-     * @var string $base_url The base of the request URL
+     * Create a Request from command-line arguments and execute it
+     * @return a Response object
+     * @param args e.g.['%pdfprocess.php', 'FlattenForm', 'hello_world.pdf']
+     * @param base_url
      */
-    var $base_url = "https://pdfprocess.datalogics-cloud.com";
-
-    /**
-     * @var string $full_url The Full URL for the service request
-     */
-    var $full_url;
-
-    /**
-     * Application ID needed to utilize service
-     *
-     * Register for an Application ID at
-     * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
-     *
-     * @var string $application_id Application ID
-     */
-    var $application_id = 'your app id';  # TODO: paste!
-
-    /**
-     * Application Key need to utilize service
-     *
-     * Register for an Application Key at
-     * <a href="https://api.datalogics-cloud.com">api.datalogics-cloud.com</a>
-     *
-     * @var string $application_key Application Key at api.datalogics-cloud.com
-     */
-    var $application_key = 'your app key';  # TODO: paste!
-
-    /**
-     * @var string $source_file Full path to file being uploaded for processing
-     */
-    var $source_file;
-
-    /**
-     * @var string $source_file_name File name without Path information
-     */
-    var $source_file_name;
-
-    /**
-     * @var string $URL_input URL to pdf file to be processed
-     */
-    var $URL_input = NULL;
-
-    /**
-     * @var string $destination_file_name Output file name
-     */
-    var $destination_file_name;
-
-    /**
-     * Output format of any images created with the Render Pages Service
-     *
-     * See
-     * <a href="https://api.datalogics-cloud.com/docs/#outputFormat">
-     * outputFormat</a> at
-     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>
-     * for more information
-     *
-     * @var string $output_format Default format for output file
-     */
-    var $output_format = 'jpg';
-
-    /**
-     * Default setting for print preview option
-     *
-     * See
-     * <a href="https://api.datalogics-cloud.com/docs/#printPreview">
-     * printPreview</a> at
-     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>
-     * for more information
-     *
-     * @var boolean $print_preview Default print preview option setting
-     */
-    var $print_preview = FALSE;
-
-    /**
-     * Options given on the command line for the requested service
-     *
-     * See
-     * <a href="https://api.datalogics-cloud.com/docs/#RenderPagesOptions">
-     * Request Options</a> at
-     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>
-     * for more information
-     *
-     * @var JSONArray $options holds options for server request call
-     */
-    var $options = NULL;
-
-    /**
-     * Service request to be used on the uploaded document
-     *
-     * See
-     * <a href="https://api.datalogics-cloud.com/#RequestTypes">
-     * Request Types</a> at
-     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>
-     *
-     * @var string $request_type Service to be used on provided document
-     */
-    var $request_type;
-
-    /**
-     * User provided password for given PDf file
-     *
-     * See
-     * <a href="https://api.datalogics-cloud.com/#password">
-     * Password</a> at
-     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>
-     *
-     * @var string $password password for loaded PDF
-     */
-    var $password = NULL;
-
-    /**
-     * Input Name specified by the user
-     *
-     * See
-     * <a href="https://api.datalogics-cloud.com/#inputName">
-     * inputName</a> at
-     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>i
-     *
-     * @var string $input_name input name if provided by user
-     */
-    var $input_name = NULL;
-
-    /**
-     * Format request type given on the command line for use in request URL.
-     *
-     * See
-     * <a href="https://api.datalogics-cloud.com/#RequestTypes">
-     * Request Types</a> at
-     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>
-     *
-     * @param string $request_type the request type argument
-     * @return string $return_string the URL formatted request type
-     */
-    public function set_request_type($request_type)
+    function __invoke($args, $base_url = NULL)
     {
-        return strtolower(preg_replace('/([A-Z].)/', '/$1$2', $request_type));
+        if (count($args) < 3) { exit($usage); }
+
+        $input = $args[2];
+        $request_fields = $this->_initialize($args);
+        $base_url = $base_url ? $base_url : \pdfclient\BASE_URL;
+        $this->_request = $this->make_request($args[1], $base_url);
+
+        $input_name = $request_fields['inputName'];
+        $this->_input_name = $input_name ? $input_name : basename($input);
+
+        $api_request = $this->_request;
+        $api_response = $api_request($input, $request_fields);
+        return new Response($api_response, $this->output_filename());
     }
 
     /**
-     * Parses through arguments to create JSON formatted array for request
-     *
-     * See
-     * <a href="https://api.datalogics-cloud.com/docs/#RenderPagesOptions">
-     * Render Pages Options</a> and
-     * <a href="https://api.datalogics-cloud.com/#RequestForm">
-     * Request Form</a> for more information
-     *
-     * @param string[]  $args The user provided arguments
-     * @return string[]  $json_array The JSON formatted array
-     * @throws Exception If arguments provided are not formatted correctly
+     * Derived from the input name or explicitly specified
      */
-    private function set_options($args)
-    {
-        $options = array();
-        $scriptName = $args[0];
+    function input_name() { return $this->_input_name; }
 
-        foreach ($args as $key => $index)
+    /**
+     * @return #input_name with extension replaced by requested output format
+     */
+    function output_filename()
+    {
+        $extension = $this->_request->output_format();
+        return basename($this->input_name(), '.pdf') . $extension;
+    }
+
+    private function _initialize($args)
+    {
+        try
         {
-            if ($scriptName === $index ||
-                $args[1] === $index ||
-                $this->source_file === $index)
+            return $this->_parse_args(array_slice($args, 3));
+        }
+        catch (Exception $exception)
+        {
+            echo $exception->getMessage();
+            exit($usage);
+        }
+    }
+
+    private function _parse_args($args)
+    {
+        $result = array();
+        foreach ($args as $arg)
+        {
+            list($option, $value) = explode('=', $arg);
+            if (!array_search($option, $options))
             {
-                continue;
+                $invalid_option = 'invalid option: ' . $option;
+                throw new UnexpectedValueException($invalid_option);
             }
-            else if (strpos($index, '=') !== false)
-            {
-                list($opt, $value) = explode('=', $index, 2);
-                if ($opt === 'password')
-                {
-                    $this->password = $value;
-                }
-                else if ($opt === 'inputName')
-                {
-                    $this->input_name = $value;
-                }
-                else if ($opt === 'options')
-                {
-                    $decoded = array(json_decode($value));
-                    foreach ($decoded[0] as $ref => $val)
-                    {
-                        $options[$ref] = $val;
-                    }
-                }
-            }
-            else
-            {
-                throw new Exception('Usage: '
-                                     .$scriptName.
-                                     ' request_type input [inputName=name]'
-                                     .' [password=pwd] [options=json]');
-            }
+            $json = in_array($option, $json_options);
+            $result[$option] = $json ? json_decode($value, true) : $value;
         }
-        if(empty($options))
-        {
-            return NULL;
-        }
-        else
-        {
-            return $options;
-        }
+        return $result;
     }
 
-    /**
-     * Set the full URL for making service request
-     */
-    private function set_request_url()
-    {
-        $this->full_url = $this->base_url . '/api/actions'. $this->request_type;
-    }
-
-    /**
-     * Set the format for the name of the output file (if any)
-     *
-     * See
-     * <a href="https://api.datalogics-cloud.com/docs/#outputFormat">
-     * outputformat</a> at
-     * <a href="https://api.datalogics-cloud.com">api.datalogics.com</a>
-     * for more information
-     *
-     * @param string[] $json_array An array of options in JSON format
-     */
-    private function set_output_format($json_array)
-    {
-        if ($json_array != NULL)
-        {
-            if (array_key_exists('outputFormat', $json_array))
-            {
-                $this->output_format = $json_array['outputFormat'];
-            }
-        }
-
-        list($this->destination_file_name, $type)
-                        = explode('.', $this->source_file_name);
-        $this->destination_file_name .= '.'. $this->output_format;
-    }
-
-    /**
-     * Parse command line arguments to create proper server request call
-     * @param string[] $args The user supplied arguments
-     * @param int $argc The number of arguments the user provided
-     * @throws Exception If enough arguments are not provided
-     */
-    public function parse_arguments($args, $argc)
-    {
-        $this->request_type = $this->set_request_type($args[1]);
-        $this->source_file = $args[2];
-        $this->source_file_name = basename($args[2]);
-
-        if ($argc < 3)
-        {
-            throw new Exception('Usage: '
-                                .$scriptName.
-                                ' request_type input [inputName=name]'
-                                .' [password=pwd] [options=json]');
-        }
-        $json_array = $this->set_options($args);
-        $this->options = $json_array;
-        $this->set_output_format($json_array);
-        $this->set_request_url();
-    }
+    private $_input_name;
+    private $_request;
 }
 
-// Driver code
-$pdfprocess = new PDFProcess();
-$requester = new Request();
-$responder = new Response();
 
-try
+/**
+ * pdfclient\\%Response wrapper
+ * saves output to the file specified by the request
+ */
+class Response
 {
-    $pdfprocess->parse_arguments($argv, $argc);
+    function __construct($api_response, $output_filename)
+    {
+        $this->_api_response = $api_response;
+        $this->_output_filename = $output_filename;
+    }
+
+    function __toString() { return (string) $this->api_response(); }
+
+    /**
+     * @return pdfclient\\%Response
+     */
+    public function api_response() { return $this->_api_response; }
+
+    /**
+     * @return True only if http_code is 200
+     */
+    function ok() { return $this->api_response()->ok(); }
+
+    /**
+     * Derived from Client.input_name and requested output format
+     */
+    public function output_filename()
+    {
+        if ($this->ok()) { return $this->_output_filename; }
+    }
+
+    /**
+     * Save output in file named #output_filename
+     */
+    function save_output()
+    {
+        $output_file = fopen($this->output_filename(), 'wb');
+        fwrite($output_file, $this->api_response()->output);
+        fclose($output_file);
+    }
+
+    private $_api_response;
+    private $_output_filename;
 }
-catch (Exception $e)
+
+
+function run($args, $app_id = NULL, $app_key = NULL)
 {
-    echo $e->getMessage(), "\n";
-    exit();
+    if (!$app_id) $app_id = APPLICATION_ID;
+    if (!$app_key) $app_key = APPLICATION_KEY;
+
+    $client = new Client($app_id, $app_key);
+    return $client($args);
 }
 
-$prepared = $requester->prepare_request($pdfprocess->application_id,
-                                        $pdfprocess->application_key,
-                                        $pdfprocess->source_file,
-                                        $pdfprocess->password,
-                                        $pdfprocess->input_name,
-                                        $pdfprocess->options);
-$response = $requester->make_request($pdfprocess->full_url, $prepared);
-$responder->handle_response($response,
-                            $pdfprocess->destination_file_name,
-                            $pdfprocess->request_type,
-                            $pdfprocess->source_file);
-
+$response = run($argv);
+if ($response->ok())
+{
+    $response->save_output();
+    echo 'created: ' . $response->output_filename();
+}
+else
+{
+    echo $response;
+    exit($response->api_response()->error_code());
+}
 ?>

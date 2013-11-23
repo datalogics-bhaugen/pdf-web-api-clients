@@ -30,7 +30,8 @@ def test_pdfprocess_sample_perl():
         assert_in('your app id', str(stdout))
 
 def test_pdfprocess_sample_php():
-    args = ['../samples/php/pdfprocess.php', 'RenderPages', 'data/bad.pdf']
+    php_sample = '../samples/php/pdfprocess.php'
+    args = ['php', php_sample, 'RenderPages', 'data/bad.pdf']
     with Stdout() as stdout:
         error_code = subprocess.call(args, stdout=stdout)
         assert_equal(error_code, ErrorCode.AuthorizationError)
