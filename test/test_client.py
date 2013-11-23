@@ -38,6 +38,6 @@ def run(argv, base_url=BASE_URL):
 
 if __name__ == '__main__':
     response = run(sys.argv)
-    if not response: sys.exit(response)
+    if not response.ok: sys.exit(response)
     response.save_output()
     print('created: {}'.format(response.output_filename))

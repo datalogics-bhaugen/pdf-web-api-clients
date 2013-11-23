@@ -97,6 +97,7 @@ class Request(object):
     #  @param data dict with keys in ('inputName', 'password', 'options')
     def __call__(self, input, **data):
         files = None
+        data = data.copy()
         data.update(self._data)
         if type(input) in STRING_TYPES:
             data['inputURL'] = input
@@ -105,6 +106,9 @@ class Request(object):
             files = {'input': input}
             if 'inputName' not in data: data['inputName'] = input.name
         if 'options' in data:
+            for option in data['options'].keys():
+                if option not in self.OPTIONS:
+                    raise Exception('invalid option: {}'.format(option))
             data['options'] = json.dumps(data['options'])
         return Response(
             requests.post(self.url, verify=False, data=data, files=files))
@@ -122,21 +126,17 @@ class Response(object):
     def __init__(self, request_response):
         self._response = request_response
         self._error_code, self._error_message = None, None
-        if not self.ok:
-            try:
-                json = request_response.json()
-                self._error_code = json['errorCode']
-                self._error_message = json['errorMessage']
-            except:
-                pass
+        if not self.ok: self._not_ok()
     def __str__(self):
         return self.output or \
             '{}: {}'.format(self.error_code, self.error_message)
-    def __bool__(self):
-        return self.ok
-    __nonzero__ = __bool__
-    def __getattr__(self, key):
-        return getattr(self._response, key)
+    def _not_ok(self):
+        try:
+            json = self._response.json()
+            self._error_code = json['errorCode']
+            self._error_message = json['errorMessage']
+        except:
+            pass  # 404?
     @property
     ## True only if http_code is 200
     def ok(self): return self.http_code == requests.codes.ok
@@ -145,7 +145,7 @@ class Response(object):
     def http_code(self): return self._response.status_code
     @property
     ## Document or image data (bytes) if request was successful, otherwise None
-    def output(self): return self._response.content if self else None
+    def output(self): return self._response.content if self.ok else None
     @property
     ## None if successful, otherwise API
     #   [error code](https://api.datalogics-cloud.com/#errorCode) (int)

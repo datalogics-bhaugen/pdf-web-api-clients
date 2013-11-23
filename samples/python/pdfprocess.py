@@ -51,6 +51,7 @@
 
 import json
 import os
+import re
 import sys
 
 from pdfclient import Application
@@ -79,8 +80,8 @@ class Client(Application):
     def __call__(self, args, base_url=Application.BASE_URL):
         if len(args) < 3: self._exit(args)
         input, data = self._initialize(args)
-        url_input = input.lower().startswith('http')
-        self._request = self.make_request(args[1], base_url)
+        url_input = re.match('http:|https:', input.lower())
+        self._api_request = self.make_request(args[1], base_url)
         input_name = os.path.basename(input) if url_input else input
         self._input_name = data.get('inputName', input_name)
         send_method = self._send_url if url_input else self._send_file
@@ -98,16 +99,16 @@ class Client(Application):
         result = {}
         for arg in args:
             option, value = arg.split('=')
-            if option in OPTIONS:
-                result[option] =\
-                    json.loads(value) if option in JSON_OPTIONS else value
-            else: raise Exception('invalid option: {}'.format(option))
+            if option not in OPTIONS:
+                raise Exception('invalid option: {}'.format(option))
+            json_option = option in JSON_OPTIONS
+            result[option] = json.loads(value) if json_option else value
         return result
     def _send_file(self, input, data):
         with open(input, 'rb') as input_file:
-            return self._request(input_file, **data)
+            return self._api_request(input_file, **data)
     def _send_url(self, input, data):
-        return self._request(input, **data)
+        return self._api_request(input, **data)
     @property
     ## Derived from the input name or explicitly specified
     def input_name(self):
@@ -116,7 +117,7 @@ class Client(Application):
     ## #input_name with extension replaced by requested output format
     def output_filename(self):
         input_name = os.path.splitext(self._input_name)[0]
-        return '{}.{}'.format(input_name, self._request.output_format)
+        return '{}.{}'.format(input_name, self._api_request.output_format)
 
 
 ## #pdfclient.Response wrapper
@@ -126,9 +127,6 @@ class Response(object):
         self._response, self._output_filename = response, output_filename
     def __str__(self):
         return str(self._response)
-    def __bool__(self):
-        return self.ok
-    __nonzero__ = __bool__
     def __getattr__(self, key):
         return getattr(self._response, key)
     ## Save output in file named #output_filename
@@ -143,11 +141,11 @@ class Response(object):
     @property
     ## Derived from Client.input_name and requested output format
     def output_filename(self):
-        if self: return self._output_filename
+        if self.ok: return self._output_filename
 
 
 def run(args, app_id=APPLICATION_ID, app_key=APPLICATION_KEY):
-    return Client(app_id, app_key)(args, Application.BASE_URL)
+    return Client(app_id, app_key)(args)
 
 if __name__ == '__main__':
     response = run(sys.argv)

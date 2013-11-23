@@ -20,7 +20,7 @@ class Result(object):
             assert_equal(response.http_code, self._http_code)
         else:
             assert_in(response.http_code, self._http_code)
-        if response:
+        if response.ok:
             assert_is_not_none(response.output)
             assert_is_none(response.error_message)
         else:
