@@ -120,18 +120,18 @@ class Request
             }
         }
 
-        $options = $fields['options'];
-        if ($options)
+        $request_options = $fields['options'];
+        if ($request_options)
         {
-            foreach ($options as $option)
+            foreach ($request_options as $option_name => $ignored)
             {
-                if (!array_search($option, self::$options))
+                if (!array_search($option_name, $this->options))
                 {
-                    $invalid_option = 'invalid option: ' . $option;
+                    $invalid_option = 'invalid option: ' . $option_name;
                     exit($invalid_option);
                 }
             }
-            $fields['options'] = json_encode($options);
+            $fields['options'] = json_encode($request_options);
         }
 
         $curl = curl_init($this->_url);
@@ -252,7 +252,7 @@ class FlattenForm extends Request
     /**
      * %FlattenForm has no request options
      */
-    static $options = array();
+    var $options = array();
 
     function __construct($application, $base_url)
     {
@@ -300,7 +300,7 @@ class RenderPages extends Request
      *    (https://api.datalogics-cloud.com/docs#suppressAnnotations):
      *    draw only actual page contents
      */
-    static $options = array(
+    var $options = array(
         'colorModel', 'compression',
         'disableColorManagement', 'disableThinLineEnhancement',
         'imageHeight', 'imageWidth',
