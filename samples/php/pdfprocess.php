@@ -104,7 +104,7 @@ class Client extends \pdfclient\Application
     function output_filename()
     {
         $extension = $this->_request->output_format();
-        return basename($this->input_name(), '.pdf') . $extension;
+        return basename($this->input_name(), '.pdf') . '.' . $extension;
     }
 
     private function _initialize($args)
@@ -181,7 +181,7 @@ class Response
     function save_output()
     {
         $output_file = fopen($this->output_filename(), 'wb');
-        fwrite($output_file, $this->api_response()->output);
+        fwrite($output_file, $this->api_response()->output());
         fclose($output_file);
     }
 
