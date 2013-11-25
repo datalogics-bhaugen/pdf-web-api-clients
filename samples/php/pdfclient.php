@@ -133,6 +133,10 @@ class Request
             }
             $fields['options'] = json_encode($request_options);
         }
+        elseif ($request_options == array())
+        {
+            unset($fields['options']);
+        }
 
         $curl = curl_init($this->_url);
         $http_header = array('Content-Type: multipart/form-data');
