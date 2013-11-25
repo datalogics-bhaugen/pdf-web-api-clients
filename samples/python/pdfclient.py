@@ -65,13 +65,11 @@ class Application(object):
     def __init__(self, id, key):
         self._json = json.dumps({'id': id, 'key': key})
 
-    def __str__(self): return self._json
-
     ## Create a request for the specified request type
     # @return a Request object
     # @param request_type e.g. 'FlattenForm'
     def make_request(self, request_type, base_url=BASE_URL):
-        return Application._request_class(request_type)(self, base_url)
+        return Application._request_class(request_type)(self._json, base_url)
 
     @classmethod
     def _request_class_predicate(cls, request_type):
@@ -85,9 +83,9 @@ class Application(object):
 
 ## Service request
 class Request(object):
-    def __init__(self, application, base_url):
-        self._data = {'application': str(application)}
+    def __init__(self, application_json, base_url):
         self._output_format = None
+        self._data = {'application': application_json}
         action = re.sub('([A-Z]+)', r'/\1', self.__class__.__name__).lower()
         self._url = '{}/api/actions{}'.format(base_url, action)
 
@@ -111,14 +109,11 @@ class Request(object):
                     raise Exception('invalid option: {}'.format(option))
             data['options'] = json.dumps(data['options'])
         return Response(
-            requests.post(self.url, verify=False, data=data, files=files))
+            requests.post(self._url, verify=False, data=data, files=files))
 
     @property
     ## Output filename extension property (string)
     def output_format(self): return self._output_format
-    @property
-    ## %Request URL property (string)
-    def url(self): return self._url
 
 
 ## Service response

@@ -60,8 +60,7 @@ from pdfclient import Application
 APPLICATION_ID = 'your app id'  # TODO: paste!
 APPLICATION_KEY = 'your app key'  # TODO: paste!
 
-JSON_OPTIONS = ('options',)
-OPTIONS = ('inputName', 'password') + JSON_OPTIONS
+OPTIONS = ('inputName', 'password', 'options')
 PDF2IMG_GUIDE = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
 USAGE_OPTIONS = '[{}=name] [{}=pwd] [{}=json]'.format(*OPTIONS)
 USAGE = 'usage: {0} request_type input ' + USAGE_OPTIONS + '\n' +\
@@ -101,8 +100,8 @@ class Client(Application):
             option, value = arg.split('=')
             if option not in OPTIONS:
                 raise Exception('invalid option: {}'.format(option))
-            json_option = option in JSON_OPTIONS
-            result[option] = json.loads(value) if json_option else value
+            result[option] =\
+                json.loads(value) if option == 'options' else value
         return result
     def _send_file(self, input, data):
         with open(input, 'rb') as input_file:

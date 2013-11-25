@@ -54,20 +54,18 @@ include 'pdfclient.php';
 const APPLICATION_ID = 'your app id';  # TODO: paste!
 const APPLICATION_KEY = 'your app key';  # TODO: paste!
 
-$json_options = array('options');
-$options = array_merge(array('inputName', 'password'), $json_options);
+const PDF2IMG_GUIDE = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf';
+const USAGE_OPTIONS = '[inputName=name] [password=pwd] [options=json]';
 
-$pdf2img_guide = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf';
-$usage_options = '[inputName=name] [password=pwd] [options=json]';
-
-$usage = "usage: pdfprocess.php request_type input " . $usage_options . "\n" .
+$usage =
+    "usage: pdfprocess.php request_type input " . USAGE_OPTIONS . "\n" .
     "example: pdfprocess.php FlattenForm hello_world.pdf\n" .
-    "example: pdfprocess.php RenderPages " . $pdf2img_guide .
+    "example: pdfprocess.php RenderPages " . PDF2IMG_GUIDE .
         'options={"printPreview": True, "outputFormat": "jpg"}';
 
 
 /**
- * Sample pdfclient driver:
+ * @brief Sample pdfclient driver:
  * execute %pdfprocess.php with no arguments for usage information
  */
 class Client extends \pdfclient\Application
@@ -76,7 +74,7 @@ class Client extends \pdfclient\Application
      * Create a Request from command-line arguments and execute it
      * @return a Response object
      * @param args e.g.['%pdfprocess.php', 'FlattenForm', 'hello_world.pdf']
-     * @param base_url
+     * @param base_url default = %https://pdfprocess.datalogics-cloud.com
      */
     function __invoke($args, $base_url = NULL)
     {
@@ -125,16 +123,17 @@ class Client extends \pdfclient\Application
     private function _parse_args($args)
     {
         $result = array();
+        $options = array('inputName', 'password', 'options');
         foreach ($args as $arg)
         {
             list($option, $value) = explode('=', $arg);
-            if (!array_search($option, $options))
+            if (!array_search($option, OPTIONS))
             {
                 $invalid_option = 'invalid option: ' . $option;
                 throw new UnexpectedValueException($invalid_option);
             }
-            $json = in_array($option, $json_options);
-            $result[$option] = $json ? json_decode($value, true) : $value;
+            $result[$option] =
+                $option == 'options' ? json_decode($value, true) : $value;
         }
         return $result;
     }
@@ -145,7 +144,7 @@ class Client extends \pdfclient\Application
 
 
 /**
- * pdfclient\\%Response wrapper
+ * @brief %pdfclient\\%Response wrapper
  * saves output to the file specified by the request
  */
 class Response

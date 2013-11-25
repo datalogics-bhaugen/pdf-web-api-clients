@@ -53,7 +53,7 @@ const BASE_URL = 'https://pdfprocess.datalogics-cloud.com';
 
 
 /**
- * %Request factory
+ * @brief %Request factory
  */
 class Application
 {
@@ -66,19 +66,18 @@ class Application
         $this->_json = json_encode(array('id' => $id, 'key' => $key));
     }
 
-    function __toString() { return $this->_json; }
-
     /**
      * Create a request for the specified request type
      * @return a Request object
      * @param request_type e.g. '%FlattenForm'
+     * @param base_url default = %https://pdfprocess.datalogics-cloud.com
      */
     function make_request($request_type, $base_url = NULL)
     {
         if (!$base_url) $base_url = BASE_URL;
 
         $request_type = '\\pdfclient\\' . $request_type;
-        return new $request_type((string) $this, $base_url);
+        return new $request_type($this->_json, $base_url);
     }
 
     private $_json;
@@ -86,14 +85,16 @@ class Application
 
 
 /**
- * Service request
+ * @brief Service request
  */
 class Request
 {
-    function __construct($application, $base_url)
+    function __construct($application_json, $base_url)
     {
-        $this->_request_fields = array('application' => $application);
-        $this->_url = $base_url . '/api/actions/' . $this->name();
+        $class_name = end(explode('\\', get_class($this)));
+        $action = preg_replace('/([A-Z])/', '/$1', $class_name);
+        $this->_url = $base_url . '/api/actions' . strtolower($action);
+        $this->_request_fields = array('application' => $application_json);
     }
 
     /**
@@ -133,7 +134,7 @@ class Request
             $fields['options'] = json_encode($options);
         }
 
-        $curl = curl_init($this->url());
+        $curl = curl_init($this->_url);
         $http_header = array('Content-Type: multipart/form-data');
         curl_setopt($curl, CURLOPT_HTTPHEADER, $http_header);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -150,11 +151,6 @@ class Request
      */
     function output_format() { return $this->_output_format; }
 
-    /**
-     * %Request URL (string)
-     */
-    function url() { return $this->_url; }
-
     protected $_output_format;
 
     private $_request_fields;
@@ -163,7 +159,7 @@ class Request
 
 
 /**
- * Service response
+ * @brief Service response
  */
 class Response
 {
@@ -230,7 +226,7 @@ class Response
 
 
 /**
- * API error codes
+ * @brief API error codes
  */
 class ErrorCode
 {
@@ -249,7 +245,7 @@ class ErrorCode
 
 
 /**
- * Flatten form fields and other annotations
+ * @brief Flatten form fields and other annotations
  */
 class FlattenForm extends Request
 {
@@ -263,16 +259,11 @@ class FlattenForm extends Request
         parent::__construct($application, $base_url);
         $this->_output_format = 'pdf';
     }
-
-    /**
-     * @return 'flatten/form'
-     */
-    function name() { return 'flatten/form'; }
 }
 
 
 /**
- * Create raster image representation
+ * @brief Create raster image representation
  */
 class RenderPages extends Request
 {
@@ -331,18 +322,13 @@ class RenderPages extends Request
         $this->_output_format = $output_format ? $output_format : 'png';
         return parent::__invoke($input, $request_fields);
     }
-
-    /**
-     * @return 'render/pages'
-     */
-    function name() { return 'render/pages'; }
 }
 
 
 namespace pdfclient\FlattenForm;
 
 /**
- * Error codes for FlattenForm requests
+ * @brief Error codes for FlattenForm requests
  */
 class ErrorCode extends \pdfclient\ErrorCode
 {
@@ -352,7 +338,7 @@ class ErrorCode extends \pdfclient\ErrorCode
 namespace pdfclient\RenderPages;
 
 /**
- * Error codes for RenderPages requests
+ * @brief Error codes for RenderPages requests
  */
 class ErrorCode extends \pdfclient\ErrorCode
 {
