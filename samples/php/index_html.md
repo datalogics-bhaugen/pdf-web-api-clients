@@ -43,16 +43,16 @@ status code.
 
         if ($api_response->ok())
         {
-            assert('$api_response->http_code == 200');
-            # $api_response->output is the requested document or image.
-            assert('$api_response->error_code == NULL');
-            assert('$api_response->error_message == NULL');
+            assert('$api_response->http_code() == 200');
+            # $api_response->output() is the requested document or image.
+            assert('$api_response->error_code() == NULL');
+            assert('$api_response->error_message() == NULL');
         }
         else
         {
-            assert('$api_response->http_code != 200');
-            assert('$api_response->output == NULL');
-            assert('$api_response->error_code != NULL');
-            assert('$api_response->error_message != NULL');
+            assert('$api_response->http_code() != 200');
+            assert('$api_response->output() == NULL');
+            assert('$api_response->error_code() != NULL');
+            assert('$api_response->error_message() != NULL');
         } <!-- force Doxygen to print this brace -->
 
