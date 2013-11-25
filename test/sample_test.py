@@ -29,14 +29,6 @@ def test_pdfprocess_sample_perl():
         assert_equal(error_code, ErrorCode.AuthorizationError)
         assert_in('your app id', str(stdout))
 
-def test_pdfprocess_sample_php():
-    php_sample = '../samples/php/pdfprocess.php'
-    args = ['php', php_sample, 'RenderPages', 'data/bad.pdf']
-    with Stdout() as stdout:
-        error_code = subprocess.call(args, stdout=stdout)
-        assert_equal(error_code, ErrorCode.AuthorizationError)
-        assert_in('your app id', str(stdout))
-
 def test_pdfprocess_sample_python(python3=False):
     set_python_path()
     args = ['../samples/python/pdfprocess.py', 'RenderPages', 'data/bad.pdf']
@@ -46,5 +38,13 @@ def test_pdfprocess_sample_python(python3=False):
         assert_in('your app id', str(stdout))
 
 if platform.system() == 'Darwin':
+    def test_pdfprocess_sample_php():
+        php_sample = '../samples/php/pdfprocess.php'
+        args = ['php', php_sample, 'RenderPages', 'data/bad.pdf']
+        with Stdout() as stdout:
+            error_code = subprocess.call(args, stdout=stdout)
+            assert_equal(error_code, ErrorCode.AuthorizationError)
+            assert_in('your app id', str(stdout))
+
     def test_pdfprocess_sample_python3():
         test_pdfprocess_sample_python(python3=True)
