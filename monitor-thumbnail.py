@@ -1,1 +1,0 @@
-thumbnail-src/thumbnail/monitor.py

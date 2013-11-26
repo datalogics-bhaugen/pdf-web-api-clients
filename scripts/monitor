@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+
+'''
+usage: monitor.py service_url input_filename output_filename
+monitor.py http://127.0.0.1:5000/api/actions/render/pages test/data/four_pages.pdf test.png
+'''
+
+
+import sys
+import json
+import subprocess
+
+from itertools import chain
+
+
+def application():
+    app_id, app_key = '84445ec0', '2d3eac77bb3b9bea69a91e625b9241d2'
+    application_json = json.dumps({'id': app_id, 'key': app_key})
+    return 'application={}'.format(application_json).replace(' ', '')
+
+def monitor(argv):
+    if len(argv) != 4: sys.exit(__doc__)
+    url, input, output = (argv[1], argv[2], argv[3])
+    parts = (application(), 'input=@{}'.format(input), 'inputName=monitor')
+    form_parts = list(chain.from_iterable(('--form', part) for part in parts))
+    args = ['curl', '--insecure'] + form_parts + ['--output', output, url]
+    subprocess.call(args)
+
+if __name__ == '__main__':
+    monitor(sys.argv)
