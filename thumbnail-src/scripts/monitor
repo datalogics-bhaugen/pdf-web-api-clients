@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 '''
-usage: monitor.py service_url output_filename
-monitor.py http://127.0.0.1:5050 pdf2img.png
+usage: monitor service_url output_filename
+monitor http://127.0.0.1:5050 pdf2img.png
 '''
 
 

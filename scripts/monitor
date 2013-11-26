@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 '''
-usage: monitor.py service_url input_filename output_filename
-monitor.py http://127.0.0.1:5000/api/actions/render/pages test/data/four_pages.pdf test.png
+usage: monitor service_url input_filename output_filename
+monitor http://127.0.0.1:5000/api/actions/render/pages test/data/four_pages.pdf test.png
 '''
 
 
