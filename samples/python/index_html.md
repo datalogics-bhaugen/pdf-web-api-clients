@@ -1,4 +1,4 @@
-<!-- do not remove !-->
+<!-- this prevents Doxygen from putting excess space at the top of the page -->
 ### 0. Client Dependencies
 
 * Python 3.3 or 2.7: Other versions might work, but are not supported.
@@ -39,11 +39,12 @@ Use a new version, e.g. 2.0.1.
 
 ### 4. Interpret Response
 
-* Response properties are initialized according to returned HTTP status code
+* Response properties are initialized according to the returned HTTP
+status code.
 
         if api_response.ok:
             assert_equal(api_response.http_code, requests.codes.ok)
-            # api.response.output is the requested document or image.
+            # api_response.output is the requested document or image.
             assert_is_none(api_response.error_code)
             assert_is_none(api_response.error_message)
         else:

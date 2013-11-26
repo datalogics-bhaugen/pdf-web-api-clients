@@ -1,8 +1,8 @@
+DOXYGEN_CLEAN = rm -rf *.css *.html *.js *.png search
 ERASE = printf '' >
 GIT_HOOK = .git/hooks/pre-commit
 MAKE_THUMBNAIL = make --directory thumbnail-src
-PHP_DOCUMENTOR = bin/phpDocumentor.phar
-PHPDOC = doc/php
+PHPDOC = doc/php/index.html
 PLATFORM = $(shell uname -s)
 PYDOC = doc/python/index.html
 QA = bin/flake8 --max-complexity 10
@@ -26,7 +26,7 @@ endif
 	@$(MAKE_THUMBNAIL)
 	@make qa
 
-clean: pydoc-clean
+clean: html-clean
 	rm -rf .installed.cfg $(GIT_HOOK) bin develop-eggs parts venv
 	$(ERASE) $(APP_LOG); $(ERASE) $(AUX_LOG)
 	@$(MAKE_THUMBNAIL) $@
@@ -37,10 +37,15 @@ qa: bin/segfault
 
 html: $(PHPDOC) $(PYDOC)
 
-pydoc-clean:
-	cd doc/python; rm -rf *.css *.html *.js *.png search
+html-clean: phpdoc-clean pydoc-clean
 
-.PHONY: build clean qa html pydoc-clean
+phpdoc-clean:
+	cd doc/php; $(DOXYGEN_CLEAN)
+
+pydoc-clean:
+	cd doc/python; $(DOXYGEN_CLEAN)
+
+.PHONY: build clean qa html html-clean phpdoc-clean pydoc-clean
 
 $(APP_LOG): $(VAR_LOG)
 	touch $@
@@ -51,31 +56,28 @@ $(AUX_LOG): $(SERVER_LOG)
 $(GIT_HOOK): scripts/pre-commit
 	ln -s ../../$^ $@
 
+$(PHPDOC): doxygen samples/php/*
+	@make phpdoc-clean
+	doxygen/bin/doxygen samples/php/Doxyfile
+
+$(PYDOC): doxygen samples/python/*
+	@make pydoc-clean
+	doxygen/bin/doxygen samples/python/Doxyfile
+
+bin/segfault: test/src/segfault.c
+	gcc $^ -o $@
+
 Resource:
 ifeq ($(PLATFORM), Linux)
 	ls -d ../$@/CMap
 endif
 
-bin/segfault: test/src/segfault.c
-	gcc $^ -o $@
-
-bin eggs tmp $(VAR_LOG) $(SERVER_LOG):
-	mkdir -p $@
-
 doxygen:
 	git clone https://github.com/doxygen/$@.git
 	cd $@; ./configure; make
 
+eggs tmp $(VAR_LOG) $(SERVER_LOG):
+	mkdir -p $@
+
 venv:
 	python virtualenv.py $@
-
-$(PHP_DOCUMENTOR):
-	@make bin
-	curl --output $@ http://phpdoc.org/$(@F)
-
-$(PHPDOC): $(PHP_DOCUMENTOR) samples/php/*
-	@rm -rf doc/php
-	php $< -d samples/php -t $@ --force
-
-$(PYDOC): doxygen samples/python/*
-	doxygen/bin/doxygen samples/python/Doxyfile
