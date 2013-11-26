@@ -44,7 +44,7 @@ class Error(Exception):
         Exception.__init__(self, message)
         self._code, self._http_code = code, http_code
     def __str__(self):
-        return '{}: {}'.format(self.code, self.message)
+        return u'{}: {}'.format(self.code, self.message)
     def copy(self, message=None):
         message = message or self.message
         return Error(self.code, message, self.http_code)
@@ -78,10 +78,10 @@ class JSON:
     class RequestFormParser(dict):
         "support jQuery encoding of JSON form values"
         def parse(self, request_form, part_name):
-            prefix = '{}['.format(part_name)
+            prefix = u'{}['.format(part_name)
             for key, value in request_form.items():
                 if key.startswith(prefix): self[key[len(prefix):-1]] = value
-            self.update(JSON.parse(request_form.get(part_name, '{}')))
+            self.update(JSON.parse(request_form.get(part_name, u'{}')))
     @classmethod
     def request_form_parser(cls, request_form, part_name):
         result = JSON.RequestFormParser()
@@ -92,5 +92,5 @@ class JSON:
         try:
             return simplejson.loads(json)
         except Exception:
-            error = 'cannot parse {}'.format(json)
+            error = u'cannot parse {}'.format(json)
             raise Error(ErrorCode.InvalidSyntax, error)

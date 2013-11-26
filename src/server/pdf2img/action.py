@@ -32,11 +32,12 @@ class Action(server.Action):
         image_type = self.output_format.lower()
         if image_type == 'jpg': image_type = 'jpeg'
         if image_type == 'tif': image_type = 'tiff'
-        return 'image/{}'.format(image_type)
+        return u'image/{}'.format(image_type)
     def _get_image(self, input_name, output_file):
         with server.Stdout() as stdout:
             options = Action._options() + self._parser.pdf2img_options
-            if self.password: options += ['-password={}'.format(self.password)]
+            if self.password:
+                options += [u'-password={}'.format(self.password)]
             args = ['pdf2img'] + options + [input_name, self.output_format]
             if subprocess.call(args, stdout=stdout):
                 self.raise_error(Action.get_error(stdout))
@@ -49,7 +50,7 @@ class Action(server.Action):
         output_format = self.output_format
         if output_format: output_format = ' ' + output_format
         info_args = (options, self.input_name, output_format, self.client)
-        logger.info('pdf2img{} {}{} {}'.format(*info_args))
+        logger.info(u'pdf2img{} {}{} {}'.format(*info_args))
     def _pdf2img(self):
         with server.TemporaryFile() as input_file:
             self._save_input(input_file)
@@ -64,7 +65,7 @@ class Action(server.Action):
         if not server.RESOURCE: return []
         resources = ('CMap', 'Font', 'Unicode')
         resources = [os.path.join(server.RESOURCE, r) for r in resources]
-        return ['-fontlist="{}"'.format(';'.join(resources))]
+        return [u'-fontlist="{}"'.format(';'.join(resources))]
     @property
     def output_format(self): return self._parser.output_format
     @property
@@ -79,7 +80,7 @@ class FromFile(Action):
             error = 'no inputURL or request file'
             self.raise_error(Error(ErrorCode.InvalidInput, error))
         if len(request_files) > 1:
-            error = 'excess input ({} files)'.format(len(request_files))
+            error = u'excess input ({} files)'.format(len(request_files))
             self.raise_error(Error(ErrorCode.InvalidInput, error))
         self._input = request_files[0]
         Action._set_input(self, request)
@@ -95,5 +96,5 @@ class FromURL(Action):
         try:
             self._input = requests.get(input_url).content
         except Exception as exception:
-            self.raise_error(Error(ErrorCode.InvalidInput, str(exception)))
+            self.raise_error(Error(ErrorCode.InvalidInput, unicode(exception)))
         Action._set_input(self, request, os.path.basename(input_url))
