@@ -125,7 +125,7 @@ class Request
         {
             foreach ($request_options as $option_name => $ignored)
             {
-                if (!array_search($option_name, $this->options))
+                if (!array_search($option_name, $this::$options))
                 {
                     $invalid_option = 'invalid option: ' . $option_name;
                     exit($invalid_option);
@@ -256,7 +256,7 @@ class FlattenForm extends Request
     /**
      * %FlattenForm has no request options
      */
-    var $options = array();
+    static $options = array();
 
     function __construct($application, $base_url)
     {
@@ -304,7 +304,7 @@ class RenderPages extends Request
      *    (https://api.datalogics-cloud.com/docs#suppressAnnotations):
      *    draw only actual page contents
      */
-    var $options = array(
+    static $options = array(
         'colorModel', 'compression',
         'disableColorManagement', 'disableThinLineEnhancement',
         'imageHeight', 'imageWidth',
