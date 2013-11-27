@@ -15,13 +15,13 @@ from output_file import OutputFile
 
 
 class Action(server.Action):
+    TYPE = 'RenderPages'
     OPTIONS = options.OPTIONS + translator.OPTIONS
-    def __init__(self, request):
-        server.Action.__init__(self, request)
-        self._parser = ArgumentParser(self._log_request)
     def __call__(self):
+        self._parser = ArgumentParser()
         try:
             self._parser(self.options)
+            self._set_input()
         except Error as error:
             self.raise_error(error)
         except Exception as exc:
@@ -44,13 +44,6 @@ class Action(server.Action):
         with open(output_file.name, 'rb') as image_file:
             content_type = self._content_type()
             return flask.Response(image_file.read(), content_type=content_type)
-    def _log_request(self, parser_options):
-        options = ' '.join(parser_options)
-        if options: options = ' ' + options
-        output_format = self.output_format
-        if output_format: output_format = ' ' + output_format
-        info_args = (options, self.input_name, output_format, self.client)
-        logger.info(u'pdf2img{} {}{} {}'.format(*info_args))
     def _pdf2img(self):
         with server.TemporaryFile() as input_file:
             self._save_input(input_file)
@@ -74,27 +67,23 @@ class Action(server.Action):
 class FromFile(Action):
     def _save_input(self, input_file):
         self.input.save(input_file)
-    def _set_input(self, request):
-        request_files = request.files.values()
-        if not request_files:
+    def _set_input(self):
+        if not self.request_files:
             error = 'no inputURL or request file'
             self.raise_error(Error(ErrorCode.InvalidInput, error))
-        if len(request_files) > 1:
-            error = u'excess input ({} files)'.format(len(request_files))
+        if len(self.request_files) > 1:
+            error = u'excess input ({} files)'.format(len(self.request_files))
             self.raise_error(Error(ErrorCode.InvalidInput, error))
-        self._input = request_files[0]
-        Action._set_input(self, request)
+        self._input = self.request_files[0]
 
 class FromURL(Action):
     def _save_input(self, input_file):
         input_file.write(self.input)
-    def _set_input(self, request):
-        if request.files.values():
+    def _set_input(self):
+        if self.request_files:
             error = 'excess input (inputURL and request file)'
             self.raise_error(Error(ErrorCode.InvalidInput, error))
-        input_url = request.form.get('inputURL')
         try:
-            self._input = requests.get(input_url).content
+            self._input = requests.get(self.input_url).content
         except Exception as exception:
             self.raise_error(Error(ErrorCode.InvalidInput, unicode(exception)))
-        Action._set_input(self, request, os.path.basename(input_url))

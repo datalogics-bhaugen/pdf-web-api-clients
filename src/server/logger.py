@@ -6,6 +6,7 @@ import logging
 import cfg
 import tmpdir
 from platform import system
+from datetime import datetime
 from logging.handlers import SysLogHandler as BaseSysLogHandler
 from logging.handlers import TimedRotatingFileHandler as BaseFileHandler
 
@@ -69,3 +70,7 @@ def start(app_logger, name, version=None):
         info('{} ({}) started'.format(name, version))
     else:
         info('{} started'.format(name))
+
+def iso8601_timestamp():
+    utcnow = str(datetime.utcnow())
+    return utcnow.replace(' ', 'T') + 'Z'

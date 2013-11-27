@@ -125,6 +125,8 @@ class Response(object):
     def __str__(self):
         return self.output or \
             '{}: {}'.format(self.error_code, self.error_message)
+    def __getattr__(self, name):
+        return getattr(self._response, name)
     def _not_ok(self):
         try:
             json = self._response.json()

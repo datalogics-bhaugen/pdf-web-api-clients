@@ -2,7 +2,6 @@
 
 import ThreeScalePY
 import cfg
-import logger
 
 from ThreeScalePY import ThreeScaleAuthRep
 from errors import Error, ErrorCode, HTTPCode, JSON, UNKNOWN
@@ -10,14 +9,12 @@ from errors import Error, ErrorCode, HTTPCode, JSON, UNKNOWN
 
 class Client(ThreeScaleAuthRep):
     def __init__(self, address, request_form):
+        self._address = address
         form_parser = JSON.request_form_parser(request_form, 'application')
         app_id = form_parser.get('id', None)
         app_key = form_parser.get('key', None)
-        logger.info(u"{}: id='{}', key='{}'".format(address, app_id, app_key))
         provider_key = cfg.Configuration.three_scale.provider_key
         ThreeScaleAuthRep.__init__(self, provider_key, app_id, app_key)
-    def __str__(self):
-        return u"(id='{}', key='*{}')".format(self.app_id, self.app_key[-7:])
     def authorize(self):
         try:
             if self.authrep(): return
@@ -29,3 +26,7 @@ class Client(ThreeScaleAuthRep):
             error = str(exception)
         authorization_error = ErrorCode.AuthorizationError
         raise Error(authorization_error, error, HTTPCode.Forbidden)
+    @property
+    def address(self): return self._address
+    @property
+    def application(self): return {'id': self.app_id, 'key': self.app_key}

@@ -1,13 +1,7 @@
 "WebAPI application"
 
-import os
-import sys
-import logging
-import traceback
-
 import flask
 import logger
-import tmpdir
 
 from action import Action
 from cfg import Configuration
@@ -22,23 +16,20 @@ logger.start(app.logger, app.name, Configuration.versions.server)
 
 @app.route('/api/actions/render/pages', methods=['POST'])
 def render_pages():
+    action = pdf2img.Action.from_request(flask.request)
     try:
-        return pdf2img.Action.from_request(flask.request)()
+        response = action()
+        action.log_usage()
+        return response
     except Error as error:
-        return response(error)
+        return error_response(action, error)
     except Exception as exception:
-        return response(UNKNOWN.copy(str(exception)))
+        return error_response(action, UNKNOWN.copy(str(exception)))
 
-def response(error):
-    logger.error(error)
-    if error.code == ErrorCode.UnknownError: log_traceback()
+def error_response(action, error):
     json = flask.jsonify(errorCode=int(error.code), errorMessage=error.message)
+    action.log_usage(error)
     return json, error.http_code
-
-def log_traceback():
-    for entry in traceback.format_tb(sys.exc_info()[2]):
-        logger.error(entry.rstrip())
-        if '/eggs/' in entry: return
 
 
 import random
