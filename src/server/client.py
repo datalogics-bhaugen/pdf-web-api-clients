@@ -13,11 +13,11 @@ class Client(ThreeScaleAuthRep):
         form_parser = JSON.request_form_parser(request_form, 'application')
         app_id = form_parser.get('id', None)
         app_key = form_parser.get('key', None)
-        logger.info("{}: id='{}', key='{}'".format(address, app_id, app_key))
+        logger.info(u"{}: id='{}', key='{}'".format(address, app_id, app_key))
         provider_key = cfg.Configuration.three_scale.provider_key
         ThreeScaleAuthRep.__init__(self, provider_key, app_id, app_key)
     def __str__(self):
-        return "(id='{}', key='*{}')".format(self.app_id, self.app_key[-7:])
+        return u"(id='{}', key='*{}')".format(self.app_id, self.app_key[-7:])
     def authorize(self):
         try:
             if self.authrep(): return

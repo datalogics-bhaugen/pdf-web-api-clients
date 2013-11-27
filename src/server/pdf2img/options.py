@@ -2,7 +2,7 @@
 
 
 class Option(object):
-    FORMAT = '-{}={}'
+    FORMAT = u'-{}={}'
     def __init__(self, name, pdf2img_name=None):
         self._name = name
         self._pdf2img_name = pdf2img_name or name
@@ -22,23 +22,23 @@ class Option(object):
     def action(self): return 'store'
 
 class Flag(Option):
-    FORMAT = '-{}'
+    FORMAT = u'-{}'
     def format(self, value, pdf2img_flag=False):
-        if not value: return ''
+        if not value: return u''
         if value is True:
             return Flag.FORMAT.format(self.option_name(pdf2img_flag))
-        raise Exception('invalid {} value: {}'.format(self.name, value))
+        raise Exception(u'invalid {} value: {}'.format(self.name, value))
     @property
     def action(self): return 'store_true'
 
 
 OPTIONS = [
-    Flag('OPP'),
-    Flag('disableColorManagement', 'nocmm'),
-    Flag('disableThinLineEnhancement', 'noenhancethinlines'),
-    Flag('printPreview', 'asprinted'),
-    Flag('suppressAnnotations', 'noannot'),
-    Option('colorModel', 'colormodel'),
-    Option('compression'),
-    Option('password'),
-    Option('pdfRegion', 'pdfregion')]
+    Flag(u'OPP'),
+    Flag(u'disableColorManagement', u'nocmm'),
+    Flag(u'disableThinLineEnhancement', u'noenhancethinlines'),
+    Flag(u'printPreview', u'asprinted'),
+    Flag(u'suppressAnnotations', u'noannot'),
+    Option(u'colorModel', u'colormodel'),
+    Option(u'compression'),
+    Option(u'password'),
+    Option(u'pdfRegion', u'pdfregion')]
