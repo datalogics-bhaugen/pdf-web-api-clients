@@ -61,7 +61,7 @@ def request_options(request):
     if image_width: result[str(IMAGE_WIDTH)] = image_width
     image_height = request.args.get(str(IMAGE_HEIGHT), None)
     if image_height: result[str(IMAGE_HEIGHT)] = image_height
-    result.update(JSON.parse(request.form.get(str(OPTIONS), '{}')))
+    result.update(JSON.loads(request.form.get(str(OPTIONS), '{}')))
     return result
 
 def smaller_thumbnail(request, input_file, options):
@@ -79,7 +79,7 @@ def smaller_response(response1, response2):
     return response2 if len(output2) < len(output1) else response1
 
 def response(api_response):
-    if api_response:
+    if api_response.ok:
         content_type = api_response.headers['Content-Type']
         return flask.Response(api_response.output, content_type=content_type)
     else:

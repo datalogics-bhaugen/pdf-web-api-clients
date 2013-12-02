@@ -43,10 +43,11 @@ class Stdout(TemporaryFile):
         self._file.seek(0)
         return ''.join((line for line in self._file))
     def errors(self):
-        errors = []
+        "return the last error message, because it's the most informative"
+        result = ''
         error_prefix = 'ERROR: '
         for line in str(self).split('\n'):
             index = line.find(error_prefix)
             if index < 0: index = line.find(error_prefix.lower())
-            if 0 <= index: errors.append(line[index + len(error_prefix):])
-        return '\n'.join(errors)
+            if 0 <= index: result = line[index + len(error_prefix):]
+        return result

@@ -1,7 +1,6 @@
 "WebAPI pdf2img action option translator"
 
 import sys
-import simplejson as json
 
 from errors import Error, ErrorCode
 from options import Option

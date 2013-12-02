@@ -7,9 +7,8 @@ from translator import ImageSize, OutputFormat, Pages, Resolution, Smoothing
 
 
 class ArgumentParser(argparse.ArgumentParser):
-    def __init__(self, request_logger):
+    def __init__(self):
         argparse.ArgumentParser.__init__(self)
-        self._request_logger = request_logger
         self._image_size = ImageSize()
         self._output_format = OutputFormat()
         self._pages = Pages()
@@ -20,7 +19,6 @@ class ArgumentParser(argparse.ArgumentParser):
     def __call__(self, options):
         self._output_format(options)
         self._set_options(options)
-        self._request_logger(self.options)
         self.parse_args(self.options)
         self.pdf2img_options.extend(self._image_size(options))
         self.pdf2img_options.extend(self._pages(options, self.output_format))
