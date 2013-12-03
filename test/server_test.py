@@ -24,7 +24,7 @@ def test_bad_pdf():
     Test(['data/bad.pdf'], result)()
 
 def test_truncated_pdf():
-    result = Result(ErrorCode.InvalidInput, HTTPCode.BadRequest)
+    result = Result(ErrorCode.InvalidInput, HTTPCode.UnsupportedMediaType)
     Test(['data/truncated.pdf'], result)()
 
 def test_ascii_password_ok():

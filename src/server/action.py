@@ -3,8 +3,10 @@
 import sys
 import traceback
 
+import cfg
 import logger
 from client import Client
+from input import FromFile, FromURL
 from errors import APDFL_ERRORS, Error, ErrorCode, HTTPCode, JSON, UNKNOWN
 
 
@@ -14,6 +16,7 @@ class Action(object):
         self._options = JSON.request_form_parser(request.form, 'options')
         self._request = request
         self._request_time = logger.iso8601_timestamp()
+        self._input = FromURL(self) if self.input_url else FromFile(self)
     def log_usage(self, error=None):
         usage = {'action': self.TYPE,
                  'address': self.client.address,
@@ -47,9 +50,10 @@ class Action(object):
     def log_error(cls, error):
         logger.error(error)
         if error.code == ErrorCode.UnknownError:
+            dlenv = cfg.Configuration.environment.dlenv
             for entry in traceback.format_tb(sys.exc_info()[2]):
                 logger.error(entry.rstrip())
-                if '/eggs/' in entry: return
+                if dlenv == 'prod' and '/eggs/' in entry: return
     @property
     def client(self): return self._client
     @property
@@ -65,4 +69,4 @@ class Action(object):
     @property
     def request(self): return self._request
     @property
-    def request_files(self): return self.request.files.values()
+    def request_files(self): return self.request.files

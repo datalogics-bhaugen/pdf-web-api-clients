@@ -16,7 +16,7 @@ logger.start(app.logger, app.name, Configuration.versions.server)
 
 @app.route('/api/actions/render/pages', methods=['POST'])
 def render_pages():
-    action = pdf2img.Action.from_request(flask.request)
+    action = pdf2img.Action(flask.request)
     try:
         response = action()
         action.log_usage()
