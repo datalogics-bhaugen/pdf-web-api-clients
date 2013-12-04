@@ -16,11 +16,11 @@ AUX_LOG = $(SERVER_LOG)/$(LOG_NAME)
 
 build: $(GIT_HOOK) $(APP_LOG) $(AUX_LOG) Resource eggs tmp venv html
 ifeq ($(PLATFORM), Darwin)
-	# $(ERASE) versions.cfg
+	$(ERASE) versions.cfg
 endif
 	venv/bin/python bootstrap.py
 	scripts/make_server_cfg > cfg/versions
-	bin/buildout # | scripts/make_versions_cfg > versions.cfg
+	bin/buildout | scripts/make_versions_cfg > versions.cfg
 	@diff $(VENV) virtualenv.py > /dev/null || echo Upgrade virtualenv!
 	@cp $(VENV) .
 	@$(MAKE_THUMBNAIL)
