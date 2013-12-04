@@ -1,7 +1,6 @@
 "WebAPI input document"
 
 import requests
-import logger
 from errors import Error, ErrorCode
 
 
@@ -15,9 +14,9 @@ class Input(object):
 
 class FromFile(Input):
     def initialize(self):
-        files = self.files.values()
-        if len(files) > 1:
-            self._raise_error(u'excess input ({} files)'.format(len(files)))
+        files = len(self.files)
+        if files > 1:
+            self._raise_error(u'excess input ({} files)'.format(files))
         if 'input' not in self.files:
             self._raise_error(u'request missing "input" or "inputURL" part')
         self._input = self.files['input']
