@@ -6,6 +6,8 @@ PHPDOC = doc/php/index.html
 PLATFORM = $(shell uname -s)
 PYDOC = doc/python/index.html
 QA = bin/flake8 --max-complexity 10
+REPLACE_KEY = test/scripts/replace_key
+TEST_PDFPROCESS = test/pdfprocess
 VENV = eggs/virtualenv-*.egg/virtualenv.py
 
 VAR_LOG = var/log
@@ -24,16 +26,24 @@ endif
 	@diff $(VENV) virtualenv.py > /dev/null || echo Upgrade virtualenv!
 	@cp $(VENV) .
 	@$(MAKE_THUMBNAIL)
-	@make qa
+	@make qa test-scripts
 
 clean: html-clean
 	rm -rf .installed.cfg $(GIT_HOOK) bin develop-eggs parts venv
 	$(ERASE) $(APP_LOG); $(ERASE) $(AUX_LOG)
+	rm -rf $(TEST_PDFPROCESS) test/*.png
 	@$(MAKE_THUMBNAIL) $@
 
-qa: bin/segfault
+qa: bin/segfault test-scripts
 	$(QA) cfg samples scripts src test
 	@$(MAKE_THUMBNAIL) $@
+
+test-scripts: $(TEST_PDFPROCESS)
+	$(REPLACE_KEY) samples/perl/pdfprocess.pl > $^/perl
+	$(REPLACE_KEY) samples/php/pdfprocess.php > $^/php
+	$(REPLACE_KEY) samples/python/pdfprocess.py > $^/python
+	chmod +x $^/*
+	cp samples/*/pdfclient.* $^
 
 html: $(PHPDOC) $(PYDOC)
 
@@ -45,7 +55,7 @@ phpdoc-clean:
 pydoc-clean:
 	cd doc/python; $(DOXYGEN_CLEAN)
 
-.PHONY: build clean qa html html-clean phpdoc-clean pydoc-clean
+.PHONY: build clean qa test-scripts html html-clean phpdoc-clean pydoc-clean
 
 $(APP_LOG): $(VAR_LOG)
 	touch $@
@@ -76,7 +86,7 @@ doxygen:
 	git clone https://github.com/doxygen/$@.git
 	cd $@; ./configure; make
 
-eggs tmp $(VAR_LOG) $(SERVER_LOG):
+eggs tmp $(TEST_PDFPROCESS) $(VAR_LOG) $(SERVER_LOG):
 	mkdir -p $@
 
 venv:
