@@ -11,7 +11,6 @@ from nose.tools import assert_equal, assert_in
 
 GOOD_PDF = 'data/four_pages.pdf'
 INPUT_URL = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
-PERL_ARGS = ['pdfprocess/perl', 'RenderPages']
 
 
 def set_python_path():
@@ -35,12 +34,12 @@ def test_pdfprocess_sample_perl():
         assert_in('your app id', str(stdout))
 
 def test_pdfprocess_sample_perl_patched():
-    args = PERL_ARGS + [GOOD_PDF, 'four_pages.png']
+    args = ['pdfprocess/perl', 'RenderPages', GOOD_PDF, 'four_pages.png']
     with Stdout() as stdout:
         assert_equal(subprocess.call(args, stdout=stdout), 0)
 
 def test_pdfprocess_sample_perl_patched_url():
-    args = PERL_ARGS + [INPUT_URL, 'four_pages.png']
+    args = ['pdfprocess/perl', 'RenderPages', INPUT_URL, 'pdf2img.png']
     with Stdout() as stdout:
         assert_equal(subprocess.call(args, stdout=stdout), 0)
 
