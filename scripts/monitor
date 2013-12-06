@@ -22,14 +22,15 @@ def application():
     return 'application={}'.format(application_json).replace(' ', '')
 
 def data_part(data_filename):
-    data_format = os.path.splitext(argv[-2])[1][1:].upper()
-    for part_name, file_formats in PART_NAME_FILE_FORMATS:
-        if data_format in file_formats: return part_name
+    data_format = os.path.splitext(data_filename)[1][1:].upper()
+    for part_name, file_formats in PART_NAME_FILE_FORMATS.iteritems():
+        if data_format in file_formats:
+            return '{}=@{}'.format(part_name, data_filename)
 
 def monitor(argv):
     if len(argv) < 4: sys.exit(__doc__)
     url, input, output = (argv[1], argv[2], argv[-1])
-    parts = (application(), 'input=@{}'.format(input), 'inputName=monitor')
+    parts = [application(), 'input=@{}'.format(input), 'inputName=monitor']
     if len(argv) == 5: parts.append(data_part(argv[-2]))
     form_parts = list(chain.from_iterable(('--form', part) for part in parts))
     args = ['curl', '--insecure'] + form_parts + ['--output', output, url]
