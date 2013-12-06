@@ -26,7 +26,7 @@ endif
 	@diff $(VENV) virtualenv.py > /dev/null || echo Upgrade virtualenv!
 	@cp $(VENV) .
 	@$(MAKE_THUMBNAIL)
-	@make qa test-scripts
+	@make qa test-scripts bin/segfault
 
 clean: html-clean
 	rm -rf .installed.cfg $(GIT_HOOK) bin develop-eggs parts venv
@@ -34,7 +34,7 @@ clean: html-clean
 	rm -rf $(TEST_PDFPROCESS) test/*.png
 	@$(MAKE_THUMBNAIL) $@
 
-qa: bin/segfault test-scripts
+qa:
 	$(QA) cfg samples scripts src test
 	@$(MAKE_THUMBNAIL) $@
 
