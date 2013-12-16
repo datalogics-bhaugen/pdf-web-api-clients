@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 '''
-usage: monitor service_url input_filename output_filename
+usage: monitor service_url input_filename [data_filename] output_filename
 monitor http://127.0.0.1:5000/api/actions/render/pages test/data/four_pages.pdf test.png
 '''
 
 
+import os
 import sys
 import json
 import subprocess
@@ -13,15 +14,24 @@ import subprocess
 from itertools import chain
 
 
+PART_NAME_FILE_FORMATS = {'formsData': ('FDF', 'XFDF')}
+
 def application():
     app_id, app_key = '84445ec0', '2d3eac77bb3b9bea69a91e625b9241d2'
     application_json = json.dumps({'id': app_id, 'key': app_key})
     return 'application={}'.format(application_json).replace(' ', '')
 
+def data_part(data_filename):
+    data_format = os.path.splitext(data_filename)[1][1:].upper()
+    for part_name, file_formats in PART_NAME_FILE_FORMATS.iteritems():
+        if data_format in file_formats:
+            return '{}=@{}'.format(part_name, data_filename)
+
 def monitor(argv):
-    if len(argv) != 4: sys.exit(__doc__)
-    url, input, output = (argv[1], argv[2], argv[3])
-    parts = (application(), 'input=@{}'.format(input), 'inputName=monitor')
+    if len(argv) < 4: sys.exit(__doc__)
+    url, input, output = (argv[1], argv[2], argv[-1])
+    parts = [application(), 'input=@{}'.format(input), 'inputName=monitor']
+    if len(argv) == 5: parts.append(data_part(argv[-2]))
     form_parts = list(chain.from_iterable(('--form', part) for part in parts))
     args = ['curl', '--insecure'] + form_parts + ['--output', output, url]
     subprocess.call(args)

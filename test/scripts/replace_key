@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# replace application id/key placeholders with test values
+
+sed s/your\ app\ id/84445ec0/ $1 | \
+sed s/your\ app\ key/2d3eac77bb3b9bea69a91e625b9241d2/
