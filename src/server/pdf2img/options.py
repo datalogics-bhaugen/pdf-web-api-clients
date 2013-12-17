@@ -39,6 +39,5 @@ OPTIONS = [
     Flag(u'printPreview', u'asprinted'),
     Flag(u'suppressAnnotations', u'noannot'),
     Option(u'colorModel', u'colormodel'),
-    Option(u'compression'),
     Option(u'password'),
     Option(u'pdfRegion', u'pdfregion')]

@@ -29,9 +29,9 @@ class Translator(object):
         return [u'-{}={}'.format(self._name, self.option)]
 
 class ImageSize(Translator):
-    OPTIONS = [Option('imageWidth'), Option('imageHeight')]
+    OPTIONS = [Option(u'imageWidth'), Option(u'imageHeight')]
     def __init__(self):
-        Translator.__init__(self, 'pixelcount')
+        Translator.__init__(self, u'pixelcount')
         self._dimensions = [None, None]
     def __call__(self, options):
         for key, value in options.iteritems():
@@ -49,24 +49,36 @@ class ImageSize(Translator):
     @property
     def height(self): return self._dimensions[1]
 
-class OutputFormat(Translator):
-    OPTIONS = [Option('outputFormat')]
+class Compression(Translator):
+    OPTIONS = [Option(u'compression')]
     def __init__(self):
-        Translator.__init__(self, 'outputFormat')
+        Translator.__init__(self, u'compression')
+    def validate(self, *args):
+        if self.option is None: self._option = u'lzw'
+        algorithms = ('lzw', 'jpg')
+        if self.option not in algorithms:
+            error = u'compression must be one of ' + unicode(algorithms)
+            raise Error(ErrorCode.InvalidCompression, error)
+        return self.options
+
+class OutputFormat(Translator):
+    OPTIONS = [Option(u'outputFormat')]
+    def __init__(self):
+        Translator.__init__(self, u'outputFormat')
     def validate(self, *args):
         if self.option == u'jpeg': self._option = u'jpg'
         if self.option == u'tiff': self._option = u'tif'
         if self.option is None: self._option = u'png'
-        output_formats = (u'gif', u'jpg', u'png', u'tif')
+        output_formats = ('gif', 'jpg', 'png', 'tif')
         if self.option not in output_formats:
             error = u'outputFormat must be one of ' + unicode(output_formats)
             raise Error(ErrorCode.InvalidOutputFormat, error)
         return self.options
 
 class Pages(Translator):
-    OPTIONS = [Option('pages')]
+    OPTIONS = [Option(u'pages')]
     def __init__(self):
-        Translator.__init__(self, 'pages')
+        Translator.__init__(self, u'pages')
     def validate(self, *args):
         if self.option is None: self._option = '1'
         if type(self.option) == int: self._option = unicode(self.option)
@@ -80,9 +92,9 @@ class Pages(Translator):
         raise Error(ErrorCode.InvalidOutputFormat, error)
 
 class Resolution(Translator):
-    OPTIONS = [Option('resolution')]
+    OPTIONS = [Option(u'resolution')]
     def __init__(self):
-        Translator.__init__(self, 'resolution')
+        Translator.__init__(self, u'resolution')
     def validate(self, *args):
         if self.option is None: self._option = 150
         try:
@@ -94,9 +106,9 @@ class Resolution(Translator):
         raise Error(ErrorCode.InvalidResolution, error)
 
 class Smoothing(Translator):
-    OPTIONS = [Option('smoothing')]
+    OPTIONS = [Option(u'smoothing')]
     def __init__(self):
-        Translator.__init__(self, 'smoothing')
+        Translator.__init__(self, u'smoothing')
     def validate(self, *args):
         if self.option is None: self._option = 'all'
         # TODO: remove 'none' test when pdfimg issue #21 is resolved
@@ -105,5 +117,5 @@ class Smoothing(Translator):
 
 
 OPTIONS =\
-    ImageSize.OPTIONS + OutputFormat.OPTIONS + Pages.OPTIONS +\
-    Resolution.OPTIONS + Smoothing.OPTIONS
+    Compression.OPTIONS + ImageSize.OPTIONS + OutputFormat.OPTIONS +\
+    Pages.OPTIONS + Resolution.OPTIONS + Smoothing.OPTIONS
