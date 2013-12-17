@@ -6,6 +6,8 @@ from test import Result, Test
 from test_client import ErrorCode, HTTPCode
 
 
+# TODO: add UTF-8 support to server on Linux (ignore failures until then)
+
 def test_password_ok():
     Test(['data/two_passwords.pdf', u'password=紙容量紙容量'], Result())()
 

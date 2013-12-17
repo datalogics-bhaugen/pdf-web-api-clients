@@ -39,7 +39,7 @@ class TestInvalidSyntax(SyntaxFixture):
         return  # TODO: restore when test drives server directly
         self.validate({'spam': 'spam'})
     def test_invalid_compression(self):
-        self.validate({'compression': 'spam'}, ErrorCode.InvalidCompression)
+        self.validate({'compression': 'no'}, ErrorCode.InvalidCompression)
     def test_invalid_region(self):
         self.validate({'pdfRegion': 'spam'}, ErrorCode.InvalidRegion)
     @property
