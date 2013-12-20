@@ -79,7 +79,7 @@ bin/segfault: test/src/segfault.c
 
 Resource:
 ifeq ($(PLATFORM), Linux)
-	ls -d ../$@/CMap
+	ls -d /opt/pdfprocess/$@/CMap
 endif
 
 doxygen:
