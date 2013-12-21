@@ -51,10 +51,9 @@
 
 import json
 import os
-import re
 import sys
 
-from pdfclient import Application
+import pdfclient
 
 
 APPLICATION_ID = 'your app id'  # TODO: paste!
@@ -69,45 +68,70 @@ USAGE = 'usage: {0} request_type input ' + USAGE_OPTIONS + '\n' +\
         ' options={{"printPreview": True, "outputFormat": "jpg"}}'
 
 
+## Translate command line arguments to form needed by Client
+class Parser(object):
+    PART_NAME_FILE_FORMATS = {'formsData': ('FDF', 'XFDF')}
+    def __init__(self, args):
+        self._data, self._files = {}, {}
+        files = [arg for arg in args if '=' not in arg]
+        options = [arg.split('=') for arg in args if arg not in files]
+        urls = [file for file in files if Parser._is_url(file)]
+        if len(urls) > 1:
+            raise Exception('invalid input: {} URLs'.format(len(urls)))
+        if urls:
+            files.remove(urls[0])
+            self.data['inputURL'] = urls[0]
+        for option, value in options:
+            if option not in OPTIONS:
+                raise Exception('invalid option: {}'.format(option))
+            self.data[option] =\
+                json.loads(value) if option == 'options' else value
+        for file in files:
+            self.files[Parser._part_name(file)] = open(file, 'rb')
+    def __del__(self):
+        for file in self.files.values():
+            file.close()
+    @classmethod
+    def _is_url(cls, filename):
+        name = filename.lower()
+        if name.startswith('http://') or name.startswith('https://'):
+            return filename
+    @classmethod
+    def _part_name(cls, filename):
+        data_format = os.path.splitext(filename)[1][1:].upper()
+        for part_name in Parser.PART_NAME_FILE_FORMATS:
+            if data_format in Parser.PART_NAME_FILE_FORMATS[part_name]:
+                return part_name
+        return 'input'
+    @property
+    def data(self): return self._data
+    @property
+    def files(self): return self._files
+
+
 ## Sample pdfclient driver:
 #  execute pdfprocess.py with no arguments for usage information
-class Client(Application):
+class Client(pdfclient.Application):
     ## Create a pdfclient.Request from command-line arguments and execute it
     #  @return a Response object
     #  @param args e.g.['%pdfprocess.py', 'FlattenForm', 'hello_world.pdf']
     #  @param base_url
-    def __call__(self, args, base_url=Application.BASE_URL):
-        if len(args) < 3: self._exit(args)
-        input, data = self._initialize(args)
-        url_input = re.match('http:|https:', input.lower())
+    def __call__(self, args, base_url=pdfclient.Application.BASE_URL):
+        parser = self._parse(args)
+        input_url = parser.data.get('inputURL', '')
+        input_name = os.path.basename(input_url) or parser.files['input'].name
+        self._input_name = parser.data.get('inputName', input_name)
         self._api_request = self.make_request(args[1], base_url)
-        input_name = os.path.basename(input) if url_input else input
-        self._input_name = data.get('inputName', input_name)
-        send_method = self._send_url if url_input else self._send_file
-        return Response(send_method(input, data), self.output_filename)
+        api_response = self._api_request(parser.files, **parser.data)
+        return Response(api_response, self.output_filename)
 
-    def _exit(self, args):
-        sys.exit(USAGE.format(args[0]))
-    def _initialize(self, args):
+    def _parse(self, args):
         try:
-            return args[2], self._parse_args(args[3:])
+            if len(args) > 2:
+                return Parser(args[2:])
         except Exception as exception:
             print(exception)
-            self._exit(args)
-    def _parse_args(self, args):
-        result = {}
-        for arg in args:
-            option, value = arg.split('=')
-            if option not in OPTIONS:
-                raise Exception('invalid option: {}'.format(option))
-            result[option] =\
-                json.loads(value) if option == 'options' else value
-        return result
-    def _send_file(self, input, data):
-        with open(input, 'rb') as input_file:
-            return self._api_request(input_file, **data)
-    def _send_url(self, input, data):
-        return self._api_request(input, **data)
+        sys.exit(USAGE.format(args[0]))
     @property
     ## Derived from the input name or explicitly specified
     def input_name(self):
@@ -115,7 +139,7 @@ class Client(Application):
     @property
     ## #input_name with extension replaced by requested output format
     def output_filename(self):
-        input_name = os.path.splitext(self._input_name)[0]
+        input_name = os.path.splitext(self.input_name)[0]
         return '{}.{}'.format(input_name, self._api_request.output_format)
 
 
