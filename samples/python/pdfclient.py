@@ -95,6 +95,8 @@ class Request(object):
     def __call__(self, files, **data):
         data = data.copy()
         data.update(self._application)
+        if 'inputName' not in data and 'input' in files:
+            data['inputName'] = files['input'].name
         if 'options' in data:
             for option in data['options']:
                 if option not in self.OPTIONS:
