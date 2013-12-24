@@ -70,11 +70,9 @@ class Application(object):
         return Application._request_class(request_type)(self._json, base_url)
 
     @classmethod
-    def _request_class_predicate(cls, request_type):
-        return lambda m: inspect.isclass(m) and m.__name__ == request_type
-    @classmethod
     def _request_class(cls, request_type):
-        is_request_class = cls._request_class_predicate(request_type)
+        is_request_class =\
+            lambda m: inspect.isclass(m) and m.__name__ == request_type
         members = inspect.getmembers(sys.modules[__name__], is_request_class)
         return members[0][1]
 
@@ -95,6 +93,7 @@ class Request(object):
     def __call__(self, files, **data):
         data = data.copy()
         data.update(self._application)
+        for file in files.values(): file.seek(0)
         if 'inputName' not in data and 'input' in files:
             data['inputName'] = files['input'].name
         if 'options' in data:

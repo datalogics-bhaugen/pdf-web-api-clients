@@ -70,7 +70,6 @@ def smaller_thumbnail(request, input_file, options):
     portrait_response = request(files, options=options)
     del options[str(IMAGE_HEIGHT)]
     options[str(IMAGE_WIDTH)] = MAX_THUMBNAIL_DIMENSION
-    input_file.seek(0)
     landscape_response = request(files, options=options)
     if not landscape_response: return response(portrait_response)
     if not portrait_response: return response(landscape_response)
