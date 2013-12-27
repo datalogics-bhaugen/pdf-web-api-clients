@@ -18,6 +18,7 @@ import test_client
 
 class Document(object):
     def __init__(self, directory, filename, pages):
+        "filenames in index must be relative to index's filename"
         self._filename = os.path.join(directory, filename)
         self._pages = int(pages)
     @classmethod
