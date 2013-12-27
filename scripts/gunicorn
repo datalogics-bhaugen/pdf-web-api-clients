@@ -7,4 +7,4 @@ root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 gunicorn = os.path.join(root_dir, 'bin', 'gunicorn')
 configuration = os.path.join(root_dir, 'src', 'server', 'gunicorn.py')
 
-subprocess.call([gunicorn, '-c', configuration, 'server:app'])
+subprocess.call(['python', gunicorn, '-c', configuration, 'server:app'])
