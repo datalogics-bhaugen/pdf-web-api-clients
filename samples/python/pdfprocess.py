@@ -68,47 +68,6 @@ USAGE = 'usage: {0} request_type input ' + USAGE_OPTIONS + '\n' +\
         ' options={{"printPreview": True, "outputFormat": "jpg"}}'
 
 
-## Translate command line arguments to form needed by Client
-class Parser(object):
-    PART_NAME_FILE_FORMATS = {'formsData': ('FDF', 'XFDF')}
-    def __init__(self, args):
-        self._data, self._files = {}, {}
-        files = [arg for arg in args if '=' not in arg]
-        options = [arg.split('=') for arg in args if arg not in files]
-        urls = [file for file in files if Parser._is_url(file)]
-        if len(urls) > 1:
-            raise Exception('invalid input: {} URLs'.format(len(urls)))
-        if urls:
-            files.remove(urls[0])
-            self.data['inputURL'] = urls[0]
-        for option, value in options:
-            if option not in OPTIONS:
-                raise Exception('invalid option: {}'.format(option))
-            self.data[option] =\
-                json.loads(value) if option == 'options' else value
-        for file in files:
-            self.files[Parser._part_name(file)] = open(file, 'rb')
-    def __del__(self):
-        for file in self.files.values():
-            file.close()
-    @classmethod
-    def _is_url(cls, filename):
-        name = filename.lower()
-        if name.startswith('http://') or name.startswith('https://'):
-            return filename
-    @classmethod
-    def _part_name(cls, filename):
-        data_format = os.path.splitext(filename)[1][1:].upper()
-        for part_name in Parser.PART_NAME_FILE_FORMATS:
-            if data_format in Parser.PART_NAME_FILE_FORMATS[part_name]:
-                return part_name
-        return 'input'
-    @property
-    def data(self): return self._data
-    @property
-    def files(self): return self._files
-
-
 ## Sample pdfclient driver:
 #  execute pdfprocess.py with no arguments for usage information
 class Client(pdfclient.Application):
@@ -165,6 +124,50 @@ class Response(object):
     ## Derived from Client.input_name and requested output format
     def output_filename(self):
         if self.ok: return self._output_filename
+
+
+## Translate command line arguments to form needed by
+ # pdfclient.Request.__call__
+class Parser(object):
+    PART_NAME_FILE_FORMATS = {'formsData': ('FDF', 'XFDF')}
+    def __init__(self, args):
+        self._data, self._files = {}, {}
+        files = [arg for arg in args if '=' not in arg]
+        options = [arg.split('=') for arg in args if arg not in files]
+        urls = [file for file in files if Parser._is_url(file)]
+        if len(urls) > 1:
+            raise Exception('invalid input: {} URLs'.format(len(urls)))
+        if urls:
+            files.remove(urls[0])
+            self.data['inputURL'] = urls[0]
+        for option, value in options:
+            if option not in OPTIONS:
+                raise Exception('invalid option: {}'.format(option))
+            self.data[option] =\
+                json.loads(value) if option == 'options' else value
+        for file in files:
+            self.files[Parser._part_name(file)] = open(file, 'rb')
+    def __del__(self):
+        for file in self.files.values():
+            file.close()
+    @classmethod
+    def _is_url(cls, filename):
+        name = filename.lower()
+        if name.startswith('http://') or name.startswith('https://'):
+            return filename
+    @classmethod
+    def _part_name(cls, filename):
+        data_format = os.path.splitext(filename)[1][1:].upper()
+        for part_name in Parser.PART_NAME_FILE_FORMATS:
+            if data_format in Parser.PART_NAME_FILE_FORMATS[part_name]:
+                return part_name
+        return 'input'
+    @property
+    ## dict of form parts that will be passed to requests.post
+    def data(self): return self._data
+    @property
+    ## dict of files that will be passed to requests.post
+    def files(self): return self._files
 
 
 def run(args, app_id=APPLICATION_ID, app_key=APPLICATION_KEY):
