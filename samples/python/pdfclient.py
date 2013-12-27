@@ -55,8 +55,6 @@ import sys
 import requests
 
 
-STRING_TYPES = (str, unicode) if sys.version_info.major < 3 else (str,)
-
 ## %Request factory
 class Application(object):
     BASE_URL = 'https://pdfprocess.datalogics-cloud.com'
@@ -72,11 +70,9 @@ class Application(object):
         return Application._request_class(request_type)(self._json, base_url)
 
     @classmethod
-    def _request_class_predicate(cls, request_type):
-        return lambda m: inspect.isclass(m) and m.__name__ == request_type
-    @classmethod
     def _request_class(cls, request_type):
-        is_request_class = cls._request_class_predicate(request_type)
+        is_request_class =\
+            lambda m: inspect.isclass(m) and m.__name__ == request_type
         members = inspect.getmembers(sys.modules[__name__], is_request_class)
         return members[0][1]
 
@@ -85,31 +81,28 @@ class Application(object):
 class Request(object):
     def __init__(self, application_json, base_url):
         self._output_format = None
-        self._data = {'application': application_json}
+        self._application = {'application': application_json}
         action = re.sub('([A-Z]+)', r'/\1', self.__class__.__name__).lower()
         self._url = '{}/api/actions{}'.format(base_url, action)
 
     ## Send request
     #  @return a Response object
-    #  @param input input document URL or file object
-    #  @param data dict with keys in ('inputName', 'password', 'options')
-    def __call__(self, input, **data):
-        files = None
+    #  @param files dict of input file objects
+    #  @param data dict with keys in
+    #   ('inputURL', 'inputName', 'password', 'options')
+    def __call__(self, files, **data):
         data = data.copy()
-        data.update(self._data)
-        if type(input) in STRING_TYPES:
-            data['inputURL'] = input
-        else:
-            input.seek(0)
-            files = {'input': input}
-            if 'inputName' not in data: data['inputName'] = input.name
+        data.update(self._application)
+        for file in files.values(): file.seek(0)
+        if 'inputName' not in data and 'input' in files:
+            data['inputName'] = files['input'].name
         if 'options' in data:
-            for option in data['options'].keys():
+            for option in data['options']:
                 if option not in self.OPTIONS:
                     raise Exception('invalid option: {}'.format(option))
             data['options'] = json.dumps(data['options'])
         return Response(
-            requests.post(self._url, verify=False, data=data, files=files))
+            requests.post(self._url, verify=False, files=files, data=data))
 
     @property
     ## Output filename extension property (string)
@@ -169,7 +162,27 @@ class ErrorCode:
     UnknownError = 20
 
 
-## Flatten form fields and other annotations
+## Fill form fields with supplied FDF/XFDF data
+class FillForm(Request):
+    ## %FillForm request options:
+    #  * [disableCalculation]
+    #     (https://api.datalogics-cloud.com/docs#disableCalculation)
+    #     do not run calculations afterward
+    #  * [disableGeneration]
+    #     (https://api.datalogics-cloud.com/docs#disableGeneration):
+    #     do not generate appearances afterward
+    #  * [flatten](https://api.datalogics-cloud.com/docs#flatten):
+    #     flatten form afterward
+    OPTIONS = ['disableCalculation', 'disableGeneration', 'flatten']
+    ## Error codes for %FillForm requests
+    class ErrorCode(ErrorCode):
+        pass
+    def __init__(self, application, base_url):
+        Request.__init__(self, application, base_url)
+        self._output_format = 'pdf'
+
+
+## Flatten form fields
 class FlattenForm(Request):
     ## %FlattenForm has no request options
     OPTIONS = []
@@ -230,7 +243,8 @@ class RenderPages(Request):
     ## Send request
     #  @return a Response object
     #  @param input input document URL or file object
-    #  @param data dict with keys in ('inputName', 'password', 'options')
-    def __call__(self, input, **data):
+    #  @param data dict with keys in
+    #   ('inputURL', 'inputName', 'password', 'options')
+    def __call__(self, files, **data):
         self._output_format = data.get('outputFormat', 'png')
-        return Request.__call__(self, input, **data)
+        return Request.__call__(self, files, **data)

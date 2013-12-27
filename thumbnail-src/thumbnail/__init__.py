@@ -35,12 +35,12 @@ logger.start(app.logger, app.name)
 @app.route('/', methods=['GET'])
 def action():
     try:
-        input = input_url(flask.request)
         options = request_options(flask.request)
+        files, input = {}, input_url(flask.request)
         app.logger.info('{}: options = {}'.format(input, options))
         request = api_client.make_request('RenderPages', BASE_URL)
         if str(IMAGE_WIDTH) in options or str(IMAGE_HEIGHT) in options:
-            return response(request(input, options=options))
+            return response(request(files, inputURL=input, options=options))
         with tmpdir.TemporaryFile() as input_file:
             input_file.write(requests.get(input).content)
             return smaller_thumbnail(request, input_file, options)
@@ -65,11 +65,12 @@ def request_options(request):
     return result
 
 def smaller_thumbnail(request, input_file, options):
+    files = {'input': input_file}
     options[str(IMAGE_HEIGHT)] = MAX_THUMBNAIL_DIMENSION
-    portrait_response = request(input_file, options=options)
+    portrait_response = request(files, options=options)
     del options[str(IMAGE_HEIGHT)]
     options[str(IMAGE_WIDTH)] = MAX_THUMBNAIL_DIMENSION
-    landscape_response = request(input_file, options=options)
+    landscape_response = request(files, options=options)
     if not landscape_response: return response(portrait_response)
     if not portrait_response: return response(landscape_response)
     return response(smaller_response(portrait_response, landscape_response))

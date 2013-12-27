@@ -58,9 +58,9 @@ const PDF2IMG_GUIDE = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf';
 const USAGE_OPTIONS = '[inputName=name] [password=pwd] [options=json]';
 
 $usage =
-    "usage: pdfprocess.php request_type input " . USAGE_OPTIONS . "\n" .
-    "example: pdfprocess.php FlattenForm hello_world.pdf\n" .
-    "example: pdfprocess.php RenderPages " . PDF2IMG_GUIDE .
+    "usage: php pdfprocess.php request_type input " . USAGE_OPTIONS . "\n" .
+    "example: php pdfprocess.php FlattenForm hello_world.pdf\n" .
+    "example: php pdfprocess.php RenderPages " . PDF2IMG_GUIDE .
         'options={"printPreview": True, "outputFormat": "jpg"}';
 
 
@@ -73,7 +73,8 @@ class Client extends \pdfclient\Application
     /**
      * Create a Request from command-line arguments and execute it
      * @return a Response object
-     * @param args e.g.['%pdfprocess.php', 'FlattenForm', 'hello_world.pdf']
+     * @param args e.g.
+     *  ['php', '%pdfprocess.php', 'FlattenForm', 'hello_world.pdf']
      * @param base_url default = %https://pdfprocess.datalogics-cloud.com
      */
     function __invoke($args, $base_url = NULL)
@@ -127,7 +128,7 @@ class Client extends \pdfclient\Application
         foreach ($args as $arg)
         {
             list($option, $value) = explode('=', $arg);
-            if (!array_search($option, OPTIONS))
+            if (!array_search($option, $options))
             {
                 $invalid_option = 'invalid option: ' . $option;
                 throw new UnexpectedValueException($invalid_option);
