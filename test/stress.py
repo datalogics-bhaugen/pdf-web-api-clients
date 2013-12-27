@@ -2,67 +2,89 @@
 
 '''
 usage: stress.py request_type document_index [minutes]
-e.g.: stress.py FlattenForm test_set.cfg 66
+e.g.: stress.py FlattenForm FlattenForm.cfg 66
 '''
 
 import os
 import sys
-import json
 import time
+import json
 import random
+import inspect
 import ConfigParser
 
 import test_client
 
 
-RENDER_PAGES_OPTIONS = {'pdfRegion': 'media', 'resolution': 200}
-
 class Document(object):
     def __init__(self, directory, filename, pages):
         self._filename = os.path.join(directory, filename)
         self._pages = int(pages)
+    @classmethod
+    def list(cls, index):
+        result = []
+        directory = os.path.dirname(index)
+        parser = ConfigParser.ConfigParser()
+        parser.optionxform = str
+        parser.read(index)
+        for section in parser.sections():
+            for filename, pages in parser.items(section):
+                result.append(Document(directory, filename, pages))
+        return result
     @property
     def filename(self): return self._filename
     @property
     def pages(self): return self._pages
 
-def documents(document_index):
-    result = []
-    directory = os.path.dirname(document_index)
-    parser = ConfigParser.ConfigParser()
-    parser.optionxform = str
-    parser.read(document_index)
-    for section in parser.sections():
-        for filename, pages in parser.items(section):
-            result.append(Document(directory, filename, pages))
-    return result
 
-def stress(request_type, minutes, documents):
+class Test(object):
+    def __init__(self, document):
+        self._document = document
+    def _args(self):
+        return [self._document.filename]
+    @classmethod
+    def type(cls, request_type):
+        is_test_type =\
+            lambda m: inspect.isclass(m) and m.__name__ == request_type
+        members = inspect.getmembers(sys.modules[__name__], is_test_type)
+        return members[0][1] if members else type(request_type, (Test,), {})
+    @property
+    def args(self): return [__file__, self.__class__.__name__] + self._args()
+    @property
+    def port(self): return 8080
+
+class FillForm(Test):
+    def _args(self):
+        forms_data = self._document.filename
+        return [os.path.splitext(forms_data)[0] + '.pdf', forms_data]
+
+class RenderPages(Test):
+    def _args(self):
+        pages = self._document.pages
+        pages = 1 if pages < 2 else random.randrange(1, pages)
+        options = {'pages': pages, 'pdfRegion': 'media', 'resolution': 200}
+        return Test._args(self) + ['options={}'.format(json.dumps(options))]
+    @property
+    def port(self): return 5000
+
+# TODO: support new request types by defining new Test classes as needed
+
+
+def stress(test_class, documents, minutes):
     result = 0
     end = time.time() + minutes * 60
     while (time.time() < end):
         try:
-            random_document = documents[random.randrange(0, len(documents))]
-            args, base_url = test_client_args(request_type, random_document)
-            test_client.run(args, base_url)
+            test = test_class(documents[random.randrange(0, len(documents))])
+            test_client.run(test.args, 'http://127.0.0.1:{}'.format(test.port))
             result += 1
         except:
             pass
     return result
 
-def test_client_args(request_type, document):
-    args, port = [__file__, request_type, document.filename], 8080
-    if request_type == 'RenderPages':
-        options, pages = RENDER_PAGES_OPTIONS, document.pages
-        random_page = 1 if pages < 2 else random.randrange(1, pages)
-        options.update({'pages': str(random_page)})
-        args.append('options={}'.format(json.dumps(options)))
-        port = 5000
-    return args, 'http://127.0.0.1:{}'.format(port)
-
 if __name__ == '__main__':
     if len(sys.argv) < 3: raise Exception(__doc__)
-    request_type, document_index = sys.argv[1], sys.argv[2]
+    test_class = Test.type(sys.argv[1])
+    documents = Document.list(sys.argv[2])
     minutes = float(sys.argv[3] if len(sys.argv) > 3 else 66)
-    stress_tests = stress(request_type, minutes, documents(document_index))
-    print('#tests: {}'.format(stress_tests))
+    print('#tests: {}'.format(stress(test_class, documents, minutes)))
