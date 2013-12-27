@@ -182,7 +182,7 @@ class FillForm(Request):
         self._output_format = 'pdf'
 
 
-## Flatten form fields and other annotations
+## Flatten form fields
 class FlattenForm(Request):
     ## %FlattenForm has no request options
     OPTIONS = []
