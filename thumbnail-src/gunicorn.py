@@ -1,6 +1,10 @@
 # Gunicorn configuration file.
 
 import os
+
+import sys  # for configuring gunicorn after moving build directory
+sys.path[0:0] = [os.path.dirname(os.path.abspath(__file__))]
+
 from thumbnail.tmpdir import ROOT_DIR, VAR_DIR
 
 PORT = 5050
