@@ -7,4 +7,4 @@ thumbnail_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 gunicorn = os.path.join(thumbnail_dir, 'bin', 'gunicorn')
 configuration = os.path.join(thumbnail_dir, 'gunicorn.py')
 
-subprocess.call([gunicorn, '-c', configuration, 'thumbnail:app'])
+subprocess.call(['python', gunicorn, '-c', configuration, 'thumbnail:app'])
