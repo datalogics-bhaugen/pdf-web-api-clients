@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-usage: stress.py request_type document_index [minutes]
+usage: stress.py request_type input_index [minutes]
 e.g.: stress.py FlattenForm FlattenForm.cfg 66
 '''
 
@@ -16,7 +16,7 @@ import ConfigParser
 import test_client
 
 
-class Document(object):
+class Input(object):
     def __init__(self, directory, filename, pages):
         "filenames in index must be relative to index's filename"
         self._filename = os.path.join(directory, filename)
@@ -30,7 +30,7 @@ class Document(object):
         parser.read(index)
         for section in parser.sections():
             for filename, pages in parser.items(section):
-                result.append(Document(directory, filename, pages))
+                result.append(Input(directory, filename, pages))
         return result
     @property
     def filename(self): return self._filename
@@ -39,10 +39,10 @@ class Document(object):
 
 
 class Test(object):
-    def __init__(self, document):
-        self._document = document
+    def __init__(self, input):
+        self._input = input
     def _args(self):
-        return [self._document.filename]
+        return [self._input.filename]
     @classmethod
     def type(cls, request_type):
         is_test_type =\
@@ -56,12 +56,12 @@ class Test(object):
 
 class FillForm(Test):
     def _args(self):
-        forms_data = self._document.filename
+        forms_data = self._input.filename
         return [os.path.splitext(forms_data)[0] + '.pdf', forms_data]
 
 class RenderPages(Test):
     def _args(self):
-        pages = self._document.pages
+        pages = self._input.pages
         pages = 1 if pages < 2 else random.randrange(1, pages)
         options = {'pages': pages, 'pdfRegion': 'media', 'resolution': 200}
         return Test._args(self) + ['options={}'.format(json.dumps(options))]
@@ -71,12 +71,12 @@ class RenderPages(Test):
 # TODO: support new request types by defining new Test classes as needed
 
 
-def stress(test_class, documents, minutes):
+def stress(test_class, input_list, minutes):
     result = 0
     end = time.time() + minutes * 60
     while (time.time() < end):
         try:
-            test = test_class(documents[random.randrange(0, len(documents))])
+            test = test_class(input_list[random.randrange(0, len(input_list))])
             test_client.run(test.args, 'http://127.0.0.1:{}'.format(test.port))
             result += 1
         except:
@@ -86,6 +86,6 @@ def stress(test_class, documents, minutes):
 if __name__ == '__main__':
     if len(sys.argv) < 3: raise Exception(__doc__)
     test_class = Test.type(sys.argv[1])
-    documents = Document.list(sys.argv[2])
+    input_list = Input.list(sys.argv[2])
     minutes = float(sys.argv[3] if len(sys.argv) > 3 else 66)
-    print('#tests: {}'.format(stress(test_class, documents, minutes)))
+    print('#tests: {}'.format(stress(test_class, input_list, minutes)))
