@@ -54,8 +54,6 @@ class TestDefaults(TestFixture):
         self.validate({}, '-resolution=150')
     def test_smoothing_all(self):
         self.validate({}, '-smoothing=all')
-    def test_smoothing_none(self):
-        self.validate({'smoothing': 'none'}, None, '-smoothing=none')
     def test_smoothing_text(self):
         self.validate({'smoothing': 'text'}, '-smoothing=text')
 
