@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2013, Datalogics, Inc. All rights reserved.
+# Copyright (c) 2014, Datalogics, Inc. All rights reserved.
 
 "Sample pdfclient driver"
 
