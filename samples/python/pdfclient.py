@@ -138,12 +138,15 @@ class Response(object):
     def output(self): return self._response.content if self.ok else None
     @property
     ## None if successful, otherwise API
-    #   [error code](https://api.datalogics-cloud.com/#errorCode) (int)
+    #   [error code]
+    #    (https://api.datalogics-cloud.com/Getting-Started/#ErrorMessages)
+    #    (int)
     def error_code(self): return self._error_code
     @property
     ## None if successful, otherwise an
-    #   [error message](https://api.datalogics-cloud.com/#errorMessage)
-    #   (string)
+    #   [error message]
+    #    (https://api.datalogics-cloud.com/Getting-Started/#ErrorMessages)
+    #    (string)
     def error_message(self): return self._error_message
 
 
