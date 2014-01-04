@@ -163,10 +163,10 @@ class Parser(object):
                 return part_name
         return 'input'
     @property
-    ## dict of form parts that will be passed to requests.post
+    ## form parts that will be passed to requests.post
     def data(self): return self._data
     @property
-    ## dict of files that will be passed to requests.post
+    ## files that will be passed to requests.post
     def files(self): return self._files
 
 

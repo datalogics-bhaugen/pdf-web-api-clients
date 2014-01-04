@@ -1,6 +1,6 @@
 <?php namespace pdfclient;
 
-# Copyright (c) 2013, Datalogics, Inc. All rights reserved.
+# Copyright (c) 2014, Datalogics, Inc. All rights reserved.
 
 # Sample pdfprocess client module
 
@@ -93,56 +93,55 @@ class Request
     {
         $class_name = end(explode('\\', get_class($this)));
         $action = preg_replace('/([A-Z])/', '/$1', $class_name);
+        $this->_application = $application_json;
         $this->_url = $base_url . '/api/actions' . strtolower($action);
-        $this->_request_fields = array('application' => $application_json);
     }
 
     /**
      * Send request
      * @return a Response object
-     * @param input input document URL or file
+     * @param input_files array of input filenames
      * @param request_fields array with keys in
-     *  {'inputName', 'password', 'options'}
+     *  {'inputURL', 'inputName', 'password', 'options'}
      */
-    function __invoke($input, $request_fields)
+    function __invoke($input_files, $request_fields)
     {
-        $fields = array_merge($this->_request_fields, $request_fields);
-        if (preg_match('(http:|https:)', strtolower($input)))
+        $request_fields['application'] = $this->_application;
+
+        if (!in_array('inputName', $request_fields) &&
+            in_array('input', $input_files))
         {
-            $fields['inputURL'] = $input;
-        }
-        else
-        {
-            $fields['input'] = "@$input";
-            if (!array_search('inputName', $fields))
-            {
-                $fields['inputName'] = basename($input);
-            }
+            $request_fields['inputName'] = $input_files['input'];
         }
 
-        $request_options = $fields['options'];
+        $request_options = $request_fields['options'];
         if ($request_options)
         {
             foreach ($request_options as $option_name => $ignored)
             {
-                if (!array_search($option_name, $this::$options))
+                if (!in_array($option_name, $this::$Options))
                 {
                     $invalid_option = 'invalid option: ' . $option_name;
                     exit($invalid_option);
                 }
             }
-            $fields['options'] = json_encode($request_options);
+            $request_fields['options'] = json_encode($request_options);
         }
         elseif ($request_options == array())
         {
-            unset($fields['options']);
+            unset($request_fields['options']);
+        }
+
+        foreach ($input_files as $part_name => $filename)
+        {
+            $request_fields[$part_name] = "@$filename";
         }
 
         $curl = curl_init($this->_url);
         $http_header = array('Content-Type: multipart/form-data');
         curl_setopt($curl, CURLOPT_HTTPHEADER, $http_header);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $fields);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $request_fields);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         $request_response = curl_exec($curl);
         $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -157,7 +156,7 @@ class Request
 
     protected $_output_format;
 
-    private $_request_fields;
+    private $_application;
     private $_url;
 }
 
@@ -198,14 +197,17 @@ class Response
 
     /**
      * @return NULL if successful, otherwise API
-     *  [error code](https://api.datalogics-cloud.com/#errorCode) (int)
+     *  [error code]
+     *   (https://api.datalogics-cloud.com/Getting-Started#ErrorMessages)
+     *   (int)
      */
     function error_code() { return $this->_error_code; }
 
     /**
      * @return NULL if successful, otherwise an
-     *  [error message](https://api.datalogics-cloud.com/#errorMessage)
-     *  (string)
+     *  [error message]
+     *   (https://api.datalogics-cloud.com/Getting-Started#ErrorMessages)
+     *   (string)
      */
     function error_message() { return $this->_error_message; }
 
@@ -249,14 +251,41 @@ class ErrorCode
 
 
 /**
- * @brief Flatten form fields and other annotations
+ * @brief Fill form fields with supplied FDF/XFDF data
+ */
+class FillForm extends Request
+{
+    /**
+     * %FillForm request options:
+     * * [disableCalculation]
+     *    (https://api.datalogics-cloud.com/docs#disableCalculation)
+     *    do not run calculations afterward
+     * * [disableGeneration]
+     *    (https://api.datalogics-cloud.com/docs#disableGeneration):
+     *    do not generate appearances afterward
+     * * [flatten](https://api.datalogics-cloud.com/docs#flatten):
+     *    flatten form afterward
+     */
+    static $Options = array(
+        'disableCalculation', 'disableGeneration', 'flatten');
+
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url);
+        $this->_output_format = 'pdf';
+    }
+}
+
+
+/**
+ * @brief Flatten form fields
  */
 class FlattenForm extends Request
 {
     /**
      * %FlattenForm has no request options
      */
-    static $options = array();
+    static $Options = array();
 
     function __construct($application, $base_url)
     {
@@ -304,7 +333,7 @@ class RenderPages extends Request
      *    (https://api.datalogics-cloud.com/docs#suppressAnnotations):
      *    draw only actual page contents
      */
-    static $options = array(
+    static $Options = array(
         'colorModel', 'compression',
         'disableColorManagement', 'disableThinLineEnhancement',
         'imageHeight', 'imageWidth',
@@ -318,7 +347,7 @@ class RenderPages extends Request
      * @return a Response object
      * @param input input document URL or file
      * @param request_fields array with keys in
-     *  {'inputName', 'password', 'options'}
+     *  {'inputURL', 'inputName', 'password', 'options'}
      */
     function __invoke($input, $request_fields)
     {
@@ -328,6 +357,13 @@ class RenderPages extends Request
     }
 }
 
+
+namespace pdfclient\FillForm;
+
+/**
+ * @brief Error codes for FillForm requests
+ */
+class ErrorCode extends \pdfclient\ErrorCode { }
 
 namespace pdfclient\FlattenForm;
 

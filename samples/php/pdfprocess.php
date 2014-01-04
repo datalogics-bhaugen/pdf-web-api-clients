@@ -1,6 +1,6 @@
 <?php namespace pdfprocess;
 
-# Copyright (c) 2013, Datalogics, Inc. All rights reserved.
+# Copyright (c) 2014, Datalogics, Inc. All rights reserved.
 
 # Sample pdfclient driver
 
@@ -71,7 +71,7 @@ $usage =
 class Client extends \pdfclient\Application
 {
     /**
-     * Create a Request from command-line arguments and execute it
+     * Create a %pdfclient\\%Request from command-line arguments and execute it
      * @return a Response object
      * @param args e.g.
      *  ['php', '%pdfprocess.php', 'FlattenForm', 'hello_world.pdf']
@@ -79,18 +79,22 @@ class Client extends \pdfclient\Application
      */
     function __invoke($args, $base_url = NULL)
     {
-        if (count($args) < 3) { exit($usage); }
+        $parser = $this->_parse($args);
+        $input_files = $parser->input_files();
+        $request_fields = $parser->request_fields();
+        $this->_input_name = $request_fields['inputName'];
+        if (!$this->input_name())
+        {
+            $input_url = $request_fields['inputURL'];
+            $this->_input_name =
+                basename($input_url) ? $input_url : $input_files['input'];
+        }
 
-        $input = $args[2];
-        $request_fields = $this->_initialize($args);
         $base_url = $base_url ? $base_url : \pdfclient\BASE_URL;
         $this->_request = $this->make_request($args[1], $base_url);
 
-        $input_name = $request_fields['inputName'];
-        $this->_input_name = $input_name ? $input_name : basename($input);
-
         $api_request = $this->_request;
-        $api_response = $api_request($input, $request_fields);
+        $api_response = $api_request($input_files, $request_fields);
         return new Response($api_response, $this->output_filename());
     }
 
@@ -108,35 +112,18 @@ class Client extends \pdfclient\Application
         return basename($this->input_name(), '.pdf') . '.' . $extension;
     }
 
-    private function _initialize($args)
+    private function _parse($args)
     {
         try
         {
-            return $this->_parse_args(array_slice($args, 3));
+            if (count($args) > 2)
+                return new Parser(array_slice($args, 2));
         }
         catch (Exception $exception)
         {
             echo $exception->getMessage();
-            exit($usage);
         }
-    }
-
-    private function _parse_args($args)
-    {
-        $result = array();
-        $options = array('inputName', 'password', 'options');
-        foreach ($args as $arg)
-        {
-            list($option, $value) = explode('=', $arg);
-            if (!array_search($option, $options))
-            {
-                $invalid_option = 'invalid option: ' . $option;
-                throw new UnexpectedValueException($invalid_option);
-            }
-            $result[$option] =
-                $option == 'options' ? json_decode($value, true) : $value;
-        }
-        return $result;
+        exit($usage);
     }
 
     private $_input_name;
@@ -188,6 +175,85 @@ class Response
 
     private $_api_response;
     private $_output_filename;
+}
+
+
+/**
+ * @brief Translate command line arguments to form needed by
+ * pdfclient.Request.__invoke
+ */
+class Parser
+{
+    static $PartNameFileFormats = array('formsData' => array('FDF', 'XFDF'));
+
+    function __construct($args)
+    {
+        $is_option = function($arg) { return strpos($arg, '='); };
+        $options = array_filter($args, $is_option);
+
+        $is_input = function($arg) { return strpos($arg, '=') === false; };
+        $input = array_filter($args, $is_input);
+
+        $urls = array_filter($input, array('pdfprocess\\Parser', '_is_url'));
+        if (count($urls) > 1)
+        {
+            $invalid_input = 'invalid input: ' . count($urls) . ' URLs';
+            throw new UnexpectedValueException($invalid_input);
+        }
+
+        if ($urls)
+        {
+            $input_url = array_shift($urls);
+            unset($input[array_search($input_url, $input)]);
+            $this->_request_fields['inputURL'] = $input_url;
+        }
+
+        foreach ($input as $filename)
+        {
+            $this->_input_files[Parser::_part_name($filename)] = $filename;
+        }
+
+        $form_parts = array('inputName', 'password', 'options');
+        foreach ($options as $arg)
+        {
+            list($option, $value) = explode('=', $arg);
+            if (!in_array($option, $form_parts))
+            {
+                $invalid_option = 'invalid option: ' . $option;
+                throw new UnexpectedValueException($invalid_option);
+            }
+            $this->_request_fields[$option] =
+                $option == 'options' ? json_decode($value, true) : $value;
+        }
+    }
+
+    /**
+     * array of input files
+     */
+    public function input_files() { return $this->_input_files; }
+
+    /**
+     * array of request fields
+     */
+    public function request_fields() { return $this->_request_fields; }
+
+    private static function _is_url($filename)
+    {
+        return preg_match('(http:|https:)', strtolower($filename));
+    }
+
+    private static function _part_name($filename)
+    {
+        $format = strtoupper(pathinfo($filename, PATHINFO_EXTENSION));
+        foreach (Parser::$PartNameFileFormats as $part_name => $file_formats)
+        {
+            if (in_array($format, $file_formats)) return $part_name;
+        }
+        return 'input';
+    }
+
+    private $_input_files = array();
+    private $_request_fields = array();
 }
 
 

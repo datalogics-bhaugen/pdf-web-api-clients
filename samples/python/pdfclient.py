@@ -81,7 +81,7 @@ class Application(object):
 class Request(object):
     def __init__(self, application_json, base_url):
         self._output_format = None
-        self._application = {'application': application_json}
+        self._application = application_json
         action = re.sub('([A-Z]+)', r'/\1', self.__class__.__name__).lower()
         self._url = '{}/api/actions{}'.format(base_url, action)
 
@@ -92,7 +92,7 @@ class Request(object):
     #   ('inputURL', 'inputName', 'password', 'options')
     def __call__(self, files, **data):
         data = data.copy()
-        data.update(self._application)
+        data['application'] = self._application
         for file in files.values(): file.seek(0)
         if 'inputName' not in data and 'input' in files:
             data['inputName'] = files['input'].name
@@ -139,13 +139,13 @@ class Response(object):
     @property
     ## None if successful, otherwise API
     #   [error code]
-    #    (https://api.datalogics-cloud.com/Getting-Started/#ErrorMessages)
+    #    (https://api.datalogics-cloud.com/Getting-Started#ErrorMessages)
     #    (int)
     def error_code(self): return self._error_code
     @property
     ## None if successful, otherwise an
     #   [error message]
-    #    (https://api.datalogics-cloud.com/Getting-Started/#ErrorMessages)
+    #    (https://api.datalogics-cloud.com/Getting-Started#ErrorMessages)
     #    (string)
     def error_message(self): return self._error_message
 
