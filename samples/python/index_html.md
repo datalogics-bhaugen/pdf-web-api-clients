@@ -3,7 +3,7 @@
 
 * Python 3.3 or 2.7: Other versions might work, but are not supported.
 * [Requests](http://docs.python-requests.org/en/latest/) (HTTP for Humans):
-Use a new version, e.g. 2.1.
+Use a new version, e.g. 2.2.
 
 ### 1. Download Sample Files
 
