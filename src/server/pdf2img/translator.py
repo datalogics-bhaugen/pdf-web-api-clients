@@ -111,8 +111,6 @@ class Smoothing(Translator):
         Translator.__init__(self, u'smoothing')
     def validate(self, *args):
         if self.option is None: self._option = 'all'
-        # TODO: remove 'none' test when pdfimg issue #21 is resolved
-        if self.option == 'none': self._option = None
         return self.options
 
 

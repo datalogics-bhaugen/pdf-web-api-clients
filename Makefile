@@ -90,4 +90,4 @@ eggs tmp $(TEST_PDFPROCESS) $(VAR_LOG) $(SERVER_LOG):
 	mkdir -p $@
 
 venv:
-	python virtualenv.py $@
+	python virtualenv.py --no-setuptools $@

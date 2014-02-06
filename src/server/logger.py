@@ -12,6 +12,7 @@ from logging.handlers import TimedRotatingFileHandler as BaseFileHandler
 
 
 LOGGER = logging.getLogger()
+PYTHON3 = sys.version_info.major == 3
 
 class BaseHandler(object):
     "format depends on level"
@@ -29,8 +30,7 @@ class BaseHandler(object):
             logging.CRITICAL: level_formatter}
     def emit(self, record):
         self.setFormatter(self._formatters[record.levelno])
-        major_version = sys.version_info.major
-        handler = super(BaseHandler, self) if major_version < 3 else super()
+        handler = super() if PYTHON3 else super(BaseHandler, self)
         handler.emit(record)
 
 class FileHandler(BaseHandler, BaseFileHandler):
@@ -47,6 +47,10 @@ class SysLogHandler(BaseHandler, BaseSysLogHandler):
         BaseHandler.__init__(self)
         address = '/var/run/syslog' if system() == 'Darwin' else '/dev/log'
         BaseSysLogHandler.__init__(self, address)
+    def emit(self, record):
+        if logging.DEBUG < record.levelno:
+            handler = super() if PYTHON3 else super(SysLogHandler, self)
+            handler.emit(record)
 
 
 def debug(msg, *args, **kwargs): LOGGER.debug(msg, *args, **kwargs)
