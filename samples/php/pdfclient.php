@@ -318,7 +318,7 @@ class RenderPages extends Request
      *    pixels
      * * [OPP](https://api.datalogics-cloud.com/docs#OPP): overprint preview
      * * [outputFormat](https://api.datalogics-cloud.com/docs#outputFormat):
-     *    png (default), gif, jpg, or tif
+     *    png (default), bmp, gif, jpg, or tif
      * * [pages](https://api.datalogics-cloud.com/docs#pages):
      *    default = 1
      * * [pdfRegion](https://api.datalogics-cloud.com/docs#pdfRegion):
