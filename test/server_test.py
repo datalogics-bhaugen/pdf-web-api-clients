@@ -27,7 +27,10 @@ def test_truncated_pdf():
     result = Result(ErrorCode.InvalidInput, HTTPCode.UnsupportedMediaType)
     Test(['data/truncated.pdf'], result)()
 
-def test_ascii_password_ok():
+def test_owner_password_ok():
+    Test(['data/owner_password.pdf', 'edit'], Result())()
+
+def test_user_password_ok():
     password = 'password=Kraftfahrzeughaftpflichtversicherung'
     Test(['data/user_password.pdf', password], Result())()
 
