@@ -56,7 +56,7 @@ We use Buildout, which is a three-step process. These steps are executed by the 
     * To get the password for pdfprocess, send mail to pdfprocess@datalogics.com
     * The pass phrase for the web-api deploy key is the password in lower case
 
-7. make _build_
+7. make _build_ (this will temporarily stall while building lxml)
 
 ## Run
 
