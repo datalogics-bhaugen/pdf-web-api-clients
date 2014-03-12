@@ -9,7 +9,7 @@ import server
 import options
 import translator
 import argument_parser
-from server import Error, ErrorCode
+from server import Error, ErrorCode, logger
 from output_file import OutputFile
 
 
@@ -34,11 +34,7 @@ class Action(server.Action):
         return u'image/{}'.format(image_type)
     def _get_image(self, input_name, output_file):
         with server.Stdout() as stdout:
-            options = Action._options() + self._parser.pdf2img_options
-            if self.password:
-                options += [u'-password={}'.format(self.password)]
-            args = ['pdf2img'] + options + [input_name, self.output_format]
-            if subprocess.call(args, stdout=stdout):
+            if subprocess.call(self._pdf2img_args(input_name), stdout=stdout):
                 self.raise_error(Action.get_error(stdout))
         with open(output_file.name, 'rb') as image_file:
             content_type = self._content_type()
@@ -48,6 +44,12 @@ class Action(server.Action):
             self.input.save(input_file)
             with OutputFile(input_file.name, self.output_format) as output:
                 return self._get_image(input_file.name, output)
+    def _pdf2img_args(self, input_name):
+        result = ['pdf2img'] + Action._options() + self._parser.pdf2img_options
+        if self.password: result += [u'-password={}'.format(self.password)]
+        result += [input_name, self.output_format]
+        logger.debug(' '.join(result))
+        return result
     @classmethod
     def _options(cls):
         if not server.RESOURCE: return []
