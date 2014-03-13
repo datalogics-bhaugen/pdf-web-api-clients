@@ -28,7 +28,7 @@ def test_truncated_pdf():
     Test(['data/truncated.pdf'], result)()
 
 def test_owner_password_ok():
-    Test(['data/owner_password.pdf', 'edit'], Result())()
+    Test(['data/owner_password.pdf', 'password=edit'], Result())()
 
 def test_user_password_ok():
     password = 'password=Kraftfahrzeughaftpflichtversicherung'
