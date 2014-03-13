@@ -325,6 +325,8 @@ class RenderPages extends Request
      *    crop (default), art, bleed, bounding, media, or trim
      * * [printPreview](https://api.datalogics-cloud.com/docs#printPreview):
      *    ignored if suppressAnnotations is true
+     * * [resampler](https://api.datalogics-cloud.com/docs#resampler):
+     *    auto (default), bicubic, none
      * * [resolution](https://api.datalogics-cloud.com/docs#resolution):
      *    12 to 2400 (default = 150)
      * * [smoothing](https://api.datalogics-cloud.com/docs#smoothing):
@@ -339,8 +341,9 @@ class RenderPages extends Request
         'imageHeight', 'imageWidth',
         'OPP', 'outputFormat',
         'pages', 'pdfRegion',
-        'printPreview', 'resolution',
-        'smoothing', 'suppressAnnotations');
+        'printPreview', 'resampler',
+        'resolution', 'smoothing',
+        'suppressAnnotations');
 
     /**
      * Send request
