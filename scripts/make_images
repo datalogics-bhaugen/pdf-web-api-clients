@@ -1,0 +1,224 @@
+#!/usr/bin/env python
+
+'''
+this script is usually executed in //ivy/raid/products/PDFThumbnailTestSet/.
+it populates the Images subdirectory with PDF2IMG images created for the
+first page of each PDF document in the Documents subdirectory. some images
+are resampled by ImageMagick from a baseline PDF2IMG image.
+'''
+
+# FILTERS = ['Photoshop', 'PDF2IMG', 'WebAPI', 'ImageMagick']
+FILTERS = ['Photoshop', 'WebAPI', 'ImageMagick']
+# RESOLUTIONS = ['300', '150']
+RESOLUTIONS = ['150']
+SMOOTHINGS = ['all']
+WIDTHS = ['300', '100']
+
+INDEX_BEGIN = '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Resampled Thumbnails</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="resampler.css" type="text/css" />
+</head>
+<body>
+<h2>Resampled Thumbnails</h2>
+<p>The following PNG images were rasterized by PDF2IMG, and then resampled
+by ImageMagick, PDF WebAPI, and Photoshop:</p>
+<ul>
+    <li>ImageMagick resampling was done using its default algorithm
+        (Lanczos).</li>
+    <!-- <li>PDF2IMG resampling was done using our bicubic algorithm.</li> -->
+    <li>PDF WebAPI resampling was done using our bicubic algorithm.</li>
+    <li>Photoshop resampling was done using Adobe's bicubic algorithm,
+        via File &#8594; Save for Web... (no transparency).</li>
+</ul>
+<p>To facilitate evaluating resampled image quality, each image on this page
+is a link to the (primary) image that was resampled.</p>
+'''
+
+INDEX_END = '</body>\n</html>'
+
+PDF_LINK = '''
+<div class="clearfloat"></div>
+<div class="thumbnail-space" />
+<h3><a href="%s" target="_blank">%s</a>: %s</h3>
+'''
+
+IMAGE_LINK = '''
+<div class="thumbnail">
+    <p>%s</p>
+    <a href="%s"><img src="%s" alt="%s" title="%s" /></a>
+</div>
+'''
+
+
+import os
+import glob
+import json
+import subprocess
+import ConfigParser
+
+from itertools import chain
+
+
+CONVERT = ['convert', '+antialias']
+PDF2IMG = ['pdf2img', '-firstonly', '-digits=2']
+FORMAT = 'png'
+
+
+class DocumentIndex(object):
+    def __init__(self, dir=None):
+        self._dir = dir or 'Documents'
+        self._parser = ConfigParser.ConfigParser()
+        self._parser.optionxform = str
+        self._parser.read(os.path.join(self._dir, 'index.cfg'))
+    def __call__(self):
+        filenames = glob.glob(os.path.join(self._dir, '*', '*.pdf'))
+        return [self._entry(filename) for filename in filenames]
+    def _entry(self, filename):
+        for section in self._parser.sections():
+            for path, description in self._parser.items(section):
+                if filename == os.path.join(self._dir, path):
+                    return filename, description
+
+class Index(object):
+    def __init__(self, filename=None):
+        self._file = open(filename or 'resampler.html', 'w')
+        self._file.write(INDEX_BEGIN)
+        self._paths = []
+    def __enter__(self):
+        return self
+    def __exit__(self, type, value, traceback):
+        self.close()
+    def __call__(self, path, description_or_link):
+        if path in self._paths: return
+        if path.endswith(FORMAT):
+            path_dir = os.path.dirname(path)
+            filter = os.path.basename(path_dir)
+            width_dir = os.path.dirname(path_dir)
+            resolution_dir = os.path.dirname(width_dir)
+            label = '<br>'.join((os.path.basename(resolution_dir), filter))
+            link_parameters = (label, description_or_link, path, path, path)
+            self._file.write(IMAGE_LINK % link_parameters)
+        else:
+            link_name = os.path.basename(path)
+            self._file.write(PDF_LINK % (path, link_name, description_or_link))
+        self._paths.append(path)
+        self._file.flush()
+    def close(self):
+        self._file.write(INDEX_END)
+        self._file.close()
+
+class PDF(object):
+    def __init__(self, filename, description):
+        self._filename, self._description = filename, description
+    def __call__(self, smoothing, dpi,
+                 width=None, filter=None, base_dir='', index=None):
+        result = PDF._mkdir(smoothing, dpi, width, filter)
+        input_name = os.path.splitext(os.path.basename(self._filename))[0]
+        input = PDF._image(os.path.join(base_dir, input_name))
+        output_name = os.path.join(result, input_name)
+        output = PDF._image(output_name)
+        if glob.glob(output):
+            pass
+        elif filter and width:
+            if 'pdf2img' == filter.lower():
+                self._make_image(smoothing, dpi, width, output_name, 'bicubic')
+            elif 'photoshop' == filter.lower():
+                PDF._cp_photoshop_image(dpi, width, input_name, output)
+            elif 'webapi' == filter.lower():
+                Request(dpi, width, self._filename)(output)
+            elif self._filter_image(width, filter, input, output):
+                index = None
+        elif self._make_image(smoothing, dpi, width, output_name):
+            index = None
+        if index: index(output, input)
+        return result
+    def make_images(self, index):
+        index(self._filename, self._description)
+        for smoothing in SMOOTHINGS:
+            for dpi in RESOLUTIONS:
+                base_dir = self('all', dpi)
+                for width in WIDTHS:
+                    for filter in FILTERS:
+                        self(smoothing, dpi, width, filter, base_dir, index)
+    def _filter_image(self, width, filter, input, output):
+        magick_args = list(CONVERT)
+        if 'magick' not in filter.lower():
+            magick_args += ['-filter', filter]
+        magick_args += ['-resize', width, input, output]
+        return PDF._call(magick_args)
+    def _make_image(self, smoothing, dpi, width, output_name, filter=None):
+        args = self._pdf2img_args(smoothing, dpi, width, output_name, filter)
+        return PDF._call(args)
+    def _pdf2img_args(self, smoothing, dpi, width, output_name, filter):
+        result = list(PDF2IMG)
+        result.append('-output=' + output_name)
+        result.append('-resolution=' + dpi)
+        result.append('-smoothing=' + smoothing)
+        if width: result.append('-pixelcount=w:' + width)
+        if filter: result.append('-resampler=' + filter)
+        result += [self._filename, FORMAT]
+        return result
+    @classmethod
+    def _call(cls, args, print_args=True):
+        if print_args: print(args)
+        return subprocess.call(args)
+    @classmethod
+    def _cp_photoshop_image(cls, dpi, width, input_name, output):
+        dpi = PDF._dirname('resolution', dpi)
+        width = PDF._dirname('width', width)
+        input_dir = os.path.join('Photoshop', 'Images', dpi, width)
+        input = PDF._image(os.path.join(input_dir, input_name))
+        return PDF._call(('cp', input, output), False)
+    @classmethod
+    def _dirname(cls, name, value):
+        if value: return name + '_' + value
+        return ''
+    @classmethod
+    def _image(cls, input_name):
+        return input_name + '01.' + FORMAT  # -digits=2
+    @classmethod
+    def _mkdir(cls, smoothing, dpi, width, filter):
+        smoothing = PDF._dirname('smoothing', smoothing)
+        dpi = PDF._dirname('resolution', dpi)
+        width = PDF._dirname('width', width)
+        filter = PDF._dirname('resampler', filter)
+        result = os.path.join('Images', smoothing, dpi, width, filter)
+        PDF._call(('mkdir', '-p', result), False)
+        return result
+
+class JSON(object):
+    def __init__(self, name, **kwargs):
+        self._name, self._kwargs = name, kwargs
+    def __str__(self):
+        value = json.dumps(self._kwargs).replace(' ', '')
+        return '{}={}'.format(self._name, value)
+
+class Request(object):
+    URL = 'https://pdfprocess.datalogics-cloud.com/api/actions/render/pages'
+    def __init__(self, dpi, width, input):
+        self._dpi, self._width, self._input = dpi, width, input
+    def __call__(self, output, print_args=True):
+        application_json =\
+            JSON('application',
+                 id='84445ec0', key='2d3eac77bb3b9bea69a91e625b9241d2')
+        parts = [
+            str(application_json),
+            'input=@{}'.format(self._input),
+            str(JSON('options', resolution=self._dpi, imageWidth=self._width))]
+        form_parts =\
+            list(chain.from_iterable(('--form', part) for part in parts))
+        args = ['curl', '--insecure'] + form_parts
+        args += ['--output', output, Request.URL]
+        if print_args: print(args)
+        subprocess.call(args)
+
+if __name__ == '__main__':
+    index = Index()
+    try:
+        for filename, description in DocumentIndex()():
+            PDF(filename, description).make_images(index)
+    finally:
+        index.close()

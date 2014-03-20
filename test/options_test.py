@@ -54,8 +54,8 @@ class TestDefaults(TestFixture):
         self.validate({}, '-resolution=150')
     def test_smoothing_all(self):
         self.validate({}, '-smoothing=all')
-    def test_smoothing_text(self):
-        self.validate({'smoothing': 'text'}, '-smoothing=text')
+    def test_smoothing_text_line(self):
+        self.validate({'smoothing': 'text,line'}, '-smoothing=text,line')
 
 class TestSpelling(TestFixture):
     def test_lower_case(self):

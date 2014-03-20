@@ -107,16 +107,16 @@ sub request_content {
     foreach my $option_value (@ARGV) {
         my ($option, $value) = split(/=/, $option_value); 
         if (!($option ~~ @options)) { die $usage; }
-        push $result, $option => $value;
+        push @{$result}, $option => $value;
     }
 
     if ($input =~ /^http/) {
-        push $result, 'inputURL' => $input;
+        push @{$result}, 'inputURL' => $input;
     }
     else {
-        push $result, 'input' => [$input];
+        push @{$result}, 'input' => [$input];
         if (!('inputName' ~~ $result)) {
-            push $result, 'inputName' => $input;
+            push @{$result}, 'inputName' => $input;
         }
     }
 

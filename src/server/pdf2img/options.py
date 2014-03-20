@@ -40,4 +40,5 @@ OPTIONS = [
     Flag(u'suppressAnnotations', u'noannot'),
     Option(u'colorModel', u'colormodel'),
     Option(u'password'),
-    Option(u'pdfRegion', u'pdfregion')]
+    Option(u'pdfRegion', u'pdfregion'),
+    Option(u'resampler')]

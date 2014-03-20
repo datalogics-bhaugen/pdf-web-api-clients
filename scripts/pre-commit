@@ -1,9 +1,4 @@
 #!/bin/sh
 
-while [ ! -f Makefile ]
-do
-    cd ..
-done
-
-make qa
+make --directory `git rev-parse --show-toplevel` qa
 

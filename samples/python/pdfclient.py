@@ -216,13 +216,15 @@ class RenderPages(Request):
     #     pixels
     #  * [OPP](https://api.datalogics-cloud.com/docs#OPP): overprint preview
     #  * [outputFormat](https://api.datalogics-cloud.com/docs#outputFormat):
-    #     png (default), gif, jpg, or tif
+    #     png (default), bmp, gif, jpg, or tif
     #  * [pages](https://api.datalogics-cloud.com/docs#pages):
     #     default = 1
     #  * [pdfRegion](https://api.datalogics-cloud.com/docs#pdfRegion):
     #     crop (default), art, bleed, bounding, media, or trim
     #  * [printPreview](https://api.datalogics-cloud.com/docs#printPreview):
     #     ignored if suppressAnnotations is true
+    #  * [resampler](https://api.datalogics-cloud.com/docs#resampler):
+    #     auto (default), bicubic, none
     #  * [resolution](https://api.datalogics-cloud.com/docs#resolution):
     #     12 to 2400 (default = 150)
     #  * [smoothing](https://api.datalogics-cloud.com/docs#smoothing):
@@ -235,8 +237,9 @@ class RenderPages(Request):
                'imageHeight', 'imageWidth',
                'OPP', 'outputFormat',
                'pages', 'pdfRegion',
-               'printPreview', 'resolution',
-               'smoothing', 'suppressAnnotations']
+               'printPreview', 'resampler',
+               'resolution', 'smoothing',
+               'suppressAnnotations']
     ## Error codes for %RenderPages requests
     class ErrorCode(ErrorCode):
         InvalidColorModel = 31

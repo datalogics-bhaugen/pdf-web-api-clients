@@ -69,7 +69,7 @@ class OutputFormat(Translator):
         if self.option == u'jpeg': self._option = u'jpg'
         if self.option == u'tiff': self._option = u'tif'
         if self.option is None: self._option = u'png'
-        output_formats = ('gif', 'jpg', 'png', 'tif')
+        output_formats = ('bmp', 'gif', 'jpg', 'png', 'tif')
         if self.option not in output_formats:
             error = u'outputFormat must be one of ' + unicode(output_formats)
             raise Error(ErrorCode.InvalidOutputFormat, error)
