@@ -77,7 +77,7 @@ except ImportError:
     ez = {}
     # 'https://bitbucket.org/pypa/setuptools/downloads/ez_setup.py'
     # might work, but it selects 0.9.6 today and then buildout fails!
-    url = 'https://bitbucket.org/pypa/setuptools/raw/3.1/ez_setup.py'
+    url = 'https://bitbucket.org/pypa/setuptools/raw/3.3/ez_setup.py'
     exec(urlopen(url).read(), ez)
     setup_args = dict(to_dir=tmpeggs, download_delay=0)
     ez['use_setuptools'](**setup_args)
