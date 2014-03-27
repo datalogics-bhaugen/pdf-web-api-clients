@@ -330,7 +330,7 @@ class RenderPages extends Request
      * * [resolution](https://api.datalogics-cloud.com/docs#resolution):
      *    12 to 2400 (default = 150)
      * * [smoothing](https://api.datalogics-cloud.com/docs#smoothing):
-     *    all (default), none, or text
+     *    all (default), none, text, line, image, or comma-separated value
      * * [suppressAnnotations]
      *    (https://api.datalogics-cloud.com/docs#suppressAnnotations):
      *    draw only actual page contents
