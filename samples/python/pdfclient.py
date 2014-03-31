@@ -162,6 +162,7 @@ class ErrorCode:
     InvalidPage = 8
     RequestTooLarge = 9
     UsageLimitExceeded = 10
+    NotImplemented = 11
     UnknownError = 20
 
 

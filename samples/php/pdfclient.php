@@ -246,6 +246,7 @@ class ErrorCode
     const InvalidPage = 8;
     const RequestTooLarge = 9;
     const UsageLimitExceeded = 10;
+    const NotImplemented = 11;
     const UnknownError = 20;
 }
 
