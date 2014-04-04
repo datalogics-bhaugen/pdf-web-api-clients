@@ -38,6 +38,9 @@ qa:
 	$(QA) cfg samples scripts src test
 	@$(MAKE_THUMBNAIL) $@
 
+status:
+	@git status | grep 'nothing to commit' > /dev/null
+
 test-scripts: $(TEST_PDFPROCESS)
 	$(REPLACE_KEY) samples/perl/pdfprocess.pl > $^/perl
 	$(REPLACE_KEY) samples/php/pdfprocess.php > $^/php
@@ -55,7 +58,8 @@ phpdoc-clean:
 pydoc-clean:
 	cd doc/python; $(DOXYGEN_CLEAN)
 
-.PHONY: build clean qa test-scripts html html-clean phpdoc-clean pydoc-clean
+.PHONY: build clean qa status test-scripts
+.PHONY: html html-clean phpdoc-clean pydoc-clean
 
 $(APP_LOG): $(VAR_LOG)
 	touch $@

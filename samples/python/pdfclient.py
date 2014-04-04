@@ -162,6 +162,7 @@ class ErrorCode:
     InvalidPage = 8
     RequestTooLarge = 9
     UsageLimitExceeded = 10
+    NotImplemented = 11
     UnknownError = 20
 
 
@@ -228,7 +229,7 @@ class RenderPages(Request):
     #  * [resolution](https://api.datalogics-cloud.com/docs#resolution):
     #     12 to 2400 (default = 150)
     #  * [smoothing](https://api.datalogics-cloud.com/docs#smoothing):
-    #     all (default), none, or text
+    #     all (default), none, text, line, image, or comma-separated value
     #  * [suppressAnnotations]
     #     (https://api.datalogics-cloud.com/docs#suppressAnnotations):
     #     draw only actual page contents
