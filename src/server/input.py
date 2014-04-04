@@ -1,12 +1,16 @@
 "WebAPI input document"
 
 import requests
+
+from cfg import Configuration
 from errors import Error, ErrorCode
 
 
 class Input(object):
     def __init__(self, action):
         self._action, self._input = action, None
+    def __del__(self, action):
+        if self._input: self._input.close()
     def _raise_error(self, error):
         self._action.raise_error(Error(ErrorCode.InvalidInput, error))
     @property
@@ -28,8 +32,19 @@ class FromURL(Input):
         if self.files:
             self._raise_error(u'excess input (inputURL and request file)')
         try:
-            self._input = requests.get(self._action.input_url).content
+            self._input = requests.get(self._action.input_url, stream=True)
         except Exception as exception:
             self._raise_error(unicode(exception))
+        Error.validate_input_size(self._content_length)
     def save(self, input_file):
-        input_file.write(self._input)
+        chunk_size = int(Configuration.limits.input_size) / 10
+        for chunk in self._input.iter_content(chunk_size=chunk_size):
+            if chunk:
+                input_file.write(chunk)
+                Error.validate_input_size(input_file.tell())
+    @property
+    def _content_length(self):
+        try:
+            return int(self._input.headers['content-length'])
+        except:
+            return 0
