@@ -9,7 +9,7 @@ from errors import Error, ErrorCode
 class Input(object):
     def __init__(self, action):
         self._action, self._input = action, None
-    def __del__(self, action):
+    def __del__(self):
         if self._input: self._input.close()
     def _raise_error(self, error):
         self._action.raise_error(Error(ErrorCode.InvalidInput, error))
