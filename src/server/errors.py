@@ -55,7 +55,7 @@ class Error(Exception):
         max_input_size = int(Configuration.limits.input_size)
         if input_size > max_input_size:
             raise Error(ErrorCode.InvalidInput,
-                        'Input too large (max={})'.format(max_input_size),
+                        'input too large (max={})'.format(max_input_size),
                         HTTPCode.RequestEntityTooLarge)
     @property
     def code(self): return self._code
