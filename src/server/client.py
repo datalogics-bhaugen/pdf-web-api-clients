@@ -7,6 +7,9 @@ from ThreeScalePY import ThreeScaleAuthRep
 from errors import Error, ErrorCode, HTTPCode, JSON, UNKNOWN
 
 
+USAGE_LIMIT = 'Your usage limit has been exceeded. ' \
+    'Please contact us to increase your limit.'
+
 class Client(ThreeScaleAuthRep):
     def __init__(self, address, request_form):
         self._address = address
@@ -20,8 +23,9 @@ class Client(ThreeScaleAuthRep):
             if self.authrep(): return
             error = self.build_response().get_reason()
             if 'usage limit' in error.lower():
-                limit_exceeded = ErrorCode.UsageLimitExceeded
-                raise Error(limit_exceeded, error, HTTPCode.TooManyRequests)
+                # TODO: sleep a little before raising
+                error_code = ErrorCode.UsageLimitExceeded
+                raise Error(error_code, USAGE_LIMIT, HTTPCode.TooManyRequests)
         except ThreeScalePY.ThreeScaleException as exception:
             error = str(exception)
         authorization_error = ErrorCode.AuthorizationError
