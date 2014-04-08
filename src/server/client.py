@@ -23,7 +23,7 @@ class Client(ThreeScaleAuthRep):
             if self.authrep(): return
             error = self.build_response().get_reason()
             if 'usage limit' in error.lower():
-                # TODO: sleep a little before raising
+                # TODO: do something to address repeated violations?
                 error_code = ErrorCode.UsageLimitExceeded
                 raise Error(error_code, USAGE_LIMIT, HTTPCode.TooManyRequests)
         except ThreeScalePY.ThreeScaleException as exception:
