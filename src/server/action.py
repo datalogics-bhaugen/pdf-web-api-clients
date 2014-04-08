@@ -34,8 +34,7 @@ class Action(object):
         usage['status'] = error.http_code if error else HTTPCode.OK
         logger.info(JSON.dumps(usage))
     def raise_error(self, error):
-        invalid_password = ErrorCode.InvalidPassword
-        if error.code == invalid_password and not self.password:
+        if error.code == ErrorCode.InvalidPassword and not self.password:
             error.code = ErrorCode.MissingPassword
         raise error
     @classmethod
