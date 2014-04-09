@@ -34,9 +34,6 @@ qa:
 	$(QA) cfg samples scripts src test
 	@$(MAKE_THUMBNAIL) $@
 
-status:
-	@git status | grep 'nothing to commit' > /dev/null
-
 test-scripts: $(TEST_PDFPROCESS)
 	$(REPLACE_KEY) samples/perl/pdfprocess.pl > $^/perl
 	$(REPLACE_KEY) samples/php/pdfprocess.php > $^/php

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# compare_builds base-repo [repo] (default: repo = this repo)
+
+CFG=cfg/server
+REPO=${2:-`git rev-parse --show-toplevel`}
+
+grep --quiet 'modified = 0' $REPO/$CFG && diff --brief $REPO/$CFG $1/$CFG
