@@ -253,5 +253,6 @@ class RenderPages(Request):
     #  @param data dict with keys in
     #   ('inputURL', 'inputName', 'password', 'options')
     def __call__(self, files, **data):
-        self._output_format = data.get('outputFormat', 'png')
+        request_options = data.get('options', {})
+        self._output_format = request_options.get('outputFormat', 'png')
         return Request.__call__(self, files, **data)
