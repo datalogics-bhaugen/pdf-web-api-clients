@@ -1,6 +1,11 @@
 #!/bin/sh
 
+git status | grep --quiet modified && modified=1 || modified=0
+
 echo "# created by make_server_cfg (do not edit directly)"
+echo
+echo [build]
+echo modified = $modified
 echo
 echo [versions]
 echo pdf2img = `pdf2img | grep PDF2IMG | cut -f2- -d ' '`

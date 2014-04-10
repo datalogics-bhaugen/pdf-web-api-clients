@@ -355,7 +355,8 @@ class RenderPages extends Request
      */
     function __invoke($input, $request_fields)
     {
-        $output_format = $request_fields['outputFormat'];
+        $request_options = $request_fields['options'];
+        $output_format = $request_options['outputFormat'];
         $this->_output_format = $output_format ? $output_format : 'png';
         return parent::__invoke($input, $request_fields);
     }
