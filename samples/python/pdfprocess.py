@@ -65,7 +65,7 @@ USAGE_OPTIONS = '[{}=name] [{}=pwd] [{}=json]'.format(*OPTIONS)
 USAGE = 'usage: {0} request_type input ' + USAGE_OPTIONS + '\n' +\
         'example: {0} FlattenForm hello_world.pdf\n' +\
         'example: {0} RenderPages ' + PDF2IMG_GUIDE +\
-        ' options={{"printPreview": True, "outputFormat": "jpg"}}'
+        ' options=\'{{"printPreview": true, "outputFormat": "jpg"}}\''
 
 
 ## Sample pdfclient driver:

@@ -61,7 +61,7 @@ $usage =
     "usage: php pdfprocess.php request_type input " . USAGE_OPTIONS . "\n" .
     "example: php pdfprocess.php FlattenForm hello_world.pdf\n" .
     "example: php pdfprocess.php RenderPages " . PDF2IMG_GUIDE .
-        'options={"printPreview": True, "outputFormat": "jpg"}';
+        ' options=\'{"printPreview": true, "outputFormat": "jpg"}\'';
 
 
 /**
@@ -123,6 +123,7 @@ class Client extends \pdfclient\Application
         {
             echo $exception->getMessage();
         }
+        global $usage;
         exit($usage);
     }
 
