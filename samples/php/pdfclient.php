@@ -295,6 +295,21 @@ class FlattenForm extends Request
     }
 }
 
+/**
+ * @brief exports form data
+ */
+class ExportFormData extends Request
+{
+    /**
+     * %ExportFormData has no request options
+     */
+    
+    function __construct($application, $base_url)
+    {
+        parent::_construct($application, $base_url);
+    }
+    
+}
 
 /**
  * @brief Create raster image representation
@@ -362,6 +377,8 @@ class RenderPages extends Request
     }
 }
 
+    
+namespace pdfclient \ExportFormData;
 
 namespace pdfclient\FillForm;
 
