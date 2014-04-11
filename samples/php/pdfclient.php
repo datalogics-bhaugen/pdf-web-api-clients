@@ -89,12 +89,10 @@ class Application
  */
 class Request
 {
-    function __construct($application_json, $base_url)
+    function __construct($application_json, $base_url, $action)
     {
-        $class_name = end(explode('\\', get_class($this)));
-        $action = preg_replace('/([A-Z])/', '/$1', $class_name);
         $this->_application = $application_json;
-        $this->_url = $base_url . '/api/actions' . strtolower($action);
+        $this->_url = $base_url . '/api/actions' . $action;
     }
 
     /**
@@ -272,7 +270,7 @@ class FillForm extends Request
 
     function __construct($application, $base_url)
     {
-        parent::__construct($application, $base_url);
+        parent::__construct($application, $base_url, "/fill/form");
         $this->_output_format = 'pdf';
     }
 }
@@ -290,11 +288,27 @@ class FlattenForm extends Request
 
     function __construct($application, $base_url)
     {
-        parent::__construct($application, $base_url);
+        parent::__construct($application, $base_url, "/flatten/form");
         $this->_output_format = 'pdf';
     }
 }
 
+/**
+ * @brief exports form data
+ */
+class ExportFormData extends Request
+{
+    /**
+     * %ExportFormData has no request options
+     */
+    static $Options = array('exportXFDF');
+    
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, "/export/form-data");
+    }
+    
+}
 
 /**
  * @brief Create raster image representation
@@ -346,6 +360,11 @@ class RenderPages extends Request
         'resolution', 'smoothing',
         'suppressAnnotations');
 
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, "/render/pages");
+    }
+    
     /**
      * Send request
      * @return a Response object
@@ -360,6 +379,14 @@ class RenderPages extends Request
         $this->_output_format = $output_format ? $output_format : 'png';
         return parent::__invoke($input, $request_fields);
     }
+}
+
+    
+namespace pdfclient\ExportFormData;
+    
+class ErrorCode extends \pdfclient\ErrorCode
+{
+    const ExportXFDFFromXFA = 41;
 }
 
 
