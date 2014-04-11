@@ -162,20 +162,19 @@ class ErrorCode:
     InvalidPage = 8
     RequestTooLarge = 9
     UsageLimitExceeded = 10
-    NotImplemented = 11
     UnknownError = 20
 
 
-## Export FDF, XFDF, or XML form data from input PDF
+## Export FDF, XFDF, or XML form data
 class ExportFormData(Request):
-    ## ExportFormData options:
+    ## %ExportFormData options:
     #  * [exportXFDF]
     #     (https://api.datalogics-cloud.com/docs#exportXFDF)
     #     output XFDF instead of FDF for AcroForm input
     OPTIONS = ['exportXFDF']
     ## Error codes for %ExportFormData requests
     class ErrorCode(ErrorCode):
-        ExportXFDFFomrXFA = 41
+        ExportXFDFFromXFA = 41
     def __init__(self, application, base_url):
         Request.__init__(self, application, base_url)
         # Because the format of the output depends on the format of the input,
