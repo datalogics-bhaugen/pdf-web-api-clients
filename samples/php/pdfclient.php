@@ -91,8 +91,6 @@ class Request
 {
     function __construct($application_json, $action)
     {
-        //$class_name = end(explode('\\', get_class($this)));
-        //$action = preg_replace('/([A-Z])/', '/$1', $class_name);
         $this->_application = $application_json;
         $this->_url = BASE_URL . '/api/actions' . $action;
     }
