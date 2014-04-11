@@ -185,7 +185,7 @@ class Response
  */
 class Parser
 {
-    static $PartNameFileFormats = array('formsData' => array('FDF', 'XFDF'));
+    static $PartNameFileFormats = array('formsData' => array('FDF', 'XFDF', 'XML'));
 
     function __construct($args)
     {
@@ -271,7 +271,7 @@ $response = run($argv);
 if ($response->ok())
 {
     $response->save_output();
-    echo 'created: ' . $response->output_filename();
+    echo "created: " . $response->output_filename() . "\r\n";
 }
 else
 {

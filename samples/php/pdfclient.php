@@ -89,12 +89,12 @@ class Application
  */
 class Request
 {
-    function __construct($application_json, $base_url)
+    function __construct($application_json, $action)
     {
-        $class_name = end(explode('\\', get_class($this)));
-        $action = preg_replace('/([A-Z])/', '/$1', $class_name);
+        //$class_name = end(explode('\\', get_class($this)));
+        //$action = preg_replace('/([A-Z])/', '/$1', $class_name);
         $this->_application = $application_json;
-        $this->_url = $base_url . '/api/actions' . strtolower($action);
+        $this->_url = BASE_URL . '/api/actions' . $action;
     }
 
     /**
@@ -270,9 +270,9 @@ class FillForm extends Request
     static $Options = array(
         'disableCalculation', 'disableGeneration', 'flatten');
 
-    function __construct($application, $base_url)
+    function __construct($application)
     {
-        parent::__construct($application, $base_url);
+        parent::__construct($application, "/fill/form");
         $this->_output_format = 'pdf';
     }
 }
@@ -288,9 +288,9 @@ class FlattenForm extends Request
      */
     static $Options = array();
 
-    function __construct($application, $base_url)
+    function __construct($application)
     {
-        parent::__construct($application, $base_url);
+        parent::__construct($application, "/flatten/form");
         $this->_output_format = 'pdf';
     }
 }
@@ -303,10 +303,11 @@ class ExportFormData extends Request
     /**
      * %ExportFormData has no request options
      */
+    static $Options = array('exportXFDF');
     
-    function __construct($application, $base_url)
+    function __construct($application)
     {
-        parent::_construct($application, $base_url);
+        parent::__construct($application, "/export/form-data");
     }
     
 }
@@ -361,6 +362,11 @@ class RenderPages extends Request
         'resolution', 'smoothing',
         'suppressAnnotations');
 
+    function __construct($application)
+    {
+        parent::__construct($application, "/render/pages");
+    }
+    
     /**
      * Send request
      * @return a Response object
@@ -378,7 +384,13 @@ class RenderPages extends Request
 }
 
     
-namespace pdfclient \ExportFormData;
+namespace pdfclient\ExportFormData;
+    
+class ErrorCode extends \pdfclient\ErrorCode
+{
+    const ExportXFDFFromXFA = 41;
+}
+
 
 namespace pdfclient\FillForm;
 
