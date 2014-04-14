@@ -196,11 +196,11 @@ class Response
         {
             $this->_output_filename .= 'fdf';
         }
-        elseif (strpos($output, xml_tag + '<xfdf xmlns') == 0)
+        elseif (strpos($output, xml_tag . '<xfdf xmlns') == 0)
         {
             $this->_output_filename .= 'xfdf';
         }
-        elseif (strpos($output, xml_tag + '<xfa:datasets') == 0)
+        elseif (strpos($output, xml_tag . '<xfa:datasets') == 0)
         {
             $this->_output_filename .= 'xml';
         }
