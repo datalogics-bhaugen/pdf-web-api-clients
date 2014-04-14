@@ -49,7 +49,6 @@
 
 import inspect
 import json
-import re
 import sys
 
 import requests
@@ -79,11 +78,10 @@ class Application(object):
 
 ## Service request
 class Request(object):
-    def __init__(self, application_json, base_url):
-        self._output_format = None
+    def __init__(self, application_json, base_url, url_suffix):
+        self._output_format = ''
         self._application = application_json
-        action = re.sub('([A-Z]+)', r'/\1', self.__class__.__name__).lower()
-        self._url = '{}/api/actions{}'.format(base_url, action)
+        self._url = '{}/api/actions/{}'.format(base_url, url_suffix)
 
     ## Send request
     #  @return a Response object
@@ -170,16 +168,13 @@ class ExportFormData(Request):
     ## %ExportFormData options:
     #  * [exportXFDF]
     #     (https://api.datalogics-cloud.com/docs#exportXFDF)
-    #     output XFDF instead of FDF for AcroForm input
+    #     export XFDF instead of FDF for AcroForm input
     OPTIONS = ['exportXFDF']
     ## Error codes for %ExportFormData requests
     class ErrorCode(ErrorCode):
         ExportXFDFFromXFA = 41
     def __init__(self, application, base_url):
-        Request.__init__(self, application, base_url)
-        # Because the format of the output depends on the format of the input,
-        # we cannot set self._output_format here. This means that output files
-        # will not have a file extension.
+        Request.__init__(self, application, base_url, 'export/form-data')
 
 
 ## Fill form fields with supplied FDF/XFDF data
@@ -198,7 +193,7 @@ class FillForm(Request):
     class ErrorCode(ErrorCode):
         pass
     def __init__(self, application, base_url):
-        Request.__init__(self, application, base_url)
+        Request.__init__(self, application, base_url, 'fill/form')
         self._output_format = 'pdf'
 
 
@@ -210,7 +205,7 @@ class FlattenForm(Request):
     class ErrorCode(ErrorCode):
         NoAnnotations = 21
     def __init__(self, application, base_url):
-        Request.__init__(self, application, base_url)
+        Request.__init__(self, application, base_url, 'flatten/form')
         self._output_format = 'pdf'
 
 
@@ -263,6 +258,8 @@ class RenderPages(Request):
         InvalidCompression = 32
         InvalidRegion = 33
         InvalidResolution = 34
+    def __init__(self, application, base_url):
+        Request.__init__(self, application, base_url, 'render/pages')
     ## Send request
     #  @return a Response object
     #  @param input input document URL or file object

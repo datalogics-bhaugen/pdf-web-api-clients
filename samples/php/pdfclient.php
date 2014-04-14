@@ -89,10 +89,10 @@ class Application
  */
 class Request
 {
-    function __construct($application_json, $base_url, $action)
+    function __construct($application_json, $base_url, $url_suffix)
     {
         $this->_application = $application_json;
-        $this->_url = $base_url . '/api/actions' . $action;
+        $this->_url = $base_url . '/api/actions/' . $url_suffix;
     }
 
     /**
@@ -106,15 +106,15 @@ class Request
     {
         $request_fields['application'] = $this->_application;
 
-        if (!in_array('inputName', $request_fields) &&
-            in_array('input', $input_files))
+        if (!array_key_exists('inputName', $request_fields) &&
+            array_key_exists('input', $input_files))
         {
             $request_fields['inputName'] = $input_files['input'];
         }
 
-        $request_options = $request_fields['options'];
-        if ($request_options)
+        if (array_key_exists('options', $request_fields))
         {
+            $request_options = $request_fields['options'];
             foreach ($request_options as $option_name => $ignored)
             {
                 if (!in_array($option_name, $this::$Options))
@@ -124,10 +124,6 @@ class Request
                 }
             }
             $request_fields['options'] = json_encode($request_options);
-        }
-        elseif ($request_options == array())
-        {
-            unset($request_fields['options']);
         }
 
         foreach ($input_files as $part_name => $filename)
@@ -244,8 +240,27 @@ class ErrorCode
     const InvalidPage = 8;
     const RequestTooLarge = 9;
     const UsageLimitExceeded = 10;
-    const NotImplemented = 11;
     const UnknownError = 20;
+}
+
+
+/**
+ * @brief Export FDF, XFDF, or XML form data
+ */
+class ExportFormData extends Request
+{
+    /**
+     * %ExportFormData options:
+     * * [exportXFDF]
+     *    (https://api.datalogics-cloud.com/docs#exportXFDF)
+     *    export XFDF instead of FDF for AcroForm input
+     */
+    static $Options = array('exportXFDF');
+
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, "export/form-data");
+    }
 }
 
 
@@ -270,7 +285,7 @@ class FillForm extends Request
 
     function __construct($application, $base_url)
     {
-        parent::__construct($application, $base_url, "/fill/form");
+        parent::__construct($application, $base_url, "fill/form");
         $this->_output_format = 'pdf';
     }
 }
@@ -288,27 +303,11 @@ class FlattenForm extends Request
 
     function __construct($application, $base_url)
     {
-        parent::__construct($application, $base_url, "/flatten/form");
+        parent::__construct($application, $base_url, "flatten/form");
         $this->_output_format = 'pdf';
     }
 }
 
-/**
- * @brief exports form data
- */
-class ExportFormData extends Request
-{
-    /**
-     * %ExportFormData has no request options
-     */
-    static $Options = array('exportXFDF');
-    
-    function __construct($application, $base_url)
-    {
-        parent::__construct($application, $base_url, "/export/form-data");
-    }
-    
-}
 
 /**
  * @brief Create raster image representation
@@ -362,9 +361,9 @@ class RenderPages extends Request
 
     function __construct($application, $base_url)
     {
-        parent::__construct($application, $base_url, "/render/pages");
+        parent::__construct($application, $base_url, "render/pages");
     }
-    
+
     /**
      * Send request
      * @return a Response object
@@ -374,33 +373,39 @@ class RenderPages extends Request
      */
     function __invoke($input, $request_fields)
     {
-        $request_options = $request_fields['options'];
-        $output_format = $request_options['outputFormat'];
+        $output_format = '';
+        if (array_key_exists('options', $request_fields) &&
+            array_key_exists('outputFormat', $request_fields['options']))
+        {
+            $output_format = $request_fields['options']['outputFormat'];
+        }
         $this->_output_format = $output_format ? $output_format : 'png';
         return parent::__invoke($input, $request_fields);
     }
 }
 
-    
+
 namespace pdfclient\ExportFormData;
-    
+
+/**
+ * @brief Error codes for %ExportFormData requests
+ */
 class ErrorCode extends \pdfclient\ErrorCode
 {
     const ExportXFDFFromXFA = 41;
 }
 
-
 namespace pdfclient\FillForm;
 
 /**
- * @brief Error codes for FillForm requests
+ * @brief Error codes for %FillForm requests
  */
 class ErrorCode extends \pdfclient\ErrorCode { }
 
 namespace pdfclient\FlattenForm;
 
 /**
- * @brief Error codes for FlattenForm requests
+ * @brief Error codes for %FlattenForm requests
  */
 class ErrorCode extends \pdfclient\ErrorCode
 {
@@ -410,7 +415,7 @@ class ErrorCode extends \pdfclient\ErrorCode
 namespace pdfclient\RenderPages;
 
 /**
- * @brief Error codes for RenderPages requests
+ * @brief Error codes for %RenderPages requests
  */
 class ErrorCode extends \pdfclient\ErrorCode
 {
