@@ -70,7 +70,7 @@ $usage =
 
 /**
  * @brief Sample pdfclient driver:
- * execute %pdfprocess.php with no arguments for usage information
+ * execute pdfprocess.php with no arguments for usage information
  */
 class Client extends \pdfclient\Application
 {
