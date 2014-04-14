@@ -54,19 +54,23 @@ include 'pdfclient.php';
 const APPLICATION_ID = 'your app id';  # TODO: paste!
 const APPLICATION_KEY = 'your app key';  # TODO: paste!
 
+const CMD = 'php pdfprocess.php ';
 const PDF2IMG_GUIDE = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf';
 const USAGE_OPTIONS = '[inputName=name] [password=pwd] [options=json]';
 
+$json = substr(php_uname('s'), 0, 3) == 'Win' ?
+    '"{\\"printPreview\\": true, \\"outputFormat\\": \\"jpg\\"}"' :
+    '\'{"printPreview": true, "outputFormat": "jpg"}\'';
+
 $usage =
-    "usage: php pdfprocess.php request_type input " . USAGE_OPTIONS . "\n" .
-    "example: php pdfprocess.php FlattenForm hello_world.pdf\n" .
-    "example: php pdfprocess.php RenderPages " . PDF2IMG_GUIDE .
-        ' options=\'{"printPreview": true, "outputFormat": "jpg"}\'';
+    "usage: " . CMD . "request_type input " . USAGE_OPTIONS . "\n" .
+    "example: " . CMD . "FlattenForm hello_world.pdf\n" .
+    "example: " . CMD . "RenderPages " . PDF2IMG_GUIDE . " options=" . $json;
 
 
 /**
  * @brief Sample pdfclient driver:
- * execute %pdfprocess.php with no arguments for usage information
+ * execute pdfprocess.php with no arguments for usage information
  */
 class Client extends \pdfclient\Application
 {
@@ -82,6 +86,8 @@ class Client extends \pdfclient\Application
         $parser = $this->_parse($args);
         $input_files = $parser->input_files();
         $request_fields = $parser->request_fields();
+        $default_fields = array('inputName' => '', 'inputURL' => '');
+        $request_fields = array_merge($default_fields, $request_fields);
         $this->_input_name = $request_fields['inputName'];
         if (!$this->input_name())
         {
@@ -149,7 +155,7 @@ class Response
     /**
      * @return pdfclient\\%Response
      */
-    public function api_response() { return $this->_api_response; }
+    function api_response() { return $this->_api_response; }
 
     /**
      * @return True only if http_code is 200
@@ -159,9 +165,17 @@ class Response
     /**
      * Derived from Client.input_name and requested output format
      */
-    public function output_filename()
+    function output_filename()
     {
-        if ($this->ok()) { return $this->_output_filename; }
+        if ($this->ok())
+        {
+            $output_filename_len = strlen($this->_output_filename);
+            if ($this->_output_filename[$output_filename_len - 1] == '.')
+            {
+                $this->set_output_filename();
+            }
+            return $this->_output_filename;
+        }
     }
 
     /**
@@ -172,6 +186,28 @@ class Response
         $output_file = fopen($this->output_filename(), 'wb');
         fwrite($output_file, $this->api_response()->output());
         fclose($output_file);
+    }
+
+    private function set_output_filename()
+    {
+        $output = $this->api_response()->output();
+        $xml_tag = '<?xml version="1.0" encoding="UTF-8"?>';
+        if (strpos($output, '%FDF') == 0)
+        {
+            $this->_output_filename .= 'fdf';
+        }
+        elseif (strpos($output, xml_tag . '<xfdf xmlns') == 0)
+        {
+            $this->_output_filename .= 'xfdf';
+        }
+        elseif (strpos($output, xml_tag . '<xfa:datasets') == 0)
+        {
+            $this->_output_filename .= 'xml';
+        }
+        else
+        {
+            $this->_output_filename = rtrim($this->_output_filename, ".");
+        }
     }
 
     private $_api_response;
@@ -231,12 +267,12 @@ class Parser
     /**
      * array of input files
      */
-    public function input_files() { return $this->_input_files; }
+    function input_files() { return $this->_input_files; }
 
     /**
      * array of request fields
      */
-    public function request_fields() { return $this->_request_fields; }
+    function request_fields() { return $this->_request_fields; }
 
     private static function _is_url($filename)
     {
@@ -271,7 +307,7 @@ $response = run($argv);
 if ($response->ok())
 {
     $response->save_output();
-    echo "created: " . $response->output_filename() . "\r\n";
+    echo "created: " . $response->output_filename() . "\n";
 }
 else
 {

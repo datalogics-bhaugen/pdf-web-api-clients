@@ -51,6 +51,7 @@
 
 import json
 import os
+import platform
 import sys
 
 import pdfclient
@@ -59,13 +60,17 @@ import pdfclient
 APPLICATION_ID = 'your app id'  # TODO: paste!
 APPLICATION_KEY = 'your app key'  # TODO: paste!
 
+if platform.system() == 'Windows':
+    JSON = '"{{\\"printPreview\\": true, \\"outputFormat\\": \\"jpg\\"}}"'
+else:
+    JSON = "'{{\"printPreview\": true, \"outputFormat\": \"jpg\"}}'"
+
 OPTIONS = ('inputName', 'password', 'options')
 PDF2IMG_GUIDE = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
 USAGE_OPTIONS = '[{}=name] [{}=pwd] [{}=json]'.format(*OPTIONS)
 USAGE = 'usage: {0} request_type input ' + USAGE_OPTIONS + '\n' +\
         'example: {0} FlattenForm hello_world.pdf\n' +\
-        'example: {0} RenderPages ' + PDF2IMG_GUIDE +\
-        ' options=\'{{"printPreview": true, "outputFormat": "jpg"}}\''
+        'example: {0} RenderPages ' + PDF2IMG_GUIDE + ' options=' + JSON
 
 
 ## Sample pdfclient driver:
@@ -116,6 +121,16 @@ class Response(object):
         with open(self.output_filename, 'wb') as output:
             output.write(self.output)
 
+    def _set_output_filename(self):
+        xml_tag = '<?xml version="1.0" encoding="UTF-8"?>'
+        if self.output.startswith('%FDF'):
+            self._output_filename += 'fdf'
+        elif self.output.startswith(xml_tag + '<xfdf xmlns'):
+            self._output_filename += 'xfdf'
+        elif self.output.startswith(xml_tag + '<xfa:datasets'):
+            self._output_filename += 'xml'
+        else:
+            self._output_filename.rstrip('.')
     @property
     ## True only if request succeeded
     def ok(self):
@@ -123,13 +138,16 @@ class Response(object):
     @property
     ## Derived from Client.input_name and requested output format
     def output_filename(self):
-        if self.ok: return self._output_filename
+        if self.ok:
+            if self._output_filename.endswith('.'):
+                self._set_output_filename()
+            return self._output_filename
 
 
 ## Translate command line arguments to form needed by
 #  pdfclient.Request.__call__
 class Parser(object):
-    PART_NAME_FILE_FORMATS = {'formsData': ('FDF', 'XFDF')}
+    PART_NAME_FILE_FORMATS = {'formsData': ('FDF', 'XFDF', 'XML')}
     def __init__(self, args):
         self._data, self._files = {}, {}
         files = [arg for arg in args if '=' not in arg]
@@ -177,6 +195,6 @@ if __name__ == '__main__':
     response = run(sys.argv)
     if response.ok:
         response.save_output()
-        print('created: {}'.format(response.output_filename))
+        print('created: {}\n'.format(response.output_filename))
     else:
         print(response)
