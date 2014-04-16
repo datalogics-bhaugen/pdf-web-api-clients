@@ -85,8 +85,8 @@ class Client extends \pdfclient\Application
     {
         $parser = $this->_parse($args);
         $input_files = $parser->input_files();
+        $default_fields = array('inputName' => '');
         $request_fields = $parser->request_fields();
-        $default_fields = array('inputName' => '', 'inputURL' => '');
         $request_fields = array_merge($default_fields, $request_fields);
         $this->_input_name = $request_fields['inputName'];
         if (!$this->input_name())
