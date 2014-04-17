@@ -63,7 +63,8 @@ $json = substr(php_uname('s'), 0, 3) == 'Win' ?
     '\'{"printPreview": true, "outputFormat": "jpg"}\'';
 
 $usage =
-    "usage: " . CMD . "request_type input " . USAGE_OPTIONS . "\n" .
+    "usage: " . CMD . "request_type <input file(s)> " . USAGE_OPTIONS . "\n" .
+    "example: " . CMD . "FillForm form.pdf form.fdf\n" .
     "example: " . CMD . "FlattenForm hello_world.pdf\n" .
     "example: " . CMD . "RenderPages " . PDF2IMG_GUIDE . " options=" . $json;
 
@@ -91,9 +92,14 @@ class Client extends \pdfclient\Application
         $this->_input_name = $request_fields['inputName'];
         if (!$this->input_name())
         {
-            $input_url = $request_fields['inputURL'];
-            $this->_input_name =
-                basename($input_url) ? $input_url : $input_files['input'];
+            if (array_key_exists('inputURL', $request_fields))
+            {
+                $this->_input_name = basename($request_fields['inputURL']);
+            }
+            else
+            {
+                $this->_input_name = $input_files['input'];
+            }
         }
 
         $base_url = $base_url ? $base_url : \pdfclient\BASE_URL;

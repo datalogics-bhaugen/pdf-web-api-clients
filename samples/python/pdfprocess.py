@@ -68,7 +68,8 @@ else:
 OPTIONS = ('inputName', 'password', 'options')
 PDF2IMG_GUIDE = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
 USAGE_OPTIONS = '[{}=name] [{}=pwd] [{}=json]'.format(*OPTIONS)
-USAGE = 'usage: {0} request_type input ' + USAGE_OPTIONS + '\n' +\
+USAGE = 'usage: {0} request_type <input file(s)> ' + USAGE_OPTIONS + '\n' +\
+        'example: {0} FillForm form.pdf form.fdf\n' +\
         'example: {0} FlattenForm hello_world.pdf\n' +\
         'example: {0} RenderPages ' + PDF2IMG_GUIDE + ' options=' + JSON
 
