@@ -106,13 +106,13 @@ class Request
     {
         $request_fields['application'] = $this->_application;
 
-        if (!array_key_exists('inputName', $request_fields) &&
-            array_key_exists('input', $input_files))
+        if (!isset($request_fields['inputName']) &&
+            isset($input_files['input']))
         {
             $request_fields['inputName'] = $input_files['input'];
         }
 
-        if (array_key_exists('options', $request_fields))
+        if (isset($request_fields['options']))
         {
             $request_options = $request_fields['options'];
             foreach ($request_options as $option_name => $ignored)
@@ -374,8 +374,8 @@ class RenderPages extends Request
     function __invoke($input, $request_fields)
     {
         $output_format = '';
-        if (array_key_exists('options', $request_fields) &&
-            array_key_exists('outputFormat', $request_fields['options']))
+        if (isset($request_fields['options']) &&
+            isset($request_fields['options']['outputFormat']))
         {
             $output_format = $request_fields['options']['outputFormat'];
         }

@@ -14,7 +14,7 @@ import subprocess
 from itertools import chain
 
 
-PART_NAME_FILE_FORMATS = {'formsData': ('FDF', 'XFDF')}
+PART_NAME_FILE_FORMATS = {'formsData': ('FDF', 'XFDF', 'XML')}
 
 def application():
     app_id, app_key = '84445ec0', '2d3eac77bb3b9bea69a91e625b9241d2'
