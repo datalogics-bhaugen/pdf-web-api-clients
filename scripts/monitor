@@ -23,7 +23,7 @@ def application():
 
 def data_part(data_filename):
     data_format = os.path.splitext(data_filename)[1][1:].upper()
-    for part_name, file_formats in PART_NAME_FILE_FORMATS.iteritems():
+    for part_name, file_formats in PART_NAME_FILE_FORMATS.items():
         if data_format in file_formats:
             return '{}=@{}'.format(part_name, data_filename)
 

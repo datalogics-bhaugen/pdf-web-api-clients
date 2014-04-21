@@ -19,6 +19,16 @@ def set_python_path():
     requests_dir = glob.glob(os.path.join(eggs_dir, 'requests-*.egg'))[0]
     os.environ['PYTHONPATH'] = requests_dir
 
+def test_monitor():
+    monitor = os.path.join('..', 'scripts', 'monitor')
+    url = 'https://pdfprocess.datalogics-cloud.com/api/actions/render/pages'
+    args = ['python3', monitor, url, GOOD_PDF, 'monitor.png']
+    with Stdout() as stdout:
+        assert_equal(subprocess.call(args, stdout=stdout), 0)
+    args = ['file', 'monitor.png', '|', 'grep', 'PNG']
+    with Stdout() as stdout:
+        assert_equal(subprocess.call(args, stdout=stdout), 0)
+
 def test_pdf2img_application():
     args = ['pdf2img', 'data/hello_world.pdf', 'tif']
     with Stdout() as stdout:
@@ -26,7 +36,7 @@ def test_pdf2img_application():
         assert_in('PDF2IMG', str(stdout))
 
 def test_pdfprocess_sample_perl():
-    perl_sample = '../samples/perl/pdfprocess.pl'
+    perl_sample = os.path.join('..', 'samples', 'perl', 'pdfprocess.pl')
     args = [perl_sample, 'RenderPages', 'data/bad.pdf', 'unused.png']
     with Stdout() as stdout:
         error_code = subprocess.call(args, stdout=stdout)
@@ -44,7 +54,8 @@ def test_pdfprocess_sample_perl_patched_url():
         assert_equal(subprocess.call(args, stdout=stdout), 0)
 
 def test_pdfprocess_sample_python(python3=False):
-    args = ['../samples/python/pdfprocess.py', 'RenderPages', 'data/bad.pdf']
+    python_sample = os.path.join('..', 'samples', 'python', 'pdfprocess.py')
+    args = [python_sample, 'RenderPages', 'data/bad.pdf']
     validate_sample_python(args, 'your app id', python3)
 
 def test_pdfprocess_sample_python_patched(python3=False):
@@ -64,7 +75,7 @@ def validate_sample_python(args, output, python3):
 
 if platform.system() == 'Darwin':
     def test_pdfprocess_sample_php():
-        php_sample = '../samples/php/pdfprocess.php'
+        php_sample = os.path.join('..', 'samples', 'php', 'pdfprocess.php')
         args = ['php', php_sample, 'RenderPages', 'data/bad.pdf']
         with Stdout() as stdout:
             error_code = subprocess.call(args, stdout=stdout)

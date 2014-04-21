@@ -27,10 +27,12 @@ os.environ['TMPDIR'] = TMP_DIR  # for APDFL
 class TemporaryFile(object):
     def __init__(self):
         self._file = tempfile.NamedTemporaryFile(dir=TMP_DIR)
+    def __del__(self):
+        self._file.close()
     def __enter__(self):
         return self
     def __exit__(self, type, value, traceback):
-        self._file.close()
+        del self
     def __getattr__(self, name):
         return getattr(self._file, name)
     def write(self, str):

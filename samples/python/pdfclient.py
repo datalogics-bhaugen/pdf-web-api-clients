@@ -114,8 +114,11 @@ class Response(object):
         self._error_code, self._error_message = None, None
         if not self.ok: self._not_ok()
     def __str__(self):
-        return self.output or \
-            '{}: {}'.format(self.error_code, self.error_message)
+        if self.output:
+            return self.output
+        if self.error_code:
+            return '{}: {}'.format(self.error_code, self.error_message)
+        return 'HTTP: {}'.format(self.http_code)
     def __getattr__(self, name):
         return getattr(self._response, name)
     def _not_ok(self):
