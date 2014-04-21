@@ -17,6 +17,8 @@ class Action(object):
         self._request = request
         self._request_time = logger.iso8601_timestamp()
         self._input = FromURL(self) if self.input_url else FromFile(self)
+    def __del__(self):
+        del self._input
     def log_usage(self, error=None):
         usage = {'action': self.TYPE,
                  'address': self.client.address,

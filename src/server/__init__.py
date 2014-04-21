@@ -25,6 +25,8 @@ def render_pages():
         return error_response(action, error)
     except Exception as exception:
         return error_response(action, UNKNOWN.copy(str(exception)))
+    finally:
+        del action
 
 def error_response(action, error):
     json = flask.jsonify(errorCode=int(error.code), errorMessage=error.message)
