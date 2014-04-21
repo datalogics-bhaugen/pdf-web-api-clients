@@ -169,8 +169,13 @@ class Response
 
     function __toString()
     {
-        return $this->ok() ? $this->output() :
-            $this->error_code() . ': ' . $this->error_message();
+        if ($this->ok())
+            return $this->output();
+
+        if ($this->error_code())
+            return $this->error_code() . ': ' . $this->error_message();
+
+        return 'HTTP: ' . $this->http_code();
     }
 
     /**
