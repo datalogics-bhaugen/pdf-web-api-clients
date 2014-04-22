@@ -14,7 +14,11 @@ import subprocess
 from itertools import chain
 
 
-PART_NAME_FILE_FORMATS = {'formsData': ('FDF', 'XFDF', 'XML')}
+PART_NAME_FILE_FORMATS = {
+    # XML is also a valid formsData extension, but we map it to decorationData.
+    'decorationData': ('XML'),
+    'formsData': ('FDF', 'XFDF')
+}
 
 def application():
     app_id, app_key = '84445ec0', '2d3eac77bb3b9bea69a91e625b9241d2'
