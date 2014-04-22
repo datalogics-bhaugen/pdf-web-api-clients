@@ -16,7 +16,7 @@ from itertools import chain
 
 PART_NAME_FILE_FORMATS = {
     # XML is also a valid formsData extension, but we map it to decorationData.
-    'decorationData': ('XML'),
+    'decorationData': ('XML', ),
     'formsData': ('FDF', 'XFDF')
 }
 
