@@ -324,7 +324,7 @@ class RenderPages extends Request
      * * [colorModel](https://api.datalogics-cloud.com/docs#colorModel):
      *    rgb (default), gray, rgba, or cmyk
      * * [compression](https://api.datalogics-cloud.com/docs#compression):
-     *    lzw (default) or jpg
+     *    lzw (default), g3, g4 or jpg
      * * [disableColorManagement]
      *    (https://api.datalogics-cloud.com/docs#disableColorManagement):
      *    for downstream color management (rarely used)
