@@ -5,6 +5,7 @@ MAKE_THUMBNAIL = make --directory thumbnail-src
 PHPDOC = doc/php/index.html
 PLATFORM = $(shell uname -s)
 PYDOC = doc/python/index.html
+PYDOC2 = doc/python/decorate-document/index.html
 QA = bin/flake8 --max-complexity 10
 REPLACE_KEY = test/scripts/replace_key
 TEST_PDFPROCESS = test/pdfprocess
@@ -41,9 +42,9 @@ test-scripts: $(TEST_PDFPROCESS)
 	chmod +x $^/*
 	cp samples/*/pdfclient.* $^
 
-html: $(PHPDOC) $(PYDOC)
+html: $(PHPDOC) $(PYDOC) $(PYDOC2)
 
-html-clean: phpdoc-clean pydoc-clean
+html-clean: phpdoc-clean pydoc-clean pydoc2-clean
 
 phpdoc-clean:
 	cd doc/php; $(DOXYGEN_CLEAN)
@@ -51,8 +52,11 @@ phpdoc-clean:
 pydoc-clean:
 	cd doc/python; $(DOXYGEN_CLEAN)
 
+pydoc2-clean:
+	cd doc/python/decorate-document; $(DOXYGEN_CLEAN)
+
 .PHONY: build clean qa status test-scripts
-.PHONY: html html-clean phpdoc-clean pydoc-clean
+.PHONY: html html-clean phpdoc-clean pydoc-clean pydoc2-clean
 
 $(APP_LOG): $(VAR_LOG)
 	touch $@
@@ -70,6 +74,10 @@ $(PHPDOC): doxygen samples/php/*
 $(PYDOC): doxygen samples/python/*
 	@make pydoc-clean
 	doxygen/bin/doxygen samples/python/Doxyfile
+
+$(PYDOC2): doxygen samples/python/decorate-document/*
+	@make pydoc2-clean
+	doxygen/bin/doxygen samples/python/decorate-document/Doxyfile
 
 bin/segfault: test/src/segfault.c
 	gcc $^ -o $@
