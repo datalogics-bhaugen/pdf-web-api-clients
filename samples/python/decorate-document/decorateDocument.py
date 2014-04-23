@@ -63,7 +63,7 @@ class DecorateDocument(object):
     # the keys of request_dict
     def create_request(self, args):
         request_type = self.get_request_type(args[1])
-        full_url = self.base_url + "/api/" + request_type
+        full_url = self.base_url + "/api/actions/" + request_type
         pdf_files, data_files = self.get_files(args[2:])
         data = {}
         files = {}
