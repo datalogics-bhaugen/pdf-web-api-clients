@@ -1,9 +1,22 @@
-<HeaderFooterSettings version = "8.0">
-<Font type="TrueType" size="12.0" name="Arial"/><Color r="1.0" b="0.0" g="0.0"/>
-<Margin right="72.0" left="72.0" bottom="36.0" top="36.0"/>
-<Appearance fixedprint="0" shrink="0"/><PageRange odd="0" even="1" end="-1" start="-1"/>
-
-<Header><Left></Left><Center>May 17, 2014</Center><Right></Right></Header>
-
-<Footer><Left></Left><Center>ABC Software Systems</Center><Right></Right></Footer>
-</HeaderFooterSettings>
+<?xml version = "1.0" encoding = "iso-8859-1" ?>
+    <HeaderFooterSettings version = "8.0">
+        <Font type="TrueType" size="12.0" name="Consolas"/>
+        <Color r="1.0" b="0.0" g="0.0"/>
+        <Margin right="36.0" left="36.0" bottom="36.0" top="36.0"/>
+        <Appearance fixedprint="0" shrink="0"/>
+        <PageRange odd="1" even="0" end="-1" start="-1"/>
+        <Page offset = "0">
+            <PageIndex format="1"/>
+        </Page>
+        <Date>
+            <Month format="1"/>/<Day format="1"/><Year format="0"/>
+        </Date>
+        <Header>
+            <Left>Top Inside</Left>
+            <Right>Top Outside</Right>
+        </Header>
+        <Footer>
+            <Left>Bottom Inside</Left>
+            <Right>Bottom Outside</Right>
+        </Footer>
+    </HeaderFooterSettings>
