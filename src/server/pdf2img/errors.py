@@ -22,6 +22,8 @@ ERRORS = [
           HTTPCode.RequestEntityTooLarge),
     Error(ErrorCode.RequestTooLarge, 'pdf2img ran out of memory',
           HTTPCode.RequestEntityTooLarge),
+    Error(ErrorCode.InvalidColorModel, 'For G3 or G4 TIFF compression',
+          'For G3 or G4 TIFF compression, colorModel must be "gray"'),
     Error(ErrorCode.InvalidColorModel, 'Invalid color model'),
     Error(ErrorCode.InvalidColorModel,
           'GIF only supports RGB and Gray images'),

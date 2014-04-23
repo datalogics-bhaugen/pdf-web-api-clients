@@ -55,10 +55,12 @@ class Compression(Translator):
         Translator.__init__(self, u'compression')
     def validate(self, *args):
         if self.option is None: self._option = u'lzw'
-        algorithms = ('lzw', 'jpg')
+        algorithms = ('lzw', 'g3', 'g4', 'jpg')
         if self.option not in algorithms:
             error = u'compression must be one of ' + unicode(algorithms)
             raise Error(ErrorCode.InvalidCompression, error)
+        if self.option in ('g3', 'g4'):
+            return self.options + [u'-bpc=1']
         return self.options
 
 class OutputFormat(Translator):
