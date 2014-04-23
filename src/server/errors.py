@@ -42,13 +42,18 @@ class HTTPCode:
 
 
 class Error(Exception):
-    def __init__(self, code, message, http_code=HTTPCode.BadRequest):
+    def __init__(self, code, message, default_arg=None):
         Exception.__init__(self, message)
-        self._code, self._http_code = code, http_code
+        self._code = code
+        self._http_code, self._preferred_message = HTTPCode.BadRequest, None
+        if type(default_arg) == int:
+            self._http_code = default_arg
+        else:
+            self._preferred_message = default_arg
     def __str__(self):
         return u'{}: {}'.format(self.code, self.message)
     def copy(self, message=None):
-        message = message or self.message
+        message = self._preferred_message or message or self.message
         return Error(self.code, message, self.http_code)
     @classmethod
     def validate_input_size(cls, input_size):
