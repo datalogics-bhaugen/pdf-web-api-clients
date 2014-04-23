@@ -42,6 +42,9 @@ class TestAliases(TestFixture):
         self.validate({'imageWidth': 1, 'imageHeight': 1}, '-pixelcount=1x1')
 
 class TestDefaults(TestFixture):
+    def test_black_white_tiff(self):
+        self.validate({'outputFormat': 'tif', 'compression': 'g3'}, '-bpc=1')
+        self.validate({'outputFormat': 'tif', 'compression': 'g4'}, '-bpc=1')
     def test_false_flag_value(self):
         self.validate({'printPreview': False}, None, '-asprinted')
     def test_multipage(self):
