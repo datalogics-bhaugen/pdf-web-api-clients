@@ -3,6 +3,7 @@ ERASE = printf '' >
 GIT_HOOK = .git/hooks/pre-commit
 MAKE_THUMBNAIL = make --directory thumbnail-src
 PHPDOC = doc/php/index.html
+PHPDOC2 = doc/php/decorate-document/index.html
 PLATFORM = $(shell uname -s)
 PYDOC = doc/python/index.html
 PYDOC2 = doc/python/decorate-document/index.html
@@ -42,12 +43,15 @@ test-scripts: $(TEST_PDFPROCESS)
 	chmod +x $^/*
 	cp samples/*/pdfclient.* $^
 
-html: $(PHPDOC) $(PYDOC) $(PYDOC2)
+html: $(PHPDOC) $(PHPDOC2) $(PYDOC) $(PYDOC2)
 
-html-clean: phpdoc-clean pydoc-clean pydoc2-clean
+html-clean: phpdoc-clean phpdoc2-clean pydoc-clean pydoc2-clean
 
 phpdoc-clean:
 	cd doc/php; $(DOXYGEN_CLEAN)
+
+phpdoc2-clean:
+	cd doc/php/decorate-document; $(DOXYGEN_CLEAN)
 
 pydoc-clean:
 	cd doc/python; $(DOXYGEN_CLEAN)
@@ -56,7 +60,7 @@ pydoc2-clean:
 	cd doc/python/decorate-document; $(DOXYGEN_CLEAN)
 
 .PHONY: build clean qa status test-scripts
-.PHONY: html html-clean phpdoc-clean pydoc-clean pydoc2-clean
+.PHONY: html html-clean phpdoc-clean phpdoc2-clean pydoc-clean pydoc2-clean 
 
 $(APP_LOG): $(VAR_LOG)
 	touch $@
@@ -70,6 +74,10 @@ $(GIT_HOOK): scripts/pre-commit
 $(PHPDOC): doxygen samples/php/*
 	@make phpdoc-clean
 	doxygen/bin/doxygen samples/php/Doxyfile
+
+$(PHPDOC2): doxygen samples/php/decorate-document/*
+	@make phpdoc2-clean
+	doxygen/bin/doxygen samples/php/decorate-document/Doxyfile
 
 $(PYDOC): doxygen samples/python/*
 	@make pydoc-clean
