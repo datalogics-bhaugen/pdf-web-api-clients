@@ -52,7 +52,7 @@
 include ("decorateDocument.php");
 
 const BASE_URL = 'https://pdfprocess.datalogics-cloud.com';
-const APP_INFO = '{"id": "", "key": ""}';
+const APP_INFO = '{"id": "", "key": ""}';  //TODO: paste!
 
 function run($args)
 {
