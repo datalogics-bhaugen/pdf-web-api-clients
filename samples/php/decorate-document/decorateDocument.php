@@ -104,7 +104,7 @@ class DecorateDocument {
             return $request_array[$request_type];
         }
         else {
-            //TODO: throw error (url suffix DNE)
+            exit("Request type must be of type DecorateDocument \n");
         }   
     }
 
