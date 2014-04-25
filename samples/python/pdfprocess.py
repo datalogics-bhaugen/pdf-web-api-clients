@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2014, Datalogics, Inc. All rights reserved.
-
 "Sample pdfclient driver"
+
+# Copyright (c) 2014, Datalogics, Inc. All rights reserved.
 
 # This agreement is between Datalogics, Inc. 101 N. Wacker Drive, Suite 1800,
 # Chicago, IL 60606 ("Datalogics") and you, an end user who downloads
@@ -69,6 +69,7 @@ OPTIONS = ('inputName', 'password', 'options')
 PDF2IMG_GUIDE = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
 USAGE_OPTIONS = '[{}=name] [{}=pwd] [{}=json]'.format(*OPTIONS)
 USAGE = 'usage: {0} request_type <input file(s)> ' + USAGE_OPTIONS + '\n' +\
+        'example: {0} DecorateDocument any.pdf headers.xml\n' +\
         'example: {0} FillForm form.pdf form.fdf\n' +\
         'example: {0} FlattenForm hello_world.pdf\n' +\
         'example: {0} RenderPages ' + PDF2IMG_GUIDE + ' options=' + JSON
@@ -82,37 +83,27 @@ class Client(pdfclient.Application):
     #  @param args e.g.['%pdfprocess.py', 'FlattenForm', 'hello_world.pdf']
     #  @param base_url
     def __call__(self, args, base_url=pdfclient.Application.BASE_URL):
-        parser = self._parse(args)
-        input_url = parser.data.get('inputURL', '')
-        input_name = os.path.basename(input_url) or parser.files['input'].name
-        self._input_name = parser.data.get('inputName', input_name)
-        self._api_request = self.make_request(args[1], base_url)
-        api_response = self._api_request(parser.files, **parser.data)
-        return Response(api_response, self.output_filename)
+        parser = self._parse(args, base_url)
+        api_response = self._request(parser.files, **parser.data)
+        return Response(api_response, self.output_format)
 
-    def _parse(self, args):
-        try:
-            if len(args) > 2:
-                return Parser(args[2:])
-        except Exception as exception:
-            print(exception)
+    def _parse(self, args, base_url):
+        if len(args) > 2:
+            try:
+                self._request = self.make_request(args[1], base_url)
+                return Parser(self._request, args[2:])
+            except Exception as exception:
+                print(exception)
         sys.exit(USAGE.format(args[0]))
     @property
-    ## Derived from the input name or explicitly specified
-    def input_name(self):
-        return self._input_name
-    @property
-    ## #input_name with extension replaced by requested output format
-    def output_filename(self):
-        input_name = os.path.splitext(self.input_name)[0]
-        return '{}.{}'.format(input_name, self._api_request.output_format)
+    def output_format(self):
+        return self._request.output_format
 
 
-## #pdfclient.Response wrapper
-#  saves output to the file specified by the request
+## #pdfclient.Response wrapper saves output to a file
 class Response(object):
-    def __init__(self, response, output_filename):
-        self._response, self._output_filename = response, output_filename
+    def __init__(self, response, output_format):
+        self._response, self._output_format = response, output_format
     def __str__(self):
         return str(self._response)
     def __getattr__(self, key):
@@ -122,34 +113,28 @@ class Response(object):
         with open(self.output_filename, 'wb') as output:
             output.write(self.output)
 
-    def _set_output_filename(self):
+    def output_format(self):
+        if self.output.startswith('%FDF'): return 'fdf'
         xml_tag = '<?xml version="1.0" encoding="UTF-8"?>'
-        if self.output.startswith('%FDF'):
-            self._output_filename += 'fdf'
-        elif self.output.startswith(xml_tag + '<xfdf xmlns'):
-            self._output_filename += 'xfdf'
-        elif self.output.startswith(xml_tag + '<xfa:datasets'):
-            self._output_filename += 'xml'
-        else:
-            self._output_filename.rstrip('.')
+        if self.output.startswith(xml_tag + '<xfdf xmlns'): return 'xfdf'
+        if self.output.startswith(xml_tag + '<xfa:datasets'): return 'xml'
     @property
     ## True only if request succeeded
     def ok(self):
         return self._response.ok
     @property
-    ## Derived from Client.input_name and requested output format
     def output_filename(self):
-        if self.ok:
-            if self._output_filename.endswith('.'):
-                self._set_output_filename()
-            return self._output_filename
+        if self.ok and not self._output_format:
+            self._output_format = self.output_format()
+        if self._output_format:
+            return 'pdfprocess.{}'.format(self._output_format)
+        return 'pdfprocess.out'
 
 
-## Translate command line arguments to form needed by
-#  pdfclient.Request.__call__
+## Translate command line arguments and open input files for
+#  <a href="http://docs.python-requests.org/en/latest/">Requests</a>
 class Parser(object):
-    PART_NAME_FILE_FORMATS = {'formsData': ('FDF', 'XFDF', 'XML')}
-    def __init__(self, args):
+    def __init__(self, request, args):
         self._data, self._files = {}, {}
         files = [arg for arg in args if '=' not in arg]
         options = [arg.split('=') for arg in args if arg not in files]
@@ -165,7 +150,7 @@ class Parser(object):
             self.data[option] =\
                 json.loads(value) if option == 'options' else value
         for file in files:
-            self.files[Parser._part_name(file)] = open(file, 'rb')
+            self.files[request.part_name(file)] = open(file, 'rb')
     def __del__(self):
         for file in self.files.values():
             file.close()
@@ -174,13 +159,6 @@ class Parser(object):
         name = filename.lower()
         if name.startswith('http://') or name.startswith('https://'):
             return filename
-    @classmethod
-    def _part_name(cls, filename):
-        data_format = os.path.splitext(filename)[1][1:].upper()
-        for part_name in Parser.PART_NAME_FILE_FORMATS:
-            if data_format in Parser.PART_NAME_FILE_FORMATS[part_name]:
-                return part_name
-        return 'input'
     @property
     ## form parts that will be passed to requests.post
     def data(self): return self._data
@@ -196,6 +174,6 @@ if __name__ == '__main__':
     response = run(sys.argv)
     if response.ok:
         response.save_output()
-        print('created: {}\n'.format(response.output_filename))
+        print('created: {}'.format(response.output_filename))
     else:
         print(response)

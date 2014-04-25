@@ -53,7 +53,7 @@ const BASE_URL = 'https://pdfprocess.datalogics-cloud.com';
 
 
 /**
- * @brief %Request factory
+ * @brief Service request factory: construct this to create service requests
  */
 class Application
 {
@@ -85,7 +85,9 @@ class Application
 
 
 /**
- * @brief Service request
+ * @brief Service request (base class): uses
+ * <a href="http://www.php.net/manual/en/book.curl.php">curl</a>
+ * to post request
  */
 class Request
 {
@@ -148,10 +150,22 @@ class Request
      */
     function output_format() { return $this->_output_format; }
 
+    function part_name($filename)
+    {
+        $format = strtoupper(pathinfo($filename, PATHINFO_EXTENSION));
+        foreach ($this::$InputTypes as $part_name => $file_formats)
+        {
+            if (in_array($format, $file_formats)) return $part_name;
+        }
+        return 'input';
+    }
+
     protected $_output_format;
 
     private $_application;
     private $_url;
+
+    static $InputTypes = array();
 }
 
 
@@ -189,8 +203,8 @@ class Response
     function http_code() { return (int) $this->_http_code; }
 
     /**
-     * @return Document or image data (string) if request was successful,
-     *  otherwise NULL
+     * @return Document, form, or image data (string) if request was
+     *  successful, otherwise NULL
      */
     function output() { if ($this->ok()) return $this->_response; }
 
@@ -250,10 +264,35 @@ class ErrorCode
 
 
 /**
- * @brief Export FDF, XFDF, or XML form data
+ * @brief Service request (decorate document with supplied header/footer data)
+ */
+class DecorateDocument extends Request
+{
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, "decorate/document");
+        $this->_output_format = 'pdf';
+    }
+
+    static $InputTypes = array('decorationData' => array('XML'));
+
+    /**
+     * %DecorateDocument has no request options
+     */
+    static $Options = array();
+}
+
+
+/**
+ * @brief Service request (export FDF, XFDF, or XML form data)
  */
 class ExportFormData extends Request
 {
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, "export/form-data");
+    }
+
     /**
      * %ExportFormData options:
      * * [exportXFDF]
@@ -261,19 +300,22 @@ class ExportFormData extends Request
      *    export XFDF instead of FDF for AcroForm input
      */
     static $Options = array('exportXFDF');
-
-    function __construct($application, $base_url)
-    {
-        parent::__construct($application, $base_url, "export/form-data");
-    }
 }
 
 
 /**
- * @brief Fill form fields with supplied FDF/XFDF data
+ * @brief Service request (fill form fields with supplied FDF/XFDF data)
  */
 class FillForm extends Request
 {
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, "fill/form");
+        $this->_output_format = 'pdf';
+    }
+
+    static $InputTypes = array('formsData' => array('FDF', 'XFDF', 'XML'));
+
     /**
      * %FillForm request options:
      * * [disableCalculation]
@@ -287,38 +329,49 @@ class FillForm extends Request
      */
     static $Options = array(
         'disableCalculation', 'disableGeneration', 'flatten');
-
-    function __construct($application, $base_url)
-    {
-        parent::__construct($application, $base_url, "fill/form");
-        $this->_output_format = 'pdf';
-    }
 }
 
 
 /**
- * @brief Flatten form fields
+ * @brief Service request (flatten form fields)
  */
 class FlattenForm extends Request
 {
-    /**
-     * %FlattenForm has no request options
-     */
-    static $Options = array();
-
     function __construct($application, $base_url)
     {
         parent::__construct($application, $base_url, "flatten/form");
         $this->_output_format = 'pdf';
     }
+
+    /**
+     * %FlattenForm has no request options
+     */
+    static $Options = array();
 }
 
 
 /**
- * @brief Create raster image representation
+ * @brief Service request (create raster image representation)
  */
 class RenderPages extends Request
 {
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, "render/pages");
+    }
+
+    function __invoke($input, $request_fields)
+    {
+        $output_format = '';
+        if (isset($request_fields['options']) &&
+            isset($request_fields['options']['outputFormat']))
+        {
+            $output_format = $request_fields['options']['outputFormat'];
+        }
+        $this->_output_format = $output_format ? $output_format : 'png';
+        return parent::__invoke($input, $request_fields);
+    }
+
     /**
      * %RenderPages request options:
      * * [colorModel](https://api.datalogics-cloud.com/docs#colorModel):
@@ -363,30 +416,6 @@ class RenderPages extends Request
         'printPreview', 'resampler',
         'resolution', 'smoothing',
         'suppressAnnotations');
-
-    function __construct($application, $base_url)
-    {
-        parent::__construct($application, $base_url, "render/pages");
-    }
-
-    /**
-     * Send request
-     * @return a Response object
-     * @param input input document URL or file
-     * @param request_fields array with keys in
-     *  {'inputURL', 'inputName', 'password', 'options'}
-     */
-    function __invoke($input, $request_fields)
-    {
-        $output_format = '';
-        if (isset($request_fields['options']) &&
-            isset($request_fields['options']['outputFormat']))
-        {
-            $output_format = $request_fields['options']['outputFormat'];
-        }
-        $this->_output_format = $output_format ? $output_format : 'png';
-        return parent::__invoke($input, $request_fields);
-    }
 }
 
 

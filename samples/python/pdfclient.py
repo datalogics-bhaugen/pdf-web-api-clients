@@ -49,12 +49,14 @@
 
 import inspect
 import json
+import os
 import sys
 
 import requests
 
 
-## %Request factory
+## Service request factory:
+#  construct this to create service requests
 class Application(object):
     BASE_URL = 'https://pdfprocess.datalogics-cloud.com'
     ## @param id from our [developer portal](http://api.datalogics-cloud.com/)
@@ -76,8 +78,11 @@ class Application(object):
         return members[0][1]
 
 
-## Service request
+## Service request (base class):
+#  uses <a href="http://docs.python-requests.org/en/latest/">Requests</a>
+#  to post request
 class Request(object):
+    INPUT_TYPES = {}
     def __init__(self, application_json, base_url, url_suffix):
         self._output_format = ''
         self._application = application_json
@@ -102,6 +107,12 @@ class Request(object):
         return Response(
             requests.post(self._url, verify=False, files=files, data=data))
 
+    def part_name(self, filename):
+        data_format = os.path.splitext(filename)[1][1:].upper()
+        for part_name in self.INPUT_TYPES:
+            if data_format in self.INPUT_TYPES[part_name]:
+                return part_name
+        return 'input'
     @property
     ## Output filename extension property (string)
     def output_format(self): return self._output_format
@@ -135,7 +146,8 @@ class Response(object):
     ## HTTP status code (int)
     def http_code(self): return self._response.status_code
     @property
-    ## Document or image data (bytes) if request was successful, otherwise None
+    ## Document, form, or image data (bytes) if request was successful,
+    #  otherwise None
     def output(self): return self._response.content if self.ok else None
     @property
     ## None if successful, otherwise API
@@ -166,7 +178,20 @@ class ErrorCode:
     UnknownError = 20
 
 
-## Export FDF, XFDF, or XML form data
+## Service request (decorate document with supplied header/footer data)
+class DecorateDocument(Request):
+    INPUT_TYPES = {'decorationData': ('XML', )}
+    ## %DecorateDocument has no request options
+    OPTIONS = []
+    ## Error codes for %DecorateDocument requests
+    class ErrorCode(ErrorCode):
+        pass
+    def __init__(self, application, base_url):
+        Request.__init__(self, application, base_url, 'decorate/document')
+        self._output_format = 'pdf'
+
+
+## Service request (export FDF, XFDF, or XML form data)
 class ExportFormData(Request):
     ## %ExportFormData options:
     #  * [exportXFDF]
@@ -180,8 +205,9 @@ class ExportFormData(Request):
         Request.__init__(self, application, base_url, 'export/form-data')
 
 
-## Fill form fields with supplied FDF/XFDF data
+## Service request (fill form fields with supplied FDF/XFDF data)
 class FillForm(Request):
+    INPUT_TYPES = {'formsData': ('FDF', 'XFDF', 'XML')}
     ## %FillForm request options:
     #  * [disableCalculation]
     #     (https://api.datalogics-cloud.com/docs#disableCalculation)
@@ -200,7 +226,7 @@ class FillForm(Request):
         self._output_format = 'pdf'
 
 
-## Flatten form fields
+## Service request (flatten form fields)
 class FlattenForm(Request):
     ## %FlattenForm has no request options
     OPTIONS = []
@@ -212,7 +238,7 @@ class FlattenForm(Request):
         self._output_format = 'pdf'
 
 
-## Create raster image representation
+## Service request (create raster image representation)
 class RenderPages(Request):
     ## %RenderPages request options:
     #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel):
