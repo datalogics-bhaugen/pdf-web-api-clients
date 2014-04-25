@@ -5,20 +5,20 @@
 * [Requests](http://docs.python-requests.org/en/latest/) (HTTP for Humans):
 Use a new version, e.g. 2.2.
 
-### 1. Download Sample Files
-
-* [Client](download/pdfclient.py) module
-* Command line [script](download/pdfprocess.py)
-(demonstrates client module usage)
-
-### 2. Get Application Key
+### 1. Get Application ID and Key
 
 * Get an application ID and key from our
 [developer portal](http://api.datalogics-cloud.com/).
-* To use the command line script, copy these values into it.
+
+### 2. Download Sample Files
+
+* [pdfclient](download/pdfclient.py) client module
+* [pdfprocess](download/pdfprocess.py) command line script
+(demonstrates pdfclient usage)
+* To use this script, copy your application ID and key into it.
 (Search for TODO comments.)
 
-### 3. Send Request
+### 3. Use pdfclient to Send Request
 
 * Make a request factory
 
@@ -35,7 +35,8 @@ Use a new version, e.g. 2.2.
 * Send request 
 
         input = 'hello_world.pdf'
-        api_response = api_request(input, inputName=input, options=options)
+        files = {'input': open(input, 'rb')}
+        api_response = api_request(files, inputName=input, options=options)
 
 ### 4. Interpret Response
 
@@ -43,13 +44,13 @@ Use a new version, e.g. 2.2.
 status code.
 
         if api_response.ok:
-            assert_equal(api_response.http_code, requests.codes.ok)
+            assert api_response.http_code == requests.codes.ok
             # api_response.output is the requested document or image.
-            assert_is_none(api_response.error_code)
-            assert_is_none(api_response.error_message)
+            assert api_response.error_code is None
+            assert api_response.error_message is None
         else:
-            assert_not_equal(api_response.http_code, requests.codes.ok)
-            assert_is_none(api_response.output)
-            assert_is_not_none(api_response.error_code)
-            assert_is_not_none(api_response.error_message)
+            assert api_response.http_code != requests.codes.ok
+            assert api_response.output is None
+            assert api_response.error_code
+            assert api_response.error_message
 
