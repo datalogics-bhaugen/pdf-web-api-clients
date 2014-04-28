@@ -4,7 +4,8 @@ import flask
 import requests
 
 import logger
-import tmpdir
+
+from StringIO import StringIO
 from cfg import Configuration
 from errors import HTTPCode, JSON
 from pdfclient import Application
@@ -13,7 +14,15 @@ from pdfclient import Application
 BASE_URL = 'http://127.0.0.1:5000'
 
 INPUT_URL = 'inputURL'
-MAX_THUMBNAIL_DIMENSION = 250
+
+class InputFile(StringIO):
+    def __init__(self, input):
+        # TODO: chunked transfer
+        StringIO.__init__(self, requests.get(input).content)
+        self._input = input
+    @property
+    def name(self):
+        return self._input
 
 class Option(object):
     def __init__(self, name): self._name = name
@@ -41,9 +50,7 @@ def action():
         request = api_client.make_request('RenderPages', BASE_URL)
         if str(IMAGE_WIDTH) in options or str(IMAGE_HEIGHT) in options:
             return response(request(files, inputURL=input, options=options))
-        with tmpdir.TemporaryFile() as input_file:
-            input_file.write(requests.get(input).content)
-            return smaller_thumbnail(request, input_file, options)
+        return smaller_thumbnail(request, InputFile(input), options)
     except Exception as exception:
         error = str(exception)
         app.logger.exception(error)
@@ -65,11 +72,11 @@ def request_options(request):
     return result
 
 def smaller_thumbnail(request, input_file, options):
-    files = {'input': input_file}
-    options[str(IMAGE_HEIGHT)] = MAX_THUMBNAIL_DIMENSION
+    files, limits = {'input': input_file}, Configuration.limits
+    options[str(IMAGE_HEIGHT)] = limits['max_thumbnail_dimension']
     portrait_response = request(files, options=options)
     del options[str(IMAGE_HEIGHT)]
-    options[str(IMAGE_WIDTH)] = MAX_THUMBNAIL_DIMENSION
+    options[str(IMAGE_WIDTH)] = limits['max_thumbnail_dimension']
     landscape_response = request(files, options=options)
     if not landscape_response: return response(portrait_response)
     if not portrait_response: return response(landscape_response)

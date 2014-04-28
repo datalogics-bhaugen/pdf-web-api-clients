@@ -13,3 +13,4 @@ echo server = `git describe --tags 2> /dev/null || git describe --all`
 echo
 echo [limits]
 echo input_size = 10000000
+echo max_thumbnail_dimension = 250
