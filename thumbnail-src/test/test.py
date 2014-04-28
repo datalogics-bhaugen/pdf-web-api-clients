@@ -20,6 +20,5 @@ INPUT_URL = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
 INPUT = {'inputURL': INPUT_URL}
 
 def run(base_url=BASE_URL, data=None, params=None):
-    options = {'options': '{"imageHeight": 160}'}
-    if data: options.update(data)
-    return Response(requests.get(base_url, data=options, params=params))
+    data = data or {'options': '{"imageHeight": 160}'}
+    return Response(requests.get(base_url, data=data, params=params))
