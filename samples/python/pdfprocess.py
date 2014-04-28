@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-"Sample pdfclient driver"
-
 # Copyright (c) 2014, Datalogics, Inc. All rights reserved.
+
+"Sample pdfclient driver"
 
 # This agreement is between Datalogics, Inc. 101 N. Wacker Drive, Suite 1800,
 # Chicago, IL 60606 ("Datalogics") and you, an end user who downloads
