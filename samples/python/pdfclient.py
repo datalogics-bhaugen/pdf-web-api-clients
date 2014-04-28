@@ -97,8 +97,9 @@ class Request(object):
         data = data.copy()
         data['application'] = self._application
         for file in files.values(): file.seek(0)
-        if 'inputName' not in data and 'input' in files:
-            data['inputName'] = files['input'].name
+        if 'inputName' not in data:
+            if 'input' in files and 'name' in dir(files['input']):
+                data['inputName'] = files['input'].name
         if 'options' in data:
             for option in data['options']:
                 if option not in self.OPTIONS:
