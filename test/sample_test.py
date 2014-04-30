@@ -16,7 +16,7 @@ INPUT_URL = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
 def set_python_path():
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     eggs_dir = os.path.join(root_dir, 'eggs')
-    requests_dir = glob.glob(os.path.join(eggs_dir, 'requests-*.egg'))[0]
+    requests_dir = glob.glob(os.path.join(eggs_dir, 'requests-*.egg'))[-1]
     os.environ['PYTHONPATH'] = requests_dir
 
 def test_monitor():
