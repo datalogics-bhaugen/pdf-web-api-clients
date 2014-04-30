@@ -6,7 +6,7 @@ import traceback
 import cfg
 import logger
 from client import Client
-from input import FromFile, FromURL
+from input import FromForm, FromURL
 from errors import APDFL_ERRORS, Error, ErrorCode, HTTPCode, JSON, UNKNOWN
 
 
@@ -16,7 +16,7 @@ class Action(object):
         self._options = JSON.request_form_parser(request.form, 'options')
         self._request = request
         self._request_time = logger.iso8601_timestamp()
-        self._input = FromURL(self) if self.input_url else FromFile(self)
+        self._input = FromURL(self) if self.input_url else FromForm(self)
     def __del__(self):
         self._input = None
     def log_usage(self, error=None):
