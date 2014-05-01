@@ -7,7 +7,7 @@ import os
 import sys
 
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-requests_dir = glob.glob(os.path.join(root_dir, 'eggs', 'requests-*.egg'))[0]
+requests_dir = glob.glob(os.path.join(root_dir, 'eggs', 'requests-*.egg'))[-1]
 samples_dir = os.path.join(root_dir, 'samples', 'python')
 sys.path[0:0] = [root_dir, requests_dir, samples_dir]
 
