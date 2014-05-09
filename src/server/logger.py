@@ -46,7 +46,7 @@ class SysLogHandler(BaseHandler, BaseSysLogHandler):
     def __init__(self):
         BaseHandler.__init__(self)
         address = '/var/run/syslog' if system() == 'Darwin' else '/dev/log'
-        BaseSysLogHandler.__init__(self, address)
+        BaseSysLogHandler.__init__(self, address, BaseSysLogHandler.LOG_LOCAL0)
     def emit(self, record):
         if logging.DEBUG < record.levelno:
             handler = super() if PYTHON3 else super(SysLogHandler, self)
