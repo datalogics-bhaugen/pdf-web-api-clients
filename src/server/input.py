@@ -4,17 +4,19 @@ import requests
 
 from StringIO import StringIO
 from cfg import Configuration
-from errors import Error, ErrorCode
+from errors import Error, ErrorCode, HTTPCode
 
 
 class ChunkedTransfer(object):
     def __init__(self, from_url, to_file):
-        self._file, self._input = None, None
+        self._input, self._to_file = None, None
         try:
             self._input = requests.get(from_url, stream=True)
         except Exception as exception:
             raise Error(ErrorCode.InvalidInput, unicode(exception))
+        self._validate_input_size(self._content_length())
         self._transfer(to_file)
+        self._to_file = to_file
     def __del__(self):
         if self._input: self._input.close()
     def _content_length(self):
@@ -23,16 +25,24 @@ class ChunkedTransfer(object):
         except:
             return 0
     def _transfer(self, to_file):
-        Error.validate_input_size(self._content_length())
-        chunk_size = int(Configuration.limits.input_size) / 10
-        for chunk in self._input.iter_content(chunk_size=chunk_size):
+        for chunk in self._input.iter_content(chunk_size=self.chunk_size):
             if chunk:
                 to_file.write(chunk)
-                Error.validate_input_size(to_file.tell())
-        self._file = to_file
+                self._validate_input_size(to_file.tell())
+    def _validate_input_size(self, input_size):
+        if input_size > self.max_input_size:
+            raise Error(ErrorCode.InvalidInput,
+                        'input too large (max={})'.format(self.max_input_size),
+                        HTTPCode.RequestEntityTooLarge)
+    @property
+    def chunk_size(self):
+        return self.max_input_size / 10
     @property
     def file(self):
-        return self._file
+        return self._to_file
+    @property
+    def max_input_size(self):
+        return int(Configuration.limits.input_size)
 
 
 class Input(object):

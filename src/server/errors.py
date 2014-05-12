@@ -3,8 +3,6 @@
 import requests
 import simplejson
 
-from cfg import Configuration
-
 
 class EnumValue(object):
     def __init__(self, name, value):
@@ -55,13 +53,6 @@ class Error(Exception):
     def copy(self, message=None):
         message = self._preferred_message or message or self.message
         return Error(self.code, message, self.http_code)
-    @classmethod
-    def validate_input_size(cls, input_size):
-        max_input_size = int(Configuration.limits.input_size)
-        if input_size > max_input_size:
-            raise Error(ErrorCode.InvalidInput,
-                        'input too large (max={})'.format(max_input_size),
-                        HTTPCode.RequestEntityTooLarge)
     @property
     def code(self): return self._code
     @code.setter
