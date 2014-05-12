@@ -64,6 +64,7 @@ $json = substr(php_uname('s'), 0, 3) == 'Win' ?
 
 $usage =
     "usage: " . CMD . "request_type <input file(s)> " . USAGE_OPTIONS . "\n" .
+    "example: " . CMD . "DecorateDocument any.pdf headers.xml\n" .
     "example: " . CMD . "FillForm form.pdf form.fdf\n" .
     "example: " . CMD . "FlattenForm hello_world.pdf\n" .
     "example: " . CMD . "RenderPages " . PDF2IMG_GUIDE . " options=" . $json;
@@ -84,76 +85,55 @@ class Client extends \pdfclient\Application
      */
     function __invoke($args, $base_url = NULL)
     {
-        $parser = $this->_parse($args);
+        $base_url = $base_url ? $base_url : \pdfclient\BASE_URL;
+        $parser = $this->_parse($args, $base_url);
         $input_files = $parser->input_files();
+
         $default_fields = array('inputName' => '');
         $request_fields = $parser->request_fields();
         $request_fields = array_merge($default_fields, $request_fields);
-        $this->_input_name = $request_fields['inputName'];
-        if (!$this->input_name())
-        {
-            if (array_key_exists('inputURL', $request_fields))
-            {
-                $this->_input_name = basename($request_fields['inputURL']);
-            }
-            else
-            {
-                $this->_input_name = $input_files['input'];
-            }
-        }
-
-        $base_url = $base_url ? $base_url : \pdfclient\BASE_URL;
-        $this->_request = $this->make_request($args[1], $base_url);
 
         $api_request = $this->_request;
         $api_response = $api_request($input_files, $request_fields);
-        return new Response($api_response, $this->output_filename());
+        return new Response($api_response, $this->output_format());
     }
 
-    /**
-     * Derived from the input name or explicitly specified
-     */
-    function input_name() { return $this->_input_name; }
-
-    /**
-     * @return #input_name with extension replaced by requested output format
-     */
-    function output_filename()
+    function output_format()
     {
-        $extension = $this->_request->output_format();
-        return basename($this->input_name(), '.pdf') . '.' . $extension;
+        return $this->_request->output_format();
     }
 
-    private function _parse($args)
+    private function _parse($args, $base_url)
     {
-        try
+        if (count($args) > 2)
         {
-            if (count($args) > 2)
-                return new Parser(array_slice($args, 2));
-        }
-        catch (Exception $exception)
-        {
-            echo $exception->getMessage();
+            try
+            {
+                $this->_request = $this->make_request($args[1], $base_url);
+                return new Parser($this->_request, array_slice($args, 2));
+            }
+            catch (Exception $exception)
+            {
+                echo $exception->getMessage();
+            }
         }
         global $usage;
         exit($usage);
     }
 
-    private $_input_name;
     private $_request;
 }
 
 
 /**
- * @brief %pdfclient\\%Response wrapper
- * saves output to the file specified by the request
+ * @brief %pdfclient\\%Response wrapper saves output to a file
  */
 class Response
 {
-    function __construct($api_response, $output_filename)
+    function __construct($api_response, $output_format)
     {
         $this->_api_response = $api_response;
-        $this->_output_filename = $output_filename;
+        $this->_output_format = $output_format;
     }
 
     function __toString() { return (string) $this->api_response(); }
@@ -168,20 +148,13 @@ class Response
      */
     function ok() { return $this->api_response()->ok(); }
 
-    /**
-     * Derived from Client.input_name and requested output format
-     */
     function output_filename()
     {
-        if ($this->ok())
-        {
-            $output_filename_len = strlen($this->_output_filename);
-            if ($this->_output_filename[$output_filename_len - 1] == '.')
-            {
-                $this->set_output_filename();
-            }
-            return $this->_output_filename;
-        }
+        if ($this->ok() && !$this->_output_format)
+            $this->_output_format = $this->output_format();
+        if ($this->_output_format)
+            return 'pdfprocess.' . $this->_output_format;
+        return 'pdfprocess.out';
     }
 
     /**
@@ -194,42 +167,29 @@ class Response
         fclose($output_file);
     }
 
-    private function set_output_filename()
+    private function output_format()
     {
         $output = $this->api_response()->output();
+        if (strpos($output, '%FDF') === 0) return 'fdf';
+
         $xml_tag = '<?xml version="1.0" encoding="UTF-8"?>';
-        if (strpos($output, '%FDF') == 0)
-        {
-            $this->_output_filename .= 'fdf';
-        }
-        elseif (strpos($output, xml_tag . '<xfdf xmlns') == 0)
-        {
-            $this->_output_filename .= 'xfdf';
-        }
-        elseif (strpos($output, xml_tag . '<xfa:datasets') == 0)
-        {
-            $this->_output_filename .= 'xml';
-        }
-        else
-        {
-            $this->_output_filename = rtrim($this->_output_filename, ".");
-        }
+        if (strpos($output, $xml_tag . '<xfdf xmlns') === 0) return 'xfdf';
+        if (strpos($output, $xml_tag . '<xfa:datasets') === 0) return 'xml';
+        return '';
     }
 
     private $_api_response;
-    private $_output_filename;
+    private $_output_format;
 }
 
 
 /**
  * @brief Translate command line arguments to form needed by
- * pdfclient.Request.__invoke
+ * <a href="http://www.php.net/manual/en/book.curl.php">curl</a>
  */
 class Parser
 {
-    static $PartNameFileFormats = array('formsData' => array('FDF', 'XFDF', 'XML'));
-
-    function __construct($args)
+    function __construct($request, $args)
     {
         $is_option = function($arg) { return strpos($arg, '='); };
         $options = array_filter($args, $is_option);
@@ -253,7 +213,7 @@ class Parser
 
         foreach ($input as $filename)
         {
-            $this->_input_files[Parser::_part_name($filename)] = $filename;
+            $this->_input_files[$request->part_name($filename)] = $filename;
         }
 
         $form_parts = array('inputName', 'password', 'options');
@@ -271,28 +231,18 @@ class Parser
     }
 
     /**
-     * array of input files
+     * @return array of input files that will be passed to curl
      */
     function input_files() { return $this->_input_files; }
 
     /**
-     * array of request fields
+     * @return array of request fields that will be passed to curl
      */
     function request_fields() { return $this->_request_fields; }
 
     private static function _is_url($filename)
     {
         return preg_match('(http:|https:)', strtolower($filename));
-    }
-
-    private static function _part_name($filename)
-    {
-        $format = strtoupper(pathinfo($filename, PATHINFO_EXTENSION));
-        foreach (Parser::$PartNameFileFormats as $part_name => $file_formats)
-        {
-            if (in_array($format, $file_formats)) return $part_name;
-        }
-        return 'input';
     }
 
     private $_input_files = array();
