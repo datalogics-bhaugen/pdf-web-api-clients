@@ -74,15 +74,10 @@ The Makefile's _build_ target (default) downloads packages, updates the files th
 * `scripts/gunicorn` starts this server
 * `thumbnail/scripts/gunicorn` runs the thumbnail server
 
-On Linux, the corresponding init daemon commands are:
-
-* `/sbin/start webapi` and `/sbin/stop webapi`
-* `/sbin/start thumbnail` and `/sbin/stop thumbnail`
-
 ## Monitor
 
-* `web-api/monitor.py` is used by Scout to monitor this server
-* `web-api/monitor-thumbnail.py` is used to monitor the thumbnail server
+* `scripts/monitor.py` is used by Scout to monitor this server
+* `thumbnail-src/scripts/monitor.py` is used to monitor the thumbnail server
 
 ## Test
 
