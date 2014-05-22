@@ -2,6 +2,8 @@
 
 Internet-accessible PDF API, formally known as "PDF WebAPI".
 
+Remember to look at our [Confluence](https://dlogics.atlassian.net/wiki/display/EN/PDF+Web+API) page!
+
 ## Major Dependencies
 
 Mac (different versions) is the primary development platform, and Ubuntu is the target deployment platform.
@@ -17,7 +19,7 @@ Mac (different versions) is the primary development platform, and Ubuntu is the 
 
 ### PDF2IMG
 
-pdf2img must be in the PATH used by _pdfprocess_. Copy the latest version from `//ivy/raid/products/pdf2img/latest/`.
+pdf2img must be in the PATH used by the service account. Copy the latest version from `//ivy/raid/products/pdf2img/latest/`.
 
 ### Linux
 
@@ -32,12 +34,9 @@ These packages are required:
     * libxml2-dev
     * libxslt-dev
 
-Copy PDF2IMG resources (e.g. pdf2img-resource-20130807.tar.gz) from `//ivy/raid/products/pdf2img` and install them in `/opt/pdfprocess/Resource/`.
+#### Cloud
 
-For release builds, clone this repository into `/opt/pdfprocess`:
-
-* To get the password for _pdfprocess_, send mail to pdfprocess@datalogics.com
-* The pass phrase for the web-api deploy key is the password in lower case
+Our [Confluence](https://dlogics.atlassian.net/wiki/display/EN/PDF+Web+API) page describes how to build this repository on our cloud build server. This server is also the host for our test environment. For more information about our services, please read that page!
 
 ### Mac
 
@@ -74,15 +73,10 @@ The Makefile's _build_ target (default) downloads packages, updates the files th
 * `scripts/gunicorn` starts this server
 * `thumbnail/scripts/gunicorn` runs the thumbnail server
 
-On Linux, the corresponding init daemon commands are:
-
-* `/sbin/start webapi` and `/sbin/stop webapi`
-* `/sbin/start thumbnail` and `/sbin/stop thumbnail`
-
 ## Monitor
 
-* `web-api/monitor.py` is used by Scout to monitor this server
-* `web-api/monitor-thumbnail.py` is used to monitor the thumbnail server
+* `scripts/monitor.py` is used by Scout to monitor this server
+* `thumbnail-src/scripts/monitor.py` is used to monitor the thumbnail server
 
 ## Test
 
