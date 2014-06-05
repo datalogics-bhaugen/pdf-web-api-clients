@@ -15,7 +15,7 @@ LOGGER = logging.getLogger()
 PYTHON3 = sys.version_info.major == 3
 
 class BaseHandler(object):
-    "format depends on level"
+    "base handler class defines level-dependent log entry formats"
     def __init__(self):
         prefix = '%(asctime)s:'
         level = '[%(levelname)s]'
@@ -34,8 +34,8 @@ class BaseHandler(object):
         handler.emit(record)
 
 class FileHandler(BaseHandler, BaseFileHandler):
+    "file handler rotates log files daily by default"
     def __init__(self, log_name, when='D', interval=1):
-        "rotate daily by default"
         BaseHandler.__init__(self)
         logging.Formatter.converter = time.gmtime
         log_filename = '{}.log'.format(log_name)
@@ -43,6 +43,7 @@ class FileHandler(BaseHandler, BaseFileHandler):
         BaseFileHandler.__init__(self, log_path, when=when, interval=interval)
 
 class SysLogHandler(BaseHandler, BaseSysLogHandler):
+    "syslog handler uses local0 facility, ignores debug-level entries"
     def __init__(self):
         BaseHandler.__init__(self)
         address = '/var/run/syslog' if system() == 'Darwin' else '/dev/log'

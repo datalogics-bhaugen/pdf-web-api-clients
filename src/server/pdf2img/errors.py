@@ -1,10 +1,11 @@
-"WebAPI pdf2img action errors"
+"RenderPages errors"
 
 import server
 from server import EnumValue, Error, HTTPCode
 
 
 class ErrorCode(server.ErrorCode):
+    "error codes applicable to RenderPages requests"
     InvalidColorModel = EnumValue('InvalidColorModel', 31)
     InvalidCompression = EnumValue('InvalidCompression', 32)
     InvalidRegion = EnumValue('InvalidRegion', 33)

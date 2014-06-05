@@ -1,12 +1,12 @@
-"WebAPI error definitions"
+"error definitions"
 
 import requests
-import simplejson
 
 
 class EnumValue(object):
+    "associates an error code (int) with its string representation"
     def __init__(self, name, value):
-        self._name, self._value = (name, value)
+        self._name, self._value = name, value
     def __str__(self):
         return self._name
     def __int__(self):
@@ -14,6 +14,7 @@ class EnumValue(object):
 
 
 class ErrorCode(object):
+    "error codes applicable to any request type"
     OK = EnumValue('OK', 0)
     AuthorizationError = EnumValue('AuthorizationError', 1)
     InvalidSyntax = EnumValue('InvalidSyntax', 2)
@@ -29,6 +30,7 @@ class ErrorCode(object):
 
 
 class HTTPCode:
+    "HTTP status codes"
     OK = requests.codes.ok
     BadRequest = requests.codes.bad_request
     Forbidden = requests.codes.forbidden
@@ -40,6 +42,7 @@ class HTTPCode:
 
 
 class Error(Exception):
+    "associates an ErrorCode with an HTTPCode"
     def __init__(self, code, message, default_arg=None):
         Exception.__init__(self, message)
         self._code = code
@@ -78,32 +81,3 @@ APDFL_ERRORS = [
 
 UNKNOWN = Error(ErrorCode.UnknownError, 'Internal server error',
                 HTTPCode.InternalServerError)
-
-
-class JSON:
-    class RequestFormParser(dict):
-        "support jQuery encoding of JSON form values"
-        def parse(self, request_form, part_name):
-            prefix = u'{}['.format(part_name)
-            for key, value in request_form.items():
-                if key.startswith(prefix): self[key[len(prefix):-1]] = value
-            self.update(JSON.loads(request_form.get(part_name, u'{}')))
-    @classmethod
-    def request_form_parser(cls, request_form, part_name):
-        result = JSON.RequestFormParser()
-        result.parse(request_form, part_name)
-        return result
-    @classmethod
-    def dumps(cls, obj):
-        try:
-            return simplejson.dumps(obj, sort_keys=True)
-        except Exception:
-            error = u'cannot encode {}'.format(obj)
-            raise Error(ErrorCode.InvalidSyntax, error)
-    @classmethod
-    def loads(cls, s):
-        try:
-            return simplejson.loads(s)
-        except Exception:
-            error = u'cannot parse {}'.format(s)
-            raise Error(ErrorCode.InvalidSyntax, error)

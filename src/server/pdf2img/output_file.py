@@ -12,6 +12,7 @@ from server import UNKNOWN
 
 
 class OutputFile(object):
+    "finds and deletes images created by pdf2img"
     def __init__(self, name, extension):
         self._pattern = '{}*.{}'.format(name, extension)
     def __del__(self):

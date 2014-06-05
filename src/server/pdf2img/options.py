@@ -1,7 +1,8 @@
-"WebAPI pdf2img action options"
+"RenderPages option classes"
 
 
 class Option(object):
+    "RenderPages option, e.g. password"
     FORMAT = u'-{}={}'
     def __init__(self, name, pdf2img_name=None):
         self._name = name
@@ -22,6 +23,7 @@ class Option(object):
     def action(self): return 'store'
 
 class Flag(Option):
+    "RenderPages flag, e.g. printPreview"
     FORMAT = u'-{}'
     def format(self, value, pdf2img_flag=False):
         if not value: return u''

@@ -2,12 +2,12 @@
 
 import requests
 
-from StringIO import StringIO
 from cfg import Configuration
 from errors import Error, ErrorCode, HTTPCode
 
 
 class ChunkedTransfer(object):
+    "uses chunked transfer logic to enforce input size limit"
     def __init__(self, from_url, to_file):
         self._input, self._to_file = None, None
         try:
@@ -35,25 +35,30 @@ class ChunkedTransfer(object):
                         'input too large (max={})'.format(self.max_input_size),
                         HTTPCode.RequestEntityTooLarge)
     @property
-    def chunk_size(self):
-        return self.max_input_size / 10
+    def chunk_size(self): return self.max_input_size / 10
     @property
-    def file(self):
-        return self._to_file
+    def file(self): return self._to_file
     @property
-    def max_input_size(self):
-        return int(Configuration.limits.input_size)
+    def max_input_size(self): return int(Configuration.limits.input_size)
 
 
 class Input(object):
+    "each request input class should inherit from this class"
     def __init__(self, action):
         self._action, self._input = action, None
+    def initialize(self):
+        error = '{} does not implement initialize'.format(type(self))
+        raise NotImplementedError(error)
+    def save(self):
+        error = '{} does not implement save'.format(type(self))
+        raise NotImplementedError(error)
     def _raise_error(self, error):
         self._action.raise_error(Error(ErrorCode.InvalidInput, error))
     @property
     def files(self): return self._action.request_files
 
-class FromForm(Input):
+class FromInput(Input):
+    "for input extracted from an input form part"
     def initialize(self):
         files = len(self.files)
         if files > 1:
@@ -64,19 +69,10 @@ class FromForm(Input):
     def save(self, input_file):
         self._input.save(input_file)
 
-class FromURL(Input):
+class FromInputURL(Input):
+    "for input specified by an inputURL form part"
     def initialize(self):
         if self.files:
             self._raise_error(u'excess input (inputURL and request file)')
     def save(self, input_file):
         ChunkedTransfer(self._action.input_url, input_file)
-
-
-class InputFile(StringIO):
-    def __init__(self, input_url):
-        StringIO.__init__(self)
-        self._input_url = input_url
-        ChunkedTransfer(input_url, self)
-    @property
-    def name(self):
-        return self._input_url

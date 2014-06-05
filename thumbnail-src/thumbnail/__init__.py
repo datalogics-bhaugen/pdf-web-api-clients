@@ -6,9 +6,11 @@ import requests
 import input
 import logger
 
+from StringIO import StringIO
 from cfg import Configuration
-from errors import Error, HTTPCode, JSON
 from pdfclient import Application
+from errors import Error, HTTPCode
+from request import JSON
 
 
 BASE_URL = 'http://127.0.0.1:5000'
@@ -18,6 +20,15 @@ IMAGE_WIDTH = 'imageWidth'
 INPUT_URL = 'inputURL'
 OPTIONS = 'options'
 PAGES = 'pages'
+
+class InputFile(StringIO):
+    "file-like class downloads files without using the file system"
+    def __init__(self, url):
+        StringIO.__init__(self)
+        self._url = url
+        input.ChunkedTransfer(url, self)
+    @property
+    def name(self): return self._url
 
 three_scale = Configuration.three_scale
 api_client = Application(three_scale.thumbnail_id, three_scale.thumbnail_key)
@@ -56,7 +67,7 @@ def request_options(request):
     return result
 
 def smaller_thumbnail(api_request, url, options):
-    files = {'input': input.InputFile(url)}
+    files = {'input': InputFile(url)}
     options[IMAGE_HEIGHT] = Configuration.limits['max_thumbnail_dimension']
     portrait_response = api_request(files, options=options)
     options[IMAGE_WIDTH] = options[IMAGE_HEIGHT]

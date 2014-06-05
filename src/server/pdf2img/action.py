@@ -1,4 +1,4 @@
-"WebAPI pdf2img action"
+"RenderPages request handler"
 
 import os
 import subprocess
@@ -14,8 +14,7 @@ from output_file import OutputFile
 
 
 class Action(server.Action):
-    TYPE = 'RenderPages'
-    OPTIONS = options.OPTIONS + translator.OPTIONS
+    "uses pdf2img application to process requests"
     def __call__(self):
         self._parser = argument_parser.ArgumentParser()
         try:
@@ -27,6 +26,8 @@ class Action(server.Action):
             self.raise_error(Error(ErrorCode.InvalidSyntax, exc.message))
         self.client.authorize()
         return self._pdf2img()
+    def request_type(self):
+        return 'RenderPages'
     def _content_type(self):
         image_type = self.output_format.lower()
         if image_type == 'jpg': image_type = 'jpeg'
