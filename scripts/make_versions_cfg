@@ -5,8 +5,8 @@
 import fileinput
 
 print('''\
-# If you do not want to use the latest package versions, set the PLATFORM
-# Makefile variable to a value other than 'Darwin'.
+# If you want to use a specific package version, extend the pinned-versions
+# section in buildout.cfg accordingly.
 #
 # If git indicates that this file changed, run all our tests and push the
 # new version of this file if there are no regressions.
