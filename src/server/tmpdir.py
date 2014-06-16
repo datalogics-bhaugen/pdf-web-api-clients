@@ -1,4 +1,4 @@
-"WebAPI file utilities"
+"directory definitions and file utilities"
 
 import os
 import platform
@@ -25,6 +25,7 @@ os.environ['TMPDIR'] = TMP_DIR  # for APDFL
 
 
 class TemporaryFile(object):
+    "facilitates temporary file usage"
     def __init__(self):
         self._file = tempfile.NamedTemporaryFile(dir=TMP_DIR)
     def __del__(self):

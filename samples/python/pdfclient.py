@@ -243,7 +243,7 @@ class FlattenForm(Request):
 class RenderPages(Request):
     ## %RenderPages request options:
     #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel):
-    #     rgb (default), gray, rgba, or cmyk
+    #     rgb (default), gray, rgba, cmyk, or lab
     #  * [compression](https://api.datalogics-cloud.com/docs#compression):
     #     lzw (default), g3, g4, or jpg
     #  * [disableColorManagement]

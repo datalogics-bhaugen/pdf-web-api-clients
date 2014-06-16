@@ -1,4 +1,4 @@
-"WebAPI pdf2img action arguments"
+"RenderPages option parser"
 
 import argparse
 import translator
@@ -8,6 +8,7 @@ from translator import Pages, Resolution, Smoothing
 
 
 class ArgumentParser(argparse.ArgumentParser):
+    "uses argparse.ArgumentParser to parse RenderPages options"
     def __init__(self):
         argparse.ArgumentParser.__init__(self)
         self._compression = Compression()
