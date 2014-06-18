@@ -26,8 +26,6 @@ class Action(server.Action):
             self.raise_error(Error(ErrorCode.InvalidSyntax, exc.message))
         self.client.authorize()
         return self._pdf2img()
-    def request_type(self):
-        return 'RenderPages'
     def _content_type(self):
         image_type = self.output_format.lower()
         if image_type == 'jpg': image_type = 'jpeg'
@@ -57,6 +55,8 @@ class Action(server.Action):
         resources = ('CMap', 'Font', 'Unicode')
         resources = [os.path.join(server.RESOURCE, r) for r in resources]
         return [u'-fontlist="{}"'.format(';'.join(resources))]
+    @property
+    def request_type(self): return 'RenderPages'
     @property
     def output_format(self): return self._parser.output_format
     @property

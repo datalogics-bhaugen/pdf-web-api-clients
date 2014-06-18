@@ -1,5 +1,6 @@
 "WebAPI input document"
 
+import abc
 import requests
 
 from cfg import Configuration
@@ -44,14 +45,15 @@ class ChunkedTransfer(object):
 
 class Input(object):
     "each request input class should inherit from this class"
+    __metaclass__ = abc.ABCMeta
     def __init__(self, action):
         self._action, self._input = action, None
+    @abc.abstractmethod
     def initialize(self):
-        error = '{} does not implement initialize'.format(type(self))
-        raise NotImplementedError(error)
+        pass
+    @abc.abstractmethod
     def save(self):
-        error = '{} does not implement save'.format(type(self))
-        raise NotImplementedError(error)
+        pass
     def _raise_error(self, error):
         self._action.raise_error(Error(ErrorCode.InvalidInput, error))
     @property

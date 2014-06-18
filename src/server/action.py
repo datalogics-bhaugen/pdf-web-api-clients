@@ -1,5 +1,6 @@
 "base request handler"
 
+import abc
 import sys
 import traceback
 
@@ -13,19 +14,20 @@ from request import JSON
 
 class Action(object):
     "each request handler should inherit from this class"
+    __metaclass__ = abc.ABCMeta
     def __init__(self, request):
         self._client = Client(request.remote_addr, request.form)
         self._options = JSON.request_data(request.form, 'options')
         self._request = request
         self._request_time = logger.iso8601_timestamp()
         self._input = FromInputURL(self) if self.input_url else FromInput(self)
+    @abc.abstractmethod
     def __call__(self):
-        error = '{} does not implement __call__'.format(type(self))
-        raise NotImplementedError(error)
+        pass
     def __del__(self):
         self._input = None
     def log_usage(self, error=None):
-        usage = {'action': self.request_type(),
+        usage = {'action': self.request_type,
                  'address': self.client.address,
                  'client': self.client.application}
         if error:
@@ -44,9 +46,6 @@ class Action(object):
         if error.code == ErrorCode.InvalidPassword and not self.password:
             error.code = ErrorCode.MissingPassword
         raise error
-    def request_type(self):
-        error = '{} does not implement request_type'.format(type(self))
-        raise NotImplementedError(error)
     @classmethod
     def get_error(cls, stdout):
         import pdf2img
@@ -63,6 +62,8 @@ class Action(object):
             for entry in traceback.format_tb(sys.exc_info()[2]):
                 logger.error(entry.rstrip())
                 if dlenv == 'prod' and '/eggs/' in entry: return
+    @abc.abstractproperty
+    def request_type(self): return None
     @property
     def client(self): return self._client
     @property

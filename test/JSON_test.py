@@ -17,7 +17,10 @@ def test_bad_application():
     except Error as error: assert_equal(error.message, error_message)
 
 def test_bad_options():
+    class MockAction(Action):
+        def __call__(self): pass
+        def request_type(self): return None
     options = {'outputFormat': 'jpg', 'printPreview': True}
     error_message = 'cannot parse {}'.format(options)
-    try: assert_is_none(Action(mock.Request(str(options))))
+    try: assert_is_none(MockAction(mock.Request(str(options))))
     except Error as error: assert_equal(error.message, error_message)
