@@ -6,7 +6,7 @@
 ### 1. Get Application ID and Key
 
 * Get an application ID and key from our
-[developer portal](http://api.datalogics-cloud.com/).
+[developer portal](http://api.datalogics-cloud.com/)
 
 ### 2. Download Sample Files
 

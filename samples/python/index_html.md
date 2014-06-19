@@ -1,14 +1,14 @@
 <!-- this prevents Doxygen from putting excess space at the top of the page -->
 ### 0. Client Dependencies
 
-* Python 3.3 or 2.7: Other versions might work, but are not supported.
+* Python 3.3 or 2.7: Other versions might work, but are not supported
 * [Requests](http://docs.python-requests.org/en/latest/) (HTTP for Humans):
-Use a new version, e.g. 2.3.
+Use a new version, e.g. 2.3
 
 ### 1. Get Application ID and Key
 
 * Get an application ID and key from our
-[developer portal](http://api.datalogics-cloud.com/).
+[developer portal](http://api.datalogics-cloud.com/)
 
 ### 2. Download Sample Files
 
