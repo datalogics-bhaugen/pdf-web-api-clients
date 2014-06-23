@@ -10,10 +10,6 @@ print('''\
 #
 # If git indicates that this file changed, run all our tests and push the
 # new version of this file if there are no regressions.
-#
-# If there are regressions, add a comment to this file explaining why we
-# cannot use the latest package versions. Identify the package version(s)
-# causing the regression(s) so we will know when it's time to retest, etc.
 ''')
 
 buildout_stdout = [line for line in fileinput.input()]
