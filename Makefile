@@ -14,7 +14,7 @@ APP_LOG = $(VAR_LOG)/$(LOG_NAME)
 SERVER_LOG = $(VAR_LOG)/server
 AUX_LOG = $(SERVER_LOG)/$(LOG_NAME)
 
-build: $(GIT_HOOK) $(APP_LOG) $(AUX_LOG) Resource eggs tmp venv html
+build: $(GIT_HOOK) $(APP_LOG) $(AUX_LOG) Resource eggs tmp venv
 	venv/bin/python bootstrap.py
 	scripts/make_server_cfg > cfg/server
 	bin/buildout | scripts/make_versions_cfg > versions.cfg
@@ -29,6 +29,9 @@ clean:
 	@$(MAKE_THUMBNAIL) $@
 	@$(MAKE_HTML) $@
 
+html:
+	@$(MAKE_HTML)
+
 qa:
 	$(QA) cfg samples scripts src test
 	@$(MAKE_THUMBNAIL) $@
@@ -40,10 +43,7 @@ test-scripts: $(TEST_PDFPROCESS)
 	chmod +x $^/*
 	cp samples/*/pdfclient.* $^
 
-html:
-	@$(MAKE_HTML)
-
-.PHONY: build clean qa status test-scripts html
+.PHONY: build clean html qa test-scripts
 
 $(APP_LOG): $(VAR_LOG)
 	touch $@
