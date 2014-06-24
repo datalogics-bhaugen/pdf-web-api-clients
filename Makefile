@@ -27,7 +27,6 @@ clean:
 	$(ERASE) $(APP_LOG); $(ERASE) $(AUX_LOG)
 	rm -rf $(TEST_PDFPROCESS) test/*.png
 	@$(MAKE_THUMBNAIL) $@
-	@$(MAKE_HTML) $@
 
 html:
 	@$(MAKE_HTML)
