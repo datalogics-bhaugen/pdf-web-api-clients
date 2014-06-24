@@ -1,1 +1,0 @@
-../../../samples/python/pdfprocess.py

@@ -1,0 +1,1 @@
+../../../../../samples/python/decorate-document/decorateSample.py

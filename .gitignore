@@ -27,6 +27,7 @@ develop-eggs
 doxygen
 eggs
 parts
+sphinx
 test/pdfprocess
 tmp
 var

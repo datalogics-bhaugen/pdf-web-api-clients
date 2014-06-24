@@ -1,1 +1,0 @@
-../../../samples/python/pdfclient.py
