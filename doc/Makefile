@@ -1,18 +1,14 @@
 CLEAN = rm -rf *.css *.html *.js *.png search
 DOXYGEN = doxygen/bin/doxygen
-MAKE_SPHINX_DOCS = make --directory sphinx
+MAKE_DOXYFILE = ./make_doxyfile
+MAKE_SPHINX = make --directory sphinx
 PHP = html/php/index.html
 PYTHON = html/python/index.html
 SAMPLES = ../samples
 
-html: $(PHP) $(PYTHON) eggs venv
-	venv/bin/python bootstrap.py
-	bin/buildout
-	@$(MAKE_SPHINX_DOCS) $@
+html: $(PHP) $(PYTHON) sphinx/html/index.html
 
-clean: php-clean python-clean
-	rm -rf .installed.cfg bin develop-eggs parts venv
-	@$(MAKE_SPHINX_DOCS) $@
+clean: php-clean python-clean sphinx-clean
 
 php-clean:
 	cd html/php; $(CLEAN)
@@ -20,9 +16,24 @@ php-clean:
 python-clean:
 	cd html/python; $(CLEAN)
 
-.PHONY: html clean php-clean python-clean
+sphinx-clean:
+	rm -rf .installed.cfg bin develop-eggs parts venv
+	@$(MAKE_SPHINX) clean
+
+.PHONY: html clean php-clean python-clean sphinx-clean
 
 $(DOXYGEN): doxygen
+
+$(PHP): $(DOXYGEN) $(MAKE_DOXYFILE) $(SAMPLES)/php/* cfg/server
+	@make php-clean
+	$(MAKE_DOXYFILE) $(SAMPLES)/php/Doxyfile | $(DOXYGEN) -
+
+$(PYTHON): $(DOXYGEN) $(MAKE_DOXYFILE) $(SAMPLES)/python/* cfg/server
+	@make python-clean
+	$(MAKE_DOXYFILE) $(SAMPLES)/python/Doxyfile | $(DOXYGEN) -
+
+cfg/server:
+	make --directory .. $@
 
 doxygen:
 	git clone https://github.com/doxygen/$@.git
@@ -31,13 +42,15 @@ doxygen:
 eggs:
 	mkdir -p $@
 
-$(PHP): $(DOXYGEN) $(SAMPLES)/php/*
-	@make php-clean
-	$(DOXYGEN) $(SAMPLES)/php/Doxyfile
+sphinx: eggs venv
+	venv/bin/python bootstrap.py
+	bin/buildout
 
-$(PYTHON): $(DOXYGEN) $(SAMPLES)/python/*
-	@make python-clean
-	$(DOXYGEN) $(SAMPLES)/python/Doxyfile
+sphinx/html/index.html: sphinx src/server/conf.py
+	@$(MAKE_SPHINX) html
+
+src/server/conf.py: cfg/server
+	./make_conf_py conf.py > $@
 
 venv:
 	python virtualenv.py --no-setuptools $@
