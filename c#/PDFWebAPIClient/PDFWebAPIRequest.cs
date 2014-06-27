@@ -252,11 +252,7 @@ namespace Datalogics.PdfWebApi.Request
         /// <returns>A PdfWebApiResponse object</returns>
         public PdfWebApiResponse GetResponse()
         {
-            using (HttpClient httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Add("user-agent", "C# PdfWebApiClient V." + PdfWebApiClient.Version);
-                return new PdfWebApiResponse(httpClient.PostAsync(Url, BuildRequestContent()).Result);
-            }
+            return GetResponseAsync().Result;
         }
 
         /// <summary>
