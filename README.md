@@ -64,7 +64,7 @@ The Makefile's _build_ target (default) downloads packages, updates the files th
 
 3. Buildout -- the buildout script uses its configuration to download and install packages. In some cases, this includes creating binaries from source code.
 
-4. Dependencies -- the build updates the files that record third-party dependencies. Changes may be discovered by building the _status_ target.
+4. Dependencies -- the build updates the files that record third-party dependencies.
 
 5. Code Quality -- the build uses flake8 to check Python code quality.
 

@@ -1,10 +1,11 @@
 CLEAN = rm -rf *.css *.html *.js *.png search
 DOXYGEN = doxygen/bin/doxygen
-MAKE_DOXYFILE = ./make_doxyfile
+MAKE_DOXYFILE = scripts/make_doxyfile
 MAKE_SPHINX = make --directory sphinx
 PHP = html/php/index.html
 PYTHON = html/python/index.html
 SAMPLES = ../samples
+SERVER_CFG = scripts/cfg/server
 
 html: $(PHP) $(PYTHON) sphinx/html/index.html
 
@@ -24,16 +25,16 @@ sphinx-clean:
 
 $(DOXYGEN): doxygen
 
-$(PHP): $(DOXYGEN) $(MAKE_DOXYFILE) $(SAMPLES)/php/* cfg/server
+$(PHP): $(DOXYGEN) $(MAKE_DOXYFILE) $(SAMPLES)/php/* $(SERVER_CFG)
 	@make php-clean
 	$(MAKE_DOXYFILE) $(SAMPLES)/php/Doxyfile | $(DOXYGEN) -
 
-$(PYTHON): $(DOXYGEN) $(MAKE_DOXYFILE) $(SAMPLES)/python/* cfg/server
+$(PYTHON): $(DOXYGEN) $(MAKE_DOXYFILE) $(SAMPLES)/python/* $(SERVER_CFG)
 	@make python-clean
 	$(MAKE_DOXYFILE) $(SAMPLES)/python/Doxyfile | $(DOXYGEN) -
 
-cfg/server:
-	make --directory .. $@
+$(SERVER_CFG):
+	make --directory .. cfg/server
 
 doxygen:
 	git clone https://github.com/doxygen/$@.git
@@ -49,8 +50,8 @@ sphinx: eggs venv
 sphinx/html/index.html: sphinx src/server/conf.py
 	@$(MAKE_SPHINX) html
 
-src/server/conf.py: cfg/server
-	./make_conf_py conf.py > $@
+src/server/conf.py: $(SERVER_CFG)
+	scripts/make_conf_py conf.py > $@
 
 venv:
 	python virtualenv.py --no-setuptools $@
