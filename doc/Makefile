@@ -47,7 +47,7 @@ sphinx: eggs venv
 	venv/bin/python bootstrap.py
 	bin/buildout
 
-sphinx/html/index.html: sphinx src/server/conf.py
+sphinx/html/index.html: sphinx src/server/conf.py src/server/index.rst
 	@$(MAKE_SPHINX) html
 
 venv:
