@@ -50,9 +50,6 @@ sphinx: eggs venv
 sphinx/html/index.html: sphinx src/server/conf.py
 	@$(MAKE_SPHINX) html
 
-src/server/conf.py: $(SERVER_CFG)
-	scripts/make_conf_py conf.py > $@
-
 venv:
 	python virtualenv.py --no-setuptools $@
 

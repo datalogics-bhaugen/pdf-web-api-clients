@@ -11,6 +11,16 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+.. automodule:: __init__.py
+.. automodule:: action.py
+.. automodule:: client.py
+.. automodule:: conf.py
+.. automodule:: errors.py
+.. automodule:: gunicorn.py
+.. automodule:: input.py
+.. automodule:: logger.py
+.. automodule:: request.py
+.. automodule:: tmpdir.py
 
 
 Indices and tables
