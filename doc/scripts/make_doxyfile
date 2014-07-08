@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+"initialize Doxyfile PROJECT_BRIEF"
+
+import fileinput
+from cfg import Configuration
+
+for line in [line for line in fileinput.input()]:
+    if line.startswith('PROJECT_BRIEF'):
+        version = Configuration.versions.server.split('-')[0]
+        print('PROJECT_BRIEF          = "PDF WebAPI {}"'.format(version))
+    else:
+        print(line.rstrip())

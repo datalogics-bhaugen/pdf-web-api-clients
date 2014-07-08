@@ -56,17 +56,13 @@ The Makefile's _build_ target (default) downloads packages, updates the files th
 
     NB: Don't panic if it seems to stall. (It does this while building lxml.)
 
-1. Documentation -- the build begins by generating HTML pages for our sample clients.
+1. Bootstrap -- the repository is initialized by a script that must be compatible with the version of Buildout we use (currently 2.2).
 
-    * We clone the doxygen repository, build it, and use it to generate HTML for our sample PHP and Python clients.
+2. Buildout -- the buildout script uses its configuration to download and install packages. In some cases, this includes creating binaries from source code.
 
-2. Bootstrap -- the repository is initialized by a script that must be compatible with the version of Buildout we use (currently 2.2).
+3. Dependencies -- the build updates the files that record third-party dependencies.
 
-3. Buildout -- the buildout script uses its configuration to download and install packages. In some cases, this includes creating binaries from source code.
-
-4. Dependencies -- the build updates the files that record third-party dependencies. Changes may be discovered by building the _status_ target.
-
-5. Code Quality -- the build uses flake8 to check Python code quality.
+4. Code Quality -- the build uses flake8 to check Python code quality.
 
 ## Run
 
@@ -82,10 +78,17 @@ The Makefile's _build_ target (default) downloads packages, updates the files th
 
 These scripts facilitate testing:
 
-* `bin/nose` runs the regression tests that validate this Flask application
+* `bin/nose` runs the regression tests that validate this server's Flask application
 * `bin/server` runs this Flask application with its development server (Werkzeug)
-* `test/app_test.py` tests this Flask application directly
-* `test/test_client.py` runs `samples/python/pdfprocess.py` with test settings
+* `test/app_test.py` tests this server's Flask application directly
+* `test/test_client.py` runs `samples/python/pdfprocess.py` with valid 3scale credentials
+
+## Documentation
+
+The Makefile's _html_ target generates HTML pages:
+
+* We clone the doxygen repository, build it, and use it to generate HTML for our sample PHP and Python clients.
+* We download and install Sphinx, and use it to generate HTML for this server's Flask application.
 
 ## Issues
 

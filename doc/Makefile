@@ -1,38 +1,61 @@
 CLEAN = rm -rf *.css *.html *.js *.png search
 DOXYGEN = doxygen/bin/doxygen
-PHP = php/index.html
-PYTHON = python/index.html
+MAKE_DOXYFILE = scripts/make_doxyfile
+MAKE_SPHINX = make --directory sphinx
+PHP = html/php/index.html
+PYTHON = html/python/index.html
 SAMPLES = ../samples
+SERVER_CFG = scripts/cfg/server
 
-html: $(PHP) $(PYTHON)
+html: $(PHP) $(PYTHON) sphinx/html/index.html
 
-clean: php-clean python-clean
+clean: php-clean python-clean sphinx-clean
 
 php-clean:
-	cd php; $(CLEAN)
+	cd html/php; $(CLEAN)
 
 python-clean:
-	cd python; $(CLEAN)
+	cd html/python; $(CLEAN)
 
-.PHONY: html clean php-clean python-clean
+sphinx-clean:
+	rm -rf .installed.cfg bin develop-eggs parts venv
+	@$(MAKE_SPHINX) clean
+
+.PHONY: html clean php-clean python-clean sphinx-clean
 
 $(DOXYGEN): doxygen
+
+$(PHP): $(DOXYGEN) $(MAKE_DOXYFILE) $(SAMPLES)/php/* $(SERVER_CFG)
+	@make php-clean
+	$(MAKE_DOXYFILE) $(SAMPLES)/php/Doxyfile | $(DOXYGEN) -
+
+$(PYTHON): $(DOXYGEN) $(MAKE_DOXYFILE) $(SAMPLES)/python/* $(SERVER_CFG)
+	@make python-clean
+	$(MAKE_DOXYFILE) $(SAMPLES)/python/Doxyfile | $(DOXYGEN) -
+
+$(SERVER_CFG):
+	make --directory .. cfg/server
 
 doxygen:
 	git clone https://github.com/doxygen/$@.git
 	cd $@; ./configure; make
 
-$(PHP): $(DOXYGEN) $(SAMPLES)/php/*
-	@make php-clean
-	$(DOXYGEN) $(SAMPLES)/php/Doxyfile
+eggs:
+	mkdir -p $@
 
-$(PYTHON): $(DOXYGEN) $(SAMPLES)/python/*
-	@make python-clean
-	$(DOXYGEN) $(SAMPLES)/python/Doxyfile
+sphinx: eggs venv
+	venv/bin/python bootstrap.py
+	bin/buildout
+
+sphinx/html/index.html: sphinx src/server/conf.py src/server/index.rst
+	@$(MAKE_SPHINX) html
+
+venv:
+	python virtualenv.py --no-setuptools $@
 
 
-PHP2 = php/decorate-document/index.html
-PYTHON2 = python/decorate-document/index.html
+PHP2 = html/php/decorate-document/index.html
+PYTHON2 = html/python/decorate-document/index.html
 
 $(PHP2): $(DOXYGEN) $(SAMPLES)/php/decorate-document/*
 	@make php2-clean
@@ -47,9 +70,9 @@ html: $(PHP2) $(PYTHON2)
 clean: php2-clean python2-clean
 
 php2-clean:
-	cd php/decorate-document; $(CLEAN)
+	cd html/php/decorate-document; $(CLEAN)
 
 python2-clean:
-	cd python/decorate-document; $(CLEAN)
+	cd html/python/decorate-document; $(CLEAN)
 
 .PHONY: php2-clean python2-clean

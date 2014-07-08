@@ -1,1 +1,0 @@
-../../../samples/php/pdfclient.php
