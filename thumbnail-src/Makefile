@@ -11,7 +11,7 @@ clean:
 	@printf '' > $(APP_LOG); printf '' > $(AUX_LOG)
 
 qa:
-	../bin/flake8 scripts test thumbnail
+	../bin/flake8 --max-complexity 10 scripts test thumbnail
 
 .PHONY: build clean qa
 
