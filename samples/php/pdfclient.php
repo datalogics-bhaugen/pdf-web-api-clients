@@ -419,6 +419,13 @@ class RenderPages extends Request
 }
 
 
+namespace pdfclient\DecorateDocument;
+
+/**
+ * @brief Error codes for %DecorateDocument requests
+ */
+class ErrorCode extends \pdfclient\ErrorCode { }
+
 namespace pdfclient\ExportFormData;
 
 /**
