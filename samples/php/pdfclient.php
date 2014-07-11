@@ -247,7 +247,7 @@ class Response
 /**
  * @brief API error codes
  */
-class ErrorCode
+abstract class ErrorCode
 {
     const AuthorizationError = 1;
     const InvalidSyntax = 2;
@@ -419,12 +419,19 @@ class RenderPages extends Request
 }
 
 
+namespace pdfclient\DecorateDocument;
+
+/**
+ * @brief Error codes for %DecorateDocument requests
+ */
+abstract class ErrorCode extends \pdfclient\ErrorCode { }
+
 namespace pdfclient\ExportFormData;
 
 /**
  * @brief Error codes for %ExportFormData requests
  */
-class ErrorCode extends \pdfclient\ErrorCode
+abstract class ErrorCode extends \pdfclient\ErrorCode
 {
     const ExportXFDFFromXFA = 41;
 }
@@ -434,14 +441,14 @@ namespace pdfclient\FillForm;
 /**
  * @brief Error codes for %FillForm requests
  */
-class ErrorCode extends \pdfclient\ErrorCode { }
+abstract class ErrorCode extends \pdfclient\ErrorCode { }
 
 namespace pdfclient\FlattenForm;
 
 /**
  * @brief Error codes for %FlattenForm requests
  */
-class ErrorCode extends \pdfclient\ErrorCode
+abstract class ErrorCode extends \pdfclient\ErrorCode
 {
     const NoAnnotations = 21;
 }
@@ -451,7 +458,7 @@ namespace pdfclient\RenderPages;
 /**
  * @brief Error codes for %RenderPages requests
  */
-class ErrorCode extends \pdfclient\ErrorCode
+abstract class ErrorCode extends \pdfclient\ErrorCode
 {
     const InvalidColorModel = 31;
     const InvalidCompression = 32;
