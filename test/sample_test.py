@@ -19,16 +19,6 @@ def set_python_path():
     requests_dir = glob.glob(os.path.join(eggs_dir, 'requests-*.egg'))[-1]
     os.environ['PYTHONPATH'] = requests_dir
 
-def test_monitor():
-    monitor = os.path.join('..', 'scripts', 'monitor')
-    url = 'https://pdfprocess.datalogics-cloud.com/api/actions/render/pages'
-    args = ['python3', monitor, url, GOOD_PDF, 'monitor.png']
-    with Stdout() as stdout:
-        assert_equal(subprocess.call(args, stdout=stdout), 0)
-    args = ['file', 'monitor.png', '|', 'grep', 'PNG']
-    with Stdout() as stdout:
-        assert_equal(subprocess.call(args, stdout=stdout), 0)
-
 def test_pdf2img_application():
     args = ['pdf2img', 'data/hello_world.pdf', 'tif']
     with Stdout() as stdout:
