@@ -68,7 +68,8 @@ else:
 OPTIONS = ('inputName', 'password', 'options')
 PDF2IMG_GUIDE = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
 USAGE_OPTIONS = '[{}=name] [{}=pwd] [{}=json]'.format(*OPTIONS)
-USAGE = 'usage: {0} request_type <input file(s)> ' + USAGE_OPTIONS + '\n' +\
+USAGE = 'usage: {0} request_type <input document> [input file(s)] ' +\
+        USAGE_OPTIONS + '\n' +\
         'example: {0} DecorateDocument any.pdf headers.xml\n' +\
         'example: {0} FillForm form.pdf form.fdf\n' +\
         'example: {0} FlattenForm hello_world.pdf\n' +\
@@ -144,13 +145,21 @@ class Parser(object):
         if urls:
             files.remove(urls[0])
             self.data['inputURL'] = urls[0]
+        else:
+            self.files['input'] = open(files[0], 'rb')
         for option, value in options:
             if option not in OPTIONS:
                 raise Exception('invalid option: {}'.format(option))
             self.data[option] =\
                 json.loads(value) if option == 'options' else value
-        for file in files:
-            self.files[request.part_name(file)] = open(file, 'rb')
+        suffixes = {}
+        for file in files[1:]:
+            part_name = request.part_name(file)
+            if isinstance(part_name, list):
+                part_name = part_name[0]
+                suffixes[part_name] = suffixes.get(part_name, -1) + 1
+                part_name = '{}[{}]'.format(part_name, suffixes[part_name])
+            self.files[part_name] = open(file, 'rb')
     def __del__(self):
         for file in self.files.values():
             file.close()
