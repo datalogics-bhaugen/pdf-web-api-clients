@@ -110,10 +110,9 @@ class Request(object):
 
     def part_name(self, filename):
         data_format = os.path.splitext(filename)[1][1:].upper()
-        for part_name in self.INPUT_TYPES:
-            if data_format in self.INPUT_TYPES[part_name]:
-                return part_name
-        return 'input'
+        for key in self.INPUT_TYPES.keys():
+            if data_format == key or data_format in key:
+                return self.INPUT_TYPES[key]
     @property
     ## Output filename extension property (string)
     def output_format(self): return self._output_format
@@ -181,7 +180,9 @@ class ErrorCode:
 
 ## Service request (decorate document with supplied header/footer data)
 class DecorateDocument(Request):
-    INPUT_TYPES = {'decorationData': ('XML', )}
+    INPUT_TYPES = {'XML': ['decorationData'],
+                   'MF': 'manifest',
+                   ('BMP', 'JPG', 'PDF'): 'resource'}
     ## %DecorateDocument has no request options
     OPTIONS = []
     ## Error codes for %DecorateDocument requests
@@ -208,7 +209,7 @@ class ExportFormData(Request):
 
 ## Service request (fill form fields with supplied FDF/XFDF data)
 class FillForm(Request):
-    INPUT_TYPES = {'formsData': ('FDF', 'XFDF', 'XML')}
+    INPUT_TYPES = {('FDF', 'XFDF', 'XML'): 'formsData'}
     ## %FillForm request options:
     #  * [disableCalculation]
     #     (https://api.datalogics-cloud.com/docs#disableCalculation)
