@@ -1,1 +1,0 @@
-../../../../samples/perl/pdfprocess.pl
