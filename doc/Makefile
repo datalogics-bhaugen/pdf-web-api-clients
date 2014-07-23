@@ -52,27 +52,3 @@ sphinx/html/index.html: sphinx src/server/conf.py src/server/index.rst
 
 venv:
 	python virtualenv.py --no-setuptools $@
-
-
-PHP2 = html/php/decorate-document/index.html
-PYTHON2 = html/python/decorate-document/index.html
-
-$(PHP2): $(DOXYGEN) $(SAMPLES)/php/decorate-document/*
-	@make php2-clean
-	$(DOXYGEN) $(SAMPLES)/php/decorate-document/Doxyfile
-
-$(PYTHON2): $(DOXYGEN) $(SAMPLES)/python/decorate-document/*
-	@make python2-clean
-	$(DOXYGEN) $(SAMPLES)/python/decorate-document/Doxyfile
-
-html: $(PHP2) $(PYTHON2)
-
-clean: php2-clean python2-clean
-
-php2-clean:
-	cd html/php/decorate-document; $(CLEAN)
-
-python2-clean:
-	cd html/python/decorate-document; $(CLEAN)
-
-.PHONY: php2-clean python2-clean
