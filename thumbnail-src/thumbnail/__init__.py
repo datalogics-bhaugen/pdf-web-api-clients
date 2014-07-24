@@ -39,8 +39,9 @@ logger.start(app.logger, app.name)
 @app.route('/', methods=['GET'])
 def action():
     try:
+        client_addr = flask.request.remote_addr
         url, options = input_url(flask.request), request_options(flask.request)
-        app.logger.info('{}: options = {}'.format(url, options))
+        logger.info('{}: options = {} ({})'.format(url, options, client_addr))
         request = api_client.make_request('RenderPages', BASE_URL)
         if IMAGE_WIDTH in options or IMAGE_HEIGHT in options:
             return response(request(files={}, inputURL=url, options=options))
@@ -49,7 +50,7 @@ def action():
         return error.message, error.http_code
     except Exception as exception:
         error = str(exception)
-        app.logger.exception(error)
+        logger.exception(error)
         return error, HTTPCode.InternalServerError
 
 def input_url(request):
