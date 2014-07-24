@@ -152,12 +152,8 @@ class Request
 
     function part_name($filename)
     {
-        $format = strtoupper(pathinfo($filename, PATHINFO_EXTENSION));
-        foreach ($this::$InputTypes as $part_name => $file_formats)
-        {
-            if (in_array($format, $file_formats)) return $part_name;
-        }
-        return 'input';
+        $file_format = strtoupper(pathinfo($filename, PATHINFO_EXTENSION));
+        return $this::$InputTypes[$file_format];
     }
 
     protected $_output_format;
@@ -274,7 +270,9 @@ class DecorateDocument extends Request
         $this->_output_format = 'pdf';
     }
 
-    static $InputTypes = array('decorationData' => array('XML'));
+    static $InputTypes = array(
+        'XML' => array('decorationData'), 'MF' => 'manifest',
+        'BMP' => 'resource', 'JPG' => 'resource', 'PDF' => 'resource');
 
     /**
      * %DecorateDocument has no request options
@@ -314,7 +312,8 @@ class FillForm extends Request
         $this->_output_format = 'pdf';
     }
 
-    static $InputTypes = array('formsData' => array('FDF', 'XFDF', 'XML'));
+    static $InputTypes = array(
+        'FDF' => 'formsData', 'XFDF' => 'formsData', 'XML' => 'formsData');
 
     /**
      * %FillForm request options:

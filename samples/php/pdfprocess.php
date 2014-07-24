@@ -63,7 +63,8 @@ $json = substr(php_uname('s'), 0, 3) == 'Win' ?
     '\'{"printPreview": true, "outputFormat": "jpg"}\'';
 
 $usage =
-    "usage: " . CMD . "request_type <input file(s)> " . USAGE_OPTIONS . "\n" .
+    "usage: " . CMD . "request_type <input document> [input file(s)] " .
+        USAGE_OPTIONS . "\n" .
     "example: " . CMD . "DecorateDocument any.pdf headers.xml\n" .
     "example: " . CMD . "FillForm form.pdf form.fdf\n" .
     "example: " . CMD . "FlattenForm hello_world.pdf\n" .
@@ -210,10 +211,26 @@ class Parser
             unset($input[array_search($input_url, $input)]);
             $this->_request_fields['inputURL'] = $input_url;
         }
-
-        foreach ($input as $filename)
+        else
         {
-            $this->_input_files[$request->part_name($filename)] = $filename;
+            $this->_input_files['input'] = $input[0];
+        }
+
+        $suffixes = array();
+        foreach (array_slice($input, 1) as $filename)
+        {
+            $part_name = $request->part_name($filename);
+            if (is_array($part_name))
+            {
+                $part_name = $part_name[0];
+                if (!isset($suffixes[$part_name]))
+                {
+                    $suffixes[$part_name] = -1;
+                }
+                $suffix = ++$suffixes[$part_name];
+                $part_name = sprintf('%s[%s]', $part_name, $suffix);
+            }
+            $this->_input_files[$part_name] = $filename;
         }
 
         $form_parts = array('inputName', 'password', 'options');
@@ -267,7 +284,7 @@ if ($response->ok())
 }
 else
 {
-    echo $response;
+    echo $response . "\n";
     exit($response->api_response()->error_code());
 }
 ?>

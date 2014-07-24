@@ -35,7 +35,6 @@ qa:
 	@$(MAKE_THUMBNAIL) $@
 
 test-scripts: $(TEST_PDFPROCESS)
-	$(REPLACE_KEY) samples/perl/pdfprocess.pl > $^/perl
 	$(REPLACE_KEY) samples/php/pdfprocess.php > $^/php
 	$(REPLACE_KEY) samples/python/pdfprocess.py > $^/python
 	chmod +x $^/*

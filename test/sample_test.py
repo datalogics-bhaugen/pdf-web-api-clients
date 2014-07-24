@@ -25,24 +25,6 @@ def test_pdf2img_application():
         assert_equal(subprocess.call(args, stdout=stdout), 0)
         assert_in('PDF2IMG', str(stdout))
 
-def test_pdfprocess_sample_perl():
-    perl_sample = os.path.join('..', 'samples', 'perl', 'pdfprocess.pl')
-    args = [perl_sample, 'RenderPages', 'data/bad.pdf', 'unused.png']
-    with Stdout() as stdout:
-        error_code = subprocess.call(args, stdout=stdout)
-        assert_equal(error_code, ErrorCode.AuthorizationError)
-        assert_in('your app id', str(stdout))
-
-def test_pdfprocess_sample_perl_patched():
-    args = ['pdfprocess/perl', 'RenderPages', GOOD_PDF, 'four_pages.png']
-    with Stdout() as stdout:
-        assert_equal(subprocess.call(args, stdout=stdout), 0)
-
-def test_pdfprocess_sample_perl_patched_url():
-    args = ['pdfprocess/perl', 'RenderPages', INPUT_URL, 'pdf2img.png']
-    with Stdout() as stdout:
-        assert_equal(subprocess.call(args, stdout=stdout), 0)
-
 def test_pdfprocess_sample_python(python3=False):
     python_sample = os.path.join('..', 'samples', 'python', 'pdfprocess.py')
     args = [python_sample, 'RenderPages', 'data/bad.pdf']
