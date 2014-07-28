@@ -1,5 +1,3 @@
-"directory definitions and file utilities"
-
 import os
 import platform
 import tempfile
@@ -25,7 +23,7 @@ os.environ['TMPDIR'] = TMP_DIR  # for APDFL
 
 
 class TemporaryFile(object):
-    "facilitates temporary file usage"
+    "Facilitates temporary file usage."
     def __init__(self):
         self._file = tempfile.NamedTemporaryFile(dir=TMP_DIR)
     def __del__(self):
@@ -41,12 +39,12 @@ class TemporaryFile(object):
         self._file.flush()
 
 class Stdout(TemporaryFile):
-    "for capturing stdout"
+    "For capturing stdout."
     def __str__(self):
         self._file.seek(0)
         return ''.join((line for line in self._file))
     def errors(self):
-        "return the last error message, because it's the most informative"
+        "Return the last error message, because it's the most informative."
         result = ''
         error_prefix = 'ERROR: '
         for line in str(self).split('\n'):

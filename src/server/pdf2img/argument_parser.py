@@ -1,5 +1,3 @@
-"RenderPages option parser"
-
 import argparse
 import translator
 from options import Option, Flag, OPTIONS
@@ -8,7 +6,7 @@ from translator import Pages, Resolution, Smoothing
 
 
 class ArgumentParser(argparse.ArgumentParser):
-    "uses argparse.ArgumentParser to parse RenderPages options"
+    "Use argparse.ArgumentParser to parse RenderPages options."
     def __init__(self):
         argparse.ArgumentParser.__init__(self)
         self._compression = Compression()
@@ -29,7 +27,7 @@ class ArgumentParser(argparse.ArgumentParser):
         self.pdf2img_options.extend(self._resolution(options))
         self.pdf2img_options.extend(self._smoothing(options))
     def error(self, message):
-        "overrides argparse.ArgumentParser.error"
+        "argparse.ArgumentParser method override."
         raise Exception(message)
     def _option_value(self, option_prefix):
         for option in self.options:

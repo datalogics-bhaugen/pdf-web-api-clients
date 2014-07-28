@@ -1,5 +1,3 @@
-"3scale client"
-
 import ThreeScalePY
 import cfg
 
@@ -12,7 +10,7 @@ USAGE_LIMIT = 'Your usage limit has been exceeded. ' \
     'Please contact us to increase your limit.'
 
 class Client(ThreeScaleAuthRep):
-    "3scale client extracts application ID/key and authenticates request"
+    "Extract application ID/key from request and authenticate it."
     def __init__(self, address, request_form):
         self._address = address
         request_data = JSON.request_data(request_form, 'application')

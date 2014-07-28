@@ -1,14 +1,12 @@
-"JSON utilities"
-
 import simplejson
 
 from errors import Error, ErrorCode
 
 
 class JSON:
-    "JSON encoding and parsing utilities"
+    "JSON encoding and parsing utilities."
     class RequestData(dict):
-        "request form data (supports jQuery form data encoding)"
+        "Extract request form data (supports jQuery form data encoding)."
         def parse(self, request_form, part_name):
             prefix = u'{}['.format(part_name)
             for key, value in request_form.items():
