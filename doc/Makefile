@@ -5,7 +5,10 @@ MAKE_SPHINX = make --directory sphinx
 PHP = html/php/index.html
 PYTHON = html/python/index.html
 SAMPLES = ../samples
+SERVER = src/server
 SERVER_CFG = scripts/cfg/server
+SERVER_SRC = $(SERVER)/pdf2img/*.py $(SERVER)/*.py
+SPHINX_BUILD = bin/sphinx-build
 
 html: $(PHP) $(PYTHON) sphinx/html/index.html
 
@@ -36,6 +39,10 @@ $(PYTHON): $(DOXYGEN) $(MAKE_DOXYFILE) $(SAMPLES)/python/* $(SERVER_CFG)
 $(SERVER_CFG):
 	make --directory .. cfg/server
 
+$(SPHINX_BUILD): venv
+	venv/bin/python bootstrap.py
+	bin/buildout
+
 doxygen:
 	git clone https://github.com/doxygen/$@.git
 	cd $@; ./configure; make
@@ -43,11 +50,9 @@ doxygen:
 eggs:
 	mkdir -p $@
 
-sphinx: eggs venv
-	venv/bin/python bootstrap.py
-	bin/buildout
+sphinx: $(SPHINX_BUILD) eggs
 
-sphinx/html/index.html: sphinx src/server/conf.py src/server/index.rst
+sphinx/html/index.html: sphinx $(SERVER)/*.rst $(SERVER_SRC)
 	@$(MAKE_SPHINX) html
 
 venv:
