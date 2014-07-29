@@ -1,4 +1,4 @@
-"RenderPages-to-pdf2img option translator"
+"RenderPages-to-PDF2IMG option translator."
 
 import sys
 
@@ -9,7 +9,7 @@ from options import Option
 INVALID_OPTION_VALUE = "{} is not a valid '{}' value"
 
 class Translator(object):
-    "translates Option (not Flag) to pdf2img option and validates value"
+    "Translates Option (not Flag) to PDF2IMG option and validates value."
     def __init__(self, name):
         self._name, self._option = name, None
     def __call__(self, options, *args):
@@ -22,7 +22,7 @@ class Translator(object):
         if isinstance(value, basestring):
             self._option = value.lower()
     def validate(self, *args):
-        "validation is optional, return pdf2img option(s) if valid"
+        "Validation is optional, return PDF2IMG option(s) if valid."
         return self.options
     @property
     def option(self): return self._option
@@ -32,7 +32,7 @@ class Translator(object):
         return [u'-{}={}'.format(self._name, self.option)]
 
 class ImageSize(Translator):
-    "translates imageWidth/imageHeight to -pixelcount"
+    "Translates imageWidth/imageHeight to -pixelcount."
     OPTIONS = [Option(u'imageWidth'), Option(u'imageHeight')]
     def __init__(self):
         Translator.__init__(self, u'pixelcount')
@@ -54,7 +54,7 @@ class ImageSize(Translator):
     def height(self): return self._dimensions[1]
 
 class Compression(Translator):
-    "translates compression to -compression, adding -bpc as needed"
+    "Translates compression to -compression, adding -bpc as needed."
     OPTIONS = [Option(u'compression')]
     def __init__(self):
         Translator.__init__(self, u'compression')
@@ -69,7 +69,7 @@ class Compression(Translator):
         return self.options
 
 class OutputFormat(Translator):
-    "translates and validates outputFormat (default=png)"
+    "Translates and validates outputFormat (default=png)."
     OPTIONS = [Option(u'outputFormat')]
     def __init__(self):
         Translator.__init__(self, u'outputFormat')
@@ -84,7 +84,7 @@ class OutputFormat(Translator):
         return self.options
 
 class Pages(Translator):
-    "translates pages to -pages (default=1), adding -multipage as needed"
+    "Translates pages to -pages (default=1), adding -multipage as needed."
     OPTIONS = [Option(u'pages')]
     def __init__(self):
         Translator.__init__(self, u'pages')
@@ -101,7 +101,7 @@ class Pages(Translator):
         raise Error(ErrorCode.InvalidOutputFormat, error)
 
 class Resolution(Translator):
-    "translates resolution to -resolution (default=150)"
+    "Translates resolution to -resolution (default=150)."
     OPTIONS = [Option(u'resolution')]
     def __init__(self):
         Translator.__init__(self, u'resolution')
@@ -116,7 +116,7 @@ class Resolution(Translator):
         raise Error(ErrorCode.InvalidResolution, error)
 
 class Smoothing(Translator):
-    "translates smoothing to -smoothing (default=all)"
+    "Translates smoothing to -smoothing (default=all)."
     OPTIONS = [Option(u'smoothing')]
     def __init__(self):
         Translator.__init__(self, u'smoothing')

@@ -1,5 +1,3 @@
-"WebAPI input document"
-
 import abc
 import requests
 
@@ -8,7 +6,7 @@ from errors import Error, ErrorCode, HTTPCode
 
 
 class ChunkedTransfer(object):
-    "uses chunked transfer logic to enforce input size limit"
+    "Uses chunked transfer logic to enforce input size limit."
     def __init__(self, from_url, to_file):
         self._input, self._to_file = None, None
         try:
@@ -44,7 +42,7 @@ class ChunkedTransfer(object):
 
 
 class Input(object):
-    "each request input class should inherit from this class"
+    "Each request input class should inherit from this class."
     __metaclass__ = abc.ABCMeta
     def __init__(self, action):
         self._action, self._input = action, None
@@ -60,7 +58,7 @@ class Input(object):
     def files(self): return self._action.request_files
 
 class FromInput(Input):
-    "for input extracted from an input form part"
+    "For input extracted from an input form part."
     def initialize(self):
         files = len(self.files)
         if files > 1:
@@ -72,7 +70,7 @@ class FromInput(Input):
         self._input.save(input_file)
 
 class FromInputURL(Input):
-    "for input specified by an inputURL form part"
+    "For input specified by an inputURL form part."
     def initialize(self):
         if self.files:
             self._raise_error(u'excess input (inputURL and request file)')

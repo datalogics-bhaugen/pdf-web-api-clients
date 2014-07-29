@@ -16,6 +16,7 @@ logger.start(app.logger, app.name, Configuration.versions.server)
 
 @app.route('/api/actions/render/pages', methods=['POST'])
 def render_pages():
+    "RenderPages request handler."
     action = pdf2img.Action(flask.request)
     try:
         response = action()
@@ -29,6 +30,7 @@ def render_pages():
         del action
 
 def error_response(action, error):
+    "Return the Flask response for an error."
     json = flask.jsonify(errorCode=int(error.code), errorMessage=error.message)
     action.log_usage(error)
     return json, error.http_code
@@ -52,7 +54,8 @@ IM_A_TEAPOT = '''<head><title>I'm a teapot</title></head>
 '''
 
 @app.route('/api/actions/brew/coffee', methods=['GET', 'POST'])
-def brew_coffee():
+def ping():
+    "For testing basic connectivity."
     csr_base_url = 'http://www.joereddington.com/csr'
     uploads_base_url = 'http://joereddington.com/wp-content/uploads/2013/09'
     images = ('{}/pot.png'.format(uploads_base_url),

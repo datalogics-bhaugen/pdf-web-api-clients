@@ -1,5 +1,3 @@
-"base request handler"
-
 import abc
 import sys
 import traceback
@@ -13,7 +11,7 @@ from request import JSON
 
 
 class Action(object):
-    "each request handler should inherit from this class"
+    "Each request handler should inherit from this class."
     __metaclass__ = abc.ABCMeta
     def __init__(self, request):
         self._client = Client(request.remote_addr, request.form)

@@ -1,10 +1,8 @@
-"error definitions"
-
 import requests
 
 
 class EnumValue(object):
-    "associates an error code (int) with its string representation"
+    "Associates an error code (int) with its string representation."
     def __init__(self, name, value):
         self._name, self._value = name, value
     def __str__(self):
@@ -13,8 +11,8 @@ class EnumValue(object):
         return self._value
 
 
-class ErrorCode(object):
-    "error codes applicable to any request type"
+class ErrorCode:
+    "Error codes applicable to any request type:"
     OK = EnumValue('OK', 0)
     AuthorizationError = EnumValue('AuthorizationError', 1)
     InvalidSyntax = EnumValue('InvalidSyntax', 2)
@@ -30,7 +28,6 @@ class ErrorCode(object):
 
 
 class HTTPCode:
-    "HTTP status codes"
     OK = requests.codes.ok
     BadRequest = requests.codes.bad_request
     Forbidden = requests.codes.forbidden
@@ -42,7 +39,7 @@ class HTTPCode:
 
 
 class Error(Exception):
-    "associates an ErrorCode with an HTTPCode"
+    "Associates an ErrorCode with an HTTPCode."
     def __init__(self, code, message, default_arg=None):
         Exception.__init__(self, message)
         self._code = code

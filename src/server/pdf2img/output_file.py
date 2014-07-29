@@ -1,18 +1,16 @@
-'''
-pdf2img appends a page number to the output filename, so we cannot
-use tempfile to construct the output file. instead, we assume that
-pdf2img successfully created the output file from the temporary
-file we provided as input. this class encapsulates all this logic,
-and deletes the image files created by pdf2img.
-'''
-
 import os
 import glob
 from server import UNKNOWN
 
 
 class OutputFile(object):
-    "finds and deletes images created by pdf2img"
+    '''
+    PDF2IMG appends a page number to the output filename, so we cannot
+    use tempfile to construct the output file. Instead, we assume that
+    PDF2IMG successfully created the output file from the temporary
+    file we provided as input. This class encapsulates all this logic,
+    and deletes the image files created by PDF2IMG.
+    '''
     def __init__(self, name, extension):
         self._pattern = '{}*.{}'.format(name, extension)
     def __del__(self):

@@ -1,5 +1,3 @@
-"RenderPages request handler"
-
 import os
 import subprocess
 
@@ -14,7 +12,7 @@ from output_file import OutputFile
 
 
 class Action(server.Action):
-    "uses pdf2img application to process requests"
+    "Execute PDF2IMG application to process requests."
     def __call__(self):
         self._parser = argument_parser.ArgumentParser()
         try:
