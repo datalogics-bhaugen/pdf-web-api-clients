@@ -7,6 +7,7 @@ class Config(dict):
     DLENV_FILENAME = '/etc/dl_environment'
     def __getattr__(self, name): return self[name]
     def initialize(self, filenames, default_dlenv='test'):
+        "Parse configuration files and set *dlenv* attribute."
         parser = ConfigParser.ConfigParser()
         parser.read(filenames)
         for section_name in parser.sections():

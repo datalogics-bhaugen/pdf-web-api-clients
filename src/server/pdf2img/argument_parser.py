@@ -27,7 +27,7 @@ class ArgumentParser(argparse.ArgumentParser):
         self.pdf2img_options.extend(self._resolution(options))
         self.pdf2img_options.extend(self._smoothing(options))
     def error(self, message):
-        "argparse.ArgumentParser method override."
+        "Overrides :py:meth:`argparse.ArgumentParser.error`."
         raise Exception(message)
     def _option_value(self, option_prefix):
         for option in self.options:
@@ -48,10 +48,14 @@ class ArgumentParser(argparse.ArgumentParser):
             elif value:
                 self.options.append(Option.FORMAT.format(key, value))
     @property
-    def options(self): return self._options
+    def options(self):
+        "The WebAPI options list for this request."
+        return self._options
     @property
-    def output_format(self): return self._output_format.option
+    def output_format(self):
+        "The output format for this request, e.g. PNG."
+        return self._output_format.option_value
     @property
-    def pages(self): return self._pages.option
-    @property
-    def pdf2img_options(self): return self._pdf2img_options
+    def pdf2img_options(self):
+        "PDF2IMG options list for this request."
+        return self._pdf2img_options

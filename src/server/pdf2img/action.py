@@ -22,7 +22,7 @@ class Action(server.Action):
             self.raise_error(error)
         except Exception as exc:
             self.raise_error(Error(ErrorCode.InvalidSyntax, exc.message))
-        self.client.authorize()
+        self.client.authenticate()
         return self._pdf2img()
     def _content_type(self):
         image_type = self.output_format.lower()
@@ -54,8 +54,10 @@ class Action(server.Action):
         resources = [os.path.join(server.RESOURCE, r) for r in resources]
         return [u'-fontlist="{}"'.format(';'.join(resources))]
     @property
-    def request_type(self): return 'RenderPages'
+    def request_type(self):
+        "The request's type, i.e. RenderPages."
+        return 'RenderPages'
     @property
-    def output_format(self): return self._parser.output_format
-    @property
-    def pages(self): return self._parser.pages
+    def output_format(self):
+        "The output format for this request, e.g. PNG."
+        return self._parser.output_format

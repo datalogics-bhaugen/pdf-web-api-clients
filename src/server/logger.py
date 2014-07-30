@@ -29,6 +29,7 @@ class BaseHandler(object):
             logging.ERROR: level_formatter,
             logging.CRITICAL: level_formatter}
     def emit(self, record):
+        "Overrides :py:meth:`logging.Handler.emit`."
         self.setFormatter(self._formatters[record.levelno])
         handler = super() if PYTHON3 else super(BaseHandler, self)
         handler.emit(record)
@@ -49,6 +50,7 @@ class SysLogHandler(BaseHandler, BaseSysLogHandler):
         address = '/var/run/syslog' if system() == 'Darwin' else '/dev/log'
         BaseSysLogHandler.__init__(self, address, BaseSysLogHandler.LOG_LOCAL0)
     def emit(self, record):
+        "Overrides :py:meth:`BaseHandler.emit`."
         if logging.DEBUG < record.levelno:
             handler = super() if PYTHON3 else super(SysLogHandler, self)
             handler.emit(record)
@@ -61,21 +63,23 @@ def error(msg, *args, **kwargs): LOGGER.error(msg, *args, **kwargs)
 def critical(msg, *args, **kwargs): LOGGER.critical(msg, *args, **kwargs)
 def log(lvl, msg, *args, **kwargs): LOGGER.log(lvl, msg, *args, **kwargs)
 
-def log_level():
+def _log_level():
     dlenv = cfg.Configuration.environment.dlenv
     return logging.DEBUG if dlenv == 'test' else logging.INFO
 
-def start(app_logger, name, version=None):
+def start(app_logger, app_name, version=None):
+    "Configure *app_logger* for *app_name*."
     global LOGGER
     LOGGER = app_logger
-    LOGGER.setLevel(log_level())
+    LOGGER.setLevel(_log_level())
     LOGGER.addHandler(SysLogHandler())
-    LOGGER.addHandler(FileHandler(name))
+    LOGGER.addHandler(FileHandler(app_name))
     if version:
-        info('{} ({}) started'.format(name, version))
+        info('{} ({}) started'.format(app_name, version))
     else:
-        info('{} started'.format(name))
+        info('{} started'.format(app_name))
 
 def iso8601_timestamp():
+    "Return current UTC time in ISO 8601 format."
     utcnow = str(datetime.utcnow())
     return utcnow.replace(' ', 'T') + 'Z'

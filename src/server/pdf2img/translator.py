@@ -6,33 +6,42 @@ from errors import Error, ErrorCode
 from options import Option
 
 
-INVALID_OPTION_VALUE = "{} is not a valid '{}' value"
+INVALID_VALUE = "{} is not a valid '{}' value"
 
 class Translator(object):
     "Translates Option (not Flag) to PDF2IMG option and validates value."
-    def __init__(self, name):
-        self._name, self._option = name, None
+    def __init__(self, pdf2img_name):
+        self._pdf2img_name, self._option_value = pdf2img_name, None
     def __call__(self, options, *args):
-        "*args contains additional values needed to validate an option"
+        "*args contains the additional values needed to validate an option."
         for key, value in options.iteritems():
-            if key in type(self).OPTIONS: self.set_option(value)
+            if key in type(self).OPTIONS:
+                self.option_value = value
         return self.validate(*args)
-    def set_option(self, value):
-        self._option = value
-        if isinstance(value, basestring):
-            self._option = value.lower()
     def validate(self, *args):
         "Validation is optional, return PDF2IMG option(s) if valid."
-        return self.options
+        return self.pdf2img_options
     @property
-    def option(self): return self._option
+    def option_value(self):
+        "The normalized option value (strings are lowercase)."
+        return self._option_value
+    @option_value.setter
+    def option_value(self, value):
+        self._option_value = value
+        if isinstance(value, basestring):
+            self._option_value = value.lower()
     @property
-    def options(self):
-        if self.option is None: return []
-        return [u'-{}={}'.format(self._name, self.option)]
+    def pdf2img_options(self):
+        "The PDF2IMG options (a translator may add an option, e.g. -bpc=1)."
+        if self.option_value is None: return []
+        return [u'-{}={}'.format(self.pdf2img_name, self.option_value)]
+    @property
+    def pdf2img_name(self):
+        "The PDF2IMG option supported by this translator."
+        return self._pdf2img_name
 
 class ImageSize(Translator):
-    "Translates imageWidth/imageHeight to -pixelcount."
+    "Translates the imageWidth and imageHeight options to -pixelcount."
     OPTIONS = [Option(u'imageWidth'), Option(u'imageHeight')]
     def __init__(self):
         Translator.__init__(self, u'pixelcount')
@@ -42,87 +51,98 @@ class ImageSize(Translator):
             if key in ImageSize.OPTIONS:
                 self._dimensions[ImageSize.OPTIONS.index(key)] = value
         if self.width and self.height:
-            self.set_option(u'{}x{}'.format(self.width, self.height))
+            self.option_value = u'{}x{}'.format(self.width, self.height)
         elif self.width:
-            self.set_option(u'w:{}'.format(self.width))
+            self.option_value = u'w:{}'.format(self.width)
         elif self.height:
-            self.set_option(u'h:{}'.format(self.height))
-        return self.options
+            self.option_value = u'h:{}'.format(self.height)
+        return self.pdf2img_options
     @property
-    def width(self): return self._dimensions[0]
+    def width(self):
+        "The specified image width."
+        return self._dimensions[0]
     @property
-    def height(self): return self._dimensions[1]
+    def height(self):
+        "The specified image height."
+        return self._dimensions[1]
 
 class Compression(Translator):
-    "Translates compression to -compression, adding -bpc as needed."
+    "Validates the compression option."
     OPTIONS = [Option(u'compression')]
     def __init__(self):
         Translator.__init__(self, u'compression')
     def validate(self, *args):
-        if self.option is None: self._option = u'lzw'
+        "Must be one of (lzw, g3, g4, jpg), default=lzw, add -bpc=1 as needed."
+        if self.option_value is None: self._option_value = u'lzw'
         algorithms = ('lzw', 'g3', 'g4', 'jpg')
-        if self.option not in algorithms:
+        if self.option_value not in algorithms:
             error = u'compression must be one of ' + unicode(algorithms)
             raise Error(ErrorCode.InvalidCompression, error)
-        if self.option in ('g3', 'g4'):
-            return self.options + [u'-bpc=1']
-        return self.options
+        if self.option_value in ('g3', 'g4'):
+            return self.pdf2img_options + [u'-bpc=1']
+        return self.pdf2img_options
 
 class OutputFormat(Translator):
-    "Translates and validates outputFormat (default=png)."
+    "Validates the outputFormat option."
     OPTIONS = [Option(u'outputFormat')]
     def __init__(self):
         Translator.__init__(self, u'outputFormat')
     def validate(self, *args):
-        if self.option == u'jpeg': self._option = u'jpg'
-        if self.option == u'tiff': self._option = u'tif'
-        if self.option is None: self._option = u'png'
+        "Must be one of (bmp, gif, jpg, png, tif), default=png."
+        if self.option_value == u'jpeg': self._option_value = u'jpg'
+        if self.option_value == u'tiff': self._option_value = u'tif'
+        if self.option_value is None: self._option_value = u'png'
         output_formats = ('bmp', 'gif', 'jpg', 'png', 'tif')
-        if self.option not in output_formats:
+        if self.option_value not in output_formats:
             error = u'outputFormat must be one of ' + unicode(output_formats)
             raise Error(ErrorCode.InvalidOutputFormat, error)
-        return self.options
+        return self.pdf2img_options
 
 class Pages(Translator):
-    "Translates pages to -pages (default=1), adding -multipage as needed."
+    "Validates the pages option."
     OPTIONS = [Option(u'pages')]
     def __init__(self):
         Translator.__init__(self, u'pages')
     def validate(self, *args):
-        if self.option is None: self._option = '1'
-        if type(self.option) == int: self._option = unicode(self.option)
-        if not isinstance(self.option, basestring):
-            error = INVALID_OPTION_VALUE.format(self.option, self._name)
+        "Default=1, add -multipage as needed."
+        if self.option_value is None: self._option_value = '1'
+        if type(self.option_value) == int:
+            self._option_value = unicode(self.option_value)
+        if not isinstance(self.option_value, basestring):
+            error = INVALID_VALUE.format(self.option_value, self.pdf2img_name)
             raise Error(ErrorCode.InvalidPage, error)
-        multipage_request = u'-' in self.option or u',' in self.option
-        if not multipage_request: return self.options
-        if args[0] == u'tif': return self.options + [u'-multipage']
+        if u'-' not in self.option_value and u',' not in self.option_value:
+            return self.pdf2img_options
+        if args[0] == u'tif': return self.pdf2img_options + [u'-multipage']
         error = u'Use TIFF format for multi-page image requests'
         raise Error(ErrorCode.InvalidOutputFormat, error)
 
 class Resolution(Translator):
-    "Translates resolution to -resolution (default=150)."
+    "Validates the resolution option."
     OPTIONS = [Option(u'resolution')]
     def __init__(self):
         Translator.__init__(self, u'resolution')
     def validate(self, *args):
-        if self.option is None: self._option = 150
+        "Must be an integer, default=150."
+        if self.option_value is None: self._option_value = 150
         try:
-            if int(self.option) and not isinstance(self.option, bool):
-                return self.options
+            boolean_value = isinstance(self.option_value, bool)
+            if int(self.option_value) and not boolean_value:
+                return self.pdf2img_options
         except ValueError:
             pass
-        error = INVALID_OPTION_VALUE.format(self.option, self._name)
+        error = INVALID_VALUE.format(self.option_value, self.pdf2img_name)
         raise Error(ErrorCode.InvalidResolution, error)
 
 class Smoothing(Translator):
-    "Translates smoothing to -smoothing (default=all)."
+    "Validates the smoothing option."
     OPTIONS = [Option(u'smoothing')]
     def __init__(self):
         Translator.__init__(self, u'smoothing')
     def validate(self, *args):
-        if self.option is None: self._option = 'all'
-        return self.options
+        "Default=all."
+        if self.option_value is None: self._option_value = 'all'
+        return self.pdf2img_options
 
 
 OPTIONS =\
