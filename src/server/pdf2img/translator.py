@@ -11,7 +11,8 @@ INVALID_VALUE = "{} is not a valid '{}' value"
 class Translator(object):
     "Translates Option (not Flag) to PDF2IMG option and validates value."
     def __init__(self, pdf2img_name):
-        self._pdf2img_name, self._option_value = pdf2img_name, None
+        self._pdf2img_name = pdf2img_name
+        self.option_value = None
     def __call__(self, options, *args):
         "*args contains the additional values needed to validate an option."
         for key, value in options.iteritems():
@@ -73,7 +74,7 @@ class Compression(Translator):
         Translator.__init__(self, u'compression')
     def validate(self, *args):
         "Must be one of (lzw, g3, g4, jpg), default=lzw, add -bpc=1 as needed."
-        if self.option_value is None: self._option_value = u'lzw'
+        if self.option_value is None: self.option_value = u'lzw'
         algorithms = ('lzw', 'g3', 'g4', 'jpg')
         if self.option_value not in algorithms:
             error = u'compression must be one of ' + unicode(algorithms)
@@ -89,9 +90,9 @@ class OutputFormat(Translator):
         Translator.__init__(self, u'outputFormat')
     def validate(self, *args):
         "Must be one of (bmp, gif, jpg, png, tif), default=png."
-        if self.option_value == u'jpeg': self._option_value = u'jpg'
-        if self.option_value == u'tiff': self._option_value = u'tif'
-        if self.option_value is None: self._option_value = u'png'
+        if self.option_value == u'jpeg': self.option_value = u'jpg'
+        if self.option_value == u'tiff': self.option_value = u'tif'
+        if self.option_value is None: self.option_value = u'png'
         output_formats = ('bmp', 'gif', 'jpg', 'png', 'tif')
         if self.option_value not in output_formats:
             error = u'outputFormat must be one of ' + unicode(output_formats)
@@ -105,9 +106,9 @@ class Pages(Translator):
         Translator.__init__(self, u'pages')
     def validate(self, *args):
         "Default=1, add -multipage as needed."
-        if self.option_value is None: self._option_value = '1'
+        if self.option_value is None: self.option_value = '1'
         if type(self.option_value) == int:
-            self._option_value = unicode(self.option_value)
+            self.option_value = unicode(self.option_value)
         if not isinstance(self.option_value, basestring):
             error = INVALID_VALUE.format(self.option_value, self.pdf2img_name)
             raise Error(ErrorCode.InvalidPage, error)
@@ -124,7 +125,7 @@ class Resolution(Translator):
         Translator.__init__(self, u'resolution')
     def validate(self, *args):
         "Must be an integer, default=150."
-        if self.option_value is None: self._option_value = 150
+        if self.option_value is None: self.option_value = 150
         try:
             boolean_value = isinstance(self.option_value, bool)
             if int(self.option_value) and not boolean_value:
@@ -141,7 +142,7 @@ class Smoothing(Translator):
         Translator.__init__(self, u'smoothing')
     def validate(self, *args):
         "Default=all."
-        if self.option_value is None: self._option_value = 'all'
+        if self.option_value is None: self.option_value = 'all'
         return self.pdf2img_options
 
 
