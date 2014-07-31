@@ -29,16 +29,22 @@ class ChunkedTransfer(object):
                 to_file.write(chunk)
                 self._validate_input_size(to_file.tell())
     def _validate_input_size(self, input_size):
-        if input_size > self.max_input_size:
+        if input_size > self.max_size:
             raise Error(ErrorCode.InvalidInput,
-                        'input too large (max={})'.format(self.max_input_size),
+                        'input too large (max={})'.format(self.max_size),
                         HTTPCode.RequestEntityTooLarge)
     @property
-    def chunk_size(self): return self.max_input_size / 10
+    def chunk_size(self):
+        "The maximum incremental transfer size."
+        return self.max_size / 10
     @property
-    def file(self): return self._to_file
+    def file(self):
+        "The transferred file, if successful."
+        return self._to_file
     @property
-    def max_input_size(self): return int(Configuration.limits.input_size)
+    def max_size(self):
+        "The maximum transfer size."
+        return int(Configuration.limits.input_size)
 
 
 class Input(object):
@@ -48,18 +54,27 @@ class Input(object):
         self._action, self._input = action, None
     @abc.abstractmethod
     def initialize(self):
+        "*(abstract)* Validate request input."
         pass
     @abc.abstractmethod
-    def save(self):
+    def save(self, input_file):
+        "*(abstract)* Create *input_file* from request input."
         pass
+    @classmethod
+    def make(cls, action):
+        "Construct appropriate type of input for *action*."
+        return FromInputURL(action) if action.input_url else FromInput(action)
     def _raise_error(self, error):
         self._action.raise_error(Error(ErrorCode.InvalidInput, error))
     @property
-    def files(self): return self._action.request_files
+    def files(self):
+        "The input files encoded in the request."
+        return self._action.request_files
 
 class FromInput(Input):
-    "For input extracted from an input form part."
+    "Request input extracted from an *input* form part."
     def initialize(self):
+        "A request must contain an *input* part and no other files."
         files = len(self.files)
         if files > 1:
             self._raise_error(u'excess input ({} files)'.format(files))
@@ -67,12 +82,15 @@ class FromInput(Input):
             self._raise_error(u'request missing "input" or "inputURL" part')
         self._input = self.files['input']
     def save(self, input_file):
+        "Create *input_file* by copying *input*."
         self._input.save(input_file)
 
 class FromInputURL(Input):
-    "For input specified by an inputURL form part."
+    "Request input specified by an *inputURL* form part."
     def initialize(self):
+        "A request containing an *inputURL* part should not contain files."
         if self.files:
             self._raise_error(u'excess input (inputURL and request file)')
     def save(self, input_file):
+        "Create *input_file* by downloading *inputURL*."
         ChunkedTransfer(self._action.input_url, input_file)

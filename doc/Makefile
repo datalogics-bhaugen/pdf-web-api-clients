@@ -7,7 +7,7 @@ PYTHON = html/python/index.html
 SAMPLES = ../samples
 SERVER = src/server
 SERVER_CFG = scripts/cfg/server
-SERVER_SRC = $(SERVER)/pdf2img/*.py $(SERVER)/*.py
+SERVER_SRC = $(SERVER)/*.py $(SERVER)/*/*.py
 SPHINX_BUILD = bin/sphinx-build
 
 html: $(PHP) $(PYTHON) sphinx/html/index.html

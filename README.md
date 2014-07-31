@@ -94,3 +94,4 @@ The Makefile's _html_ target generates HTML pages:
 
 * API options differ from the ones offered by PDF2IMG, so the Flask application has a significant amount of option translation code.
 * The _server_ namespace implements utilities on behalf of its _pdf2img_ package, e.g. a logger module. This introduces circular dependencies that should be removed.
+* The _server_ namespace attempts to create a framework that provides generic HTTP request functionality and supports using backend applications to process requests. _server.pdf2img_ is supposed to be the RenderPages plugin for this framework. As is often the case when there is only one plugin, the division of labor between it and the framework is probably wrong. 

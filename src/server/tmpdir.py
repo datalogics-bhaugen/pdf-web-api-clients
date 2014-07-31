@@ -23,7 +23,7 @@ os.environ['TMPDIR'] = TMP_DIR  # for APDFL
 
 
 class TemporaryFile(object):
-    "Facilitates temporary file usage."
+    "Facilitates temporary file usage, ensures that file is deleted."
     def __init__(self):
         self._file = tempfile.NamedTemporaryFile(dir=TMP_DIR)
     def __del__(self):
@@ -35,6 +35,7 @@ class TemporaryFile(object):
     def __getattr__(self, name):
         return getattr(self._file, name)
     def write(self, str):
+        "Write bytes to file."
         self._file.write(str)
         self._file.flush()
 

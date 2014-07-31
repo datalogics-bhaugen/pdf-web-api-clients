@@ -39,7 +39,7 @@ class HTTPCode:
 
 
 class Error(Exception):
-    "Associates an ErrorCode with an HTTPCode."
+    "Associates an :py:class:`ErrorCode` with an :py:class:`HTTPCode`."
     def __init__(self, code, message, default_arg=None):
         Exception.__init__(self, message)
         self._code = code
@@ -51,14 +51,19 @@ class Error(Exception):
     def __str__(self):
         return u'{}: {}'.format(self.code, self.message)
     def copy(self, message=None):
+        "Return a copy of this error using the specified message."
         message = self._preferred_message or message or self.message
         return Error(self.code, message, self.http_code)
     @property
-    def code(self): return self._code
+    def code(self):
+        "The :py:class:`ErrorCode` for this error."
+        return self._code
     @code.setter
     def code(self, value): self._code = value
     @property
-    def http_code(self): return self._http_code
+    def http_code(self):
+        "The :py:class:`HTTPCode` for this error."
+        return self._http_code
 
 
 APDFL_ERRORS = [

@@ -18,7 +18,8 @@ class Client(ThreeScaleAuthRep):
         app_key = request_data.get('key', None)
         provider_key = cfg.Configuration.three_scale.provider_key
         ThreeScaleAuthRep.__init__(self, provider_key, app_id, app_key)
-    def authorize(self):
+    def authenticate(self):
+        "Use 3scale API to authenticate client."
         try:
             if self.authrep(): return
             error = self.build_response().get_reason()
@@ -31,6 +32,10 @@ class Client(ThreeScaleAuthRep):
         authorization_error = ErrorCode.AuthorizationError
         raise Error(authorization_error, error, HTTPCode.Forbidden)
     @property
-    def address(self): return self._address
+    def address(self):
+        "The IP address for this client."
+        return self._address
     @property
-    def application(self): return {'id': self.app_id, 'key': self.app_key}
+    def application(self):
+        "The 3scale credentials for this client."
+        return {'id': self.app_id, 'key': self.app_key}

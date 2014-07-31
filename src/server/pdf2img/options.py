@@ -11,24 +11,33 @@ class Option(object):
     def __ne__(self, other):
         return not self == other
     def format(self, value, pdf2img_option=False):
+        "Return printed representation, translated for PDF2IMG if specified."
         return Option.FORMAT.format(self.option_name(pdf2img_option), value)
     def option_name(self, pdf2img_option=False):
+        "The name of this option, translated for PDF2IMG if specified."
         return str(self) if pdf2img_option else self.name
     @property
-    def name(self): return self._name
+    def name(self):
+        "The WebAPI name of this option, e.g. password."
+        return self._name
     @property
-    def action(self): return 'store'
+    def action(self):
+        ":py:meth:`argparse.ArgumentParser.add_argument` *action* value."
+        return 'store'
 
 class Flag(Option):
-    "RenderPages flag, e.g. printPreview."
+    "RenderPages flag (boolean option), e.g. printPreview."
     FORMAT = u'-{}'
     def format(self, value, pdf2img_flag=False):
+        "Return printed representation, translated for PDF2IMG if specified."
         if not value: return u''
         if value is True:
             return Flag.FORMAT.format(self.option_name(pdf2img_flag))
         raise Exception(u'invalid {} value: {}'.format(self.name, value))
     @property
-    def action(self): return 'store_true'
+    def action(self):
+        ":py:meth:`argparse.ArgumentParser.add_argument` *action* value."
+        return 'store_true'
 
 
 OPTIONS = [
