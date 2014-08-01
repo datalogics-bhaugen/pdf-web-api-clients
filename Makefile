@@ -59,8 +59,8 @@ endif
 bin/segfault: test/src/segfault.c
 	gcc $^ -o $@
 
-cfg/server:
-	scripts/make_server_cfg > $@
+cfg/server: scripts/make_server_cfg
+	$^ > $@
 
 eggs tmp $(TEST_PDFPROCESS) $(VAR_LOG) $(SERVER_LOG):
 	mkdir -p $@
