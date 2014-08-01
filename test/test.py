@@ -1,12 +1,13 @@
 "server test classes"
 
 import test_client
+import cfg  # test_client extends sys.path
 from test_client import HTTPCode, THREE_SCALE
 from nose.tools import assert_equal, assert_in
 from nose.tools import assert_is_none, assert_is_not_none
 
 
-BASE_URL = 'http://127.0.0.1:5000'
+BASE_URL = 'http://127.0.0.1:{}'.format(cfg.Configuration.service.port)
 
 
 class Result(object):
