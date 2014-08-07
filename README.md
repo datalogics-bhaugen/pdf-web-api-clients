@@ -60,6 +60,8 @@ The Makefile's _build_ target (default) downloads packages, updates the files th
 
 2. Buildout -- the buildout script uses its configuration to download and install packages. In some cases, this includes creating binaries from source code.
 
+    NB: On some older Linux hosts, buildout fails unless you add `check_certificate=off` to your wget configuration (~/.wgetrc).
+
 3. Dependencies -- the build updates the files that record third-party dependencies.
 
 4. Code Quality -- the build uses flake8 to check Python code quality.
@@ -68,6 +70,8 @@ The Makefile's _build_ target (default) downloads packages, updates the files th
 
 * `scripts/gunicorn` starts this server
 * `thumbnail/scripts/gunicorn` runs the thumbnail server
+
+    NB: To run multiple servers on one host, edit the port specifications in the generated server configuration (cfg/server).
 
 ## Monitor
 
@@ -82,6 +86,8 @@ These scripts facilitate testing:
 * `bin/server` runs this Flask application with its development server (Werkzeug)
 * `test/app_test.py` tests this server's Flask application directly
 * `test/test_client.py` runs `samples/python/pdfprocess.py` with valid 3scale credentials
+
+Testing with gunicorn is possible (of course), but it's less convenient.
 
 ## Documentation
 
