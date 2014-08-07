@@ -1,7 +1,8 @@
 #!/bin/sh
 
 SERVICE_PORT=$1
-CURL_OPTIONS=${*:2}
+shift
+CURL_OPTIONS=$*
 
 APP='application={"id":"84445ec0","key":"2d3eac77bb3b9bea69a91e625b9241d2"}'
 URL=http://127.0.0.1:$SERVICE_PORT/api/actions/render/pages
