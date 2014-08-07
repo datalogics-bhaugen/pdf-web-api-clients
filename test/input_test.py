@@ -3,6 +3,7 @@
 import os
 import json
 import subprocess
+from server.cfg import Configuration
 from server.tmpdir import Stdout
 from test_client import ErrorCode
 from nose.tools import assert_equal
@@ -37,7 +38,7 @@ def validate_input(input, error_code=0, error_message=None):
             assert_equal(error_message, response['errorMessage'])
 
 def args(input):
-    result = ['scripts/curl']
+    result = ['scripts/curl', Configuration.service.port]
     for file in input:
         result.extend(['--form', 'input=@{}'.format(file)])
     return result

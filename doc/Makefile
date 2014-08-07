@@ -9,6 +9,7 @@ SERVER = src/server
 SERVER_CFG = scripts/cfg/server
 SERVER_SRC = $(SERVER)/*.py $(SERVER)/*/*.py
 SPHINX_BUILD = bin/sphinx-build
+VAR_LOG = ../var/log
 
 html: $(PHP) $(PYTHON) sphinx/html/index.html
 
@@ -43,16 +44,17 @@ $(SPHINX_BUILD): venv
 	venv/bin/python bootstrap.py
 	bin/buildout
 
+# our logger creates a log entry when it's imported, so $(VAR_LOG) must exist
+$(VAR_LOG) eggs:
+	mkdir -p $@
+
 doxygen:
 	git clone https://github.com/doxygen/$@.git
 	cd $@; ./configure; make
 
-eggs:
-	mkdir -p $@
-
 sphinx: $(SPHINX_BUILD) eggs
 
-sphinx/html/index.html: sphinx $(SERVER)/*.rst $(SERVER_SRC)
+sphinx/html/index.html: $(SERVER)/*.rst $(SERVER_SRC) $(VAR_LOG) sphinx
 	@$(MAKE_SPHINX) html
 
 venv:

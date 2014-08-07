@@ -1,9 +1,10 @@
 # Gunicorn configuration file.
 
 import os
+from server import cfg
 from server.tmpdir import ROOT_DIR, VAR_DIR
 
-PORT = 5000
+PORT = cfg.Configuration.service.port
 PROC_NAME = 'pdfprocess'
 ERROR_LOG = os.path.join(VAR_DIR, 'log', 'server', '{}.log'.format(PROC_NAME))
 

@@ -13,7 +13,7 @@ from errors import Error, HTTPCode
 from request import JSON
 
 
-BASE_URL = 'http://127.0.0.1:5000'
+BASE_URL = 'http://127.0.0.1:{}'.format(Configuration.service.port)
 
 IMAGE_HEIGHT = 'imageHeight'
 IMAGE_WIDTH = 'imageWidth'
@@ -50,7 +50,7 @@ def action():
         return error.message, error.http_code
     except Exception as exception:
         error = str(exception)
-        logger.exception(error)
+        logger.error(error)
         return error, HTTPCode.InternalServerError
 
 def input_url(request):

@@ -13,6 +13,7 @@ import random
 import inspect
 import ConfigParser
 
+import cfg
 import test_client
 
 
@@ -66,7 +67,7 @@ class RenderPages(Test):
         options = {'pages': pages, 'pdfRegion': 'media', 'resolution': 200}
         return Test._args(self) + ['options={}'.format(json.dumps(options))]
     @property
-    def port(self): return 5000
+    def port(self): return cfg.Configuration.service.port
 
 # TODO: support new request types by defining new Test classes as needed
 

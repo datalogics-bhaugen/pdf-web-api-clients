@@ -8,12 +8,15 @@ test_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.dirname(os.path.dirname(test_dir))
 requests_dir = glob.glob(os.path.join(root_dir, 'eggs', 'requests-*.egg'))[-1]
 samples_dir = os.path.join(root_dir, 'samples', 'python')
-sys.path[0:0] = [requests_dir, samples_dir]
+sys.path[0:0] = [root_dir, requests_dir, samples_dir]
 
 import requests
+
+from thumbnail import cfg
 from pdfclient import Response
 
-BASE_URL = 'http://127.0.0.1:5050'
+THUMBNAIL_PORT = cfg.Configuration.service.thumbnail_port
+BASE_URL = 'http://127.0.0.1:{}'.format(THUMBNAIL_PORT)
 
 INPUT = {'inputURL': 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'}
 BAD_INPUT = {'inputURL': 'http://www.datalogics.com/pdf/doc/spam.pdf'}
