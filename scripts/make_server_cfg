@@ -1,6 +1,13 @@
 #!/bin/sh
 
+if [[ "$OSTYPE" == "linux"* ]]; then
+    date_format="--rfc-3339=seconds"
+fi
+
 echo "# created by make_server_cfg (do not edit directly)"
+echo
+echo [build]
+echo time = `date $date_format`
 echo
 echo [versions]
 echo pdf2img = `pdf2img | grep PDF2IMG | cut -f2- -d ' '`
