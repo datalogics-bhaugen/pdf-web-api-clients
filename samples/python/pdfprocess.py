@@ -71,6 +71,7 @@ USAGE_OPTIONS = '[{}=name] [{}=pwd] [{}=json]'.format(*OPTIONS)
 USAGE = 'usage: {0} request_type <input document> [input file(s)] ' +\
         USAGE_OPTIONS + '\n' +\
         'example: {0} DecorateDocument any.pdf headers.xml\n' +\
+        'example: {0} DecorateDocument any.pdf watermarks.json\n' +\
         'example: {0} FillForm form.pdf form.fdf\n' +\
         'example: {0} FlattenForm hello_world.pdf\n' +\
         'example: {0} RenderPages ' + PDF2IMG_GUIDE + ' options=' + JSON

@@ -180,7 +180,7 @@ class ErrorCode:
 
 ## Service request (decorate document with supplied header/footer data)
 class DecorateDocument(Request):
-    INPUT_TYPES = {'XML': ['decorationData'],
+    INPUT_TYPES = {('XML', 'JSON'): 'decorationData',
                    'MF': 'manifest',
                    ('BMP', 'JPG', 'PDF'): 'resource'}
     ## %DecorateDocument has no request options
