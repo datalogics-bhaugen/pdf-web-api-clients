@@ -40,6 +40,7 @@ class Action(object):
         usage['requestTime'] = self._request_time
         usage['responseTime'] = logger.iso8601_timestamp()
         usage['status'] = error.http_code if error else HTTPCode.OK
+        usage['serverVersion'] = cfg.Configuration.versions.server_tag
         logger.info(JSON.dumps(usage))
     def raise_error(self, error):
         "Raise an exception for this request."

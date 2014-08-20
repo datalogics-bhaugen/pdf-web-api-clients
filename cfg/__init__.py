@@ -16,6 +16,8 @@ class Config(dict):
                 section[name] = value
         self._set_environment(Config.DLENV_FILENAME)
         self._set_dlenv(self.environment, default_dlenv)
+        if 'versions' in self and 'server' in self.versions:
+            self.versions['server_tag'] = self.versions.server.split('-')[0]
     def _section(self, name):
         if name not in self: self[name] = self.__class__()
         return self[name]

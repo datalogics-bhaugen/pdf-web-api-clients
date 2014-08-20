@@ -7,7 +7,7 @@ from cfg import Configuration
 
 for line in [line for line in fileinput.input()]:
     if line.startswith('PROJECT_BRIEF'):
-        version = Configuration.versions.server.split('-')[0]
+        version = Configuration.versions.server_tag
         print('PROJECT_BRIEF          = "PDF WebAPI {}"'.format(version))
     else:
         print(line.rstrip())
