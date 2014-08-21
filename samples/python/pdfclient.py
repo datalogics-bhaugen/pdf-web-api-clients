@@ -178,7 +178,8 @@ class ErrorCode:
     UnknownError = 20
 
 
-## Service request (decorate document with supplied header/footer data)
+## Service request (decorate document with supplied header/footer,
+## watermark, and background data)
 class DecorateDocument(Request):
     INPUT_TYPES = {'JSON': 'decorationData',
                    'XML': ['decorationData'],
