@@ -66,6 +66,7 @@ $usage =
     "usage: " . CMD . "request_type <input document> [input file(s)] " .
         USAGE_OPTIONS . "\n" .
     "example: " . CMD . "DecorateDocument any.pdf headers.xml\n" .
+    "example: " . CMD . "DecorateDocument any.pdf watermark.json\n" .
     "example: " . CMD . "FillForm form.pdf form.fdf\n" .
     "example: " . CMD . "FlattenForm hello_world.pdf\n" .
     "example: " . CMD . "RenderPages " . PDF2IMG_GUIDE . " options=" . $json;

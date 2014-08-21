@@ -260,7 +260,8 @@ abstract class ErrorCode
 
 
 /**
- * @brief Service request (decorate document with supplied header/footer data)
+ * @brief Service request (decorate document with supplied header/footer,
+ * watermark, and background data)
  */
 class DecorateDocument extends Request
 {
@@ -271,8 +272,9 @@ class DecorateDocument extends Request
     }
 
     static $InputTypes = array(
-        'XML' => array('decorationData'), 'MF' => 'manifest',
-        'BMP' => 'resource', 'JPG' => 'resource', 'PDF' => 'resource');
+        'XML' => array('decorationData'),'JSON' => 'decorationData',
+        'MF' => 'manifest','BMP' => array('resource'), 'JPG' => array('resource'),
+        'PDF' => array('resource'));
 
     /**
      * %DecorateDocument has no request options
