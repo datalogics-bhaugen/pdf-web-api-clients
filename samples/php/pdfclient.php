@@ -271,8 +271,9 @@ class DecorateDocument extends Request
     }
 
     static $InputTypes = array(
-        'XML' => array('decorationData'), 'MF' => 'manifest',
-        'BMP' => 'resource', 'JPG' => 'resource', 'PDF' => 'resource');
+        'XML' => array('decorationData'),'JSON' => array('decorationData'),
+        'MF' => 'manifest','BMP' => array('resource'), 'JPG' => array('resource'),
+        'PDF' => array('resource'));
 
     /**
      * %DecorateDocument has no request options
