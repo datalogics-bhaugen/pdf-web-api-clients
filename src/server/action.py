@@ -14,10 +14,10 @@ class Action(object):
     "Each request handler should inherit from this class."
     __metaclass__ = abc.ABCMeta
     def __init__(self, request):
+        self._request_time = logger.iso8601_timestamp()
         self._client = Client(request.remote_addr, request.form)
         self._options = JSON.request_data(request.form, 'options')
         self._request = request
-        self._request_time = logger.iso8601_timestamp()
         self._input = input.Input.make(self)
     @abc.abstractmethod
     def __call__(self):
