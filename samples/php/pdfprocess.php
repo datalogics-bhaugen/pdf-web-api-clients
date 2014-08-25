@@ -221,15 +221,13 @@ class Parser
         foreach (array_slice($input, 1) as $filename)
         {
             $part_name = $request->part_name($filename);
-            if (is_array($part_name))
+            if (strpos($part_name, '%d'))
             {
-                $part_name = $part_name[0];
                 if (!isset($suffixes[$part_name]))
                 {
                     $suffixes[$part_name] = -1;
                 }
-                $suffix = ++$suffixes[$part_name];
-                $part_name = sprintf('%s[%s]', $part_name, $suffix);
+                $part_name = sprintf($part_name, ++$suffixes[$part_name]);
             }
             $this->_input_files[$part_name] = $filename;
         }

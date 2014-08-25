@@ -156,10 +156,9 @@ class Parser(object):
         suffixes = {}
         for file in files[1:]:
             part_name = request.part_name(file)
-            if isinstance(part_name, list):
-                part_name = part_name[0]
+            if '{}' in part_name:
                 suffixes[part_name] = suffixes.get(part_name, -1) + 1
-                part_name = '{}[{}]'.format(part_name, suffixes[part_name])
+                part_name = part_name.format(suffixes[part_name])
             self.files[part_name] = open(file, 'rb')
     def __del__(self):
         for file in self.files.values():
