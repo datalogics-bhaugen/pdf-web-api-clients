@@ -18,7 +18,7 @@ class Client(ThreeScaleAuthRep):
         app_key = request_data.get('key', None)
         provider_key = cfg.Configuration.three_scale.provider_key
         ThreeScaleAuthRep.__init__(self, provider_key, app_id, app_key)
-    def authenticate(self):
+    def authenticate(self, retry_on_exception=True):
         "Use 3scale API to authenticate client."
         try:
             if self.authrep(): return
@@ -28,6 +28,8 @@ class Client(ThreeScaleAuthRep):
                 error_code = ErrorCode.UsageLimitExceeded
                 raise Error(error_code, USAGE_LIMIT, HTTPCode.TooManyRequests)
         except ThreeScalePY.ThreeScaleException as exception:
+            if retry_on_exception:
+                return self.authenticate(False)
             error = str(exception)
         authorization_error = ErrorCode.AuthorizationError
         raise Error(authorization_error, error, HTTPCode.Forbidden)
