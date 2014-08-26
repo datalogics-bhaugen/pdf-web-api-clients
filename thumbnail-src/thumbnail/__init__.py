@@ -35,6 +35,7 @@ class Action(object):
         self._request_time = logger.iso8601_timestamp()
         self._request = request
         self._options = self._request_options()
+        self._status_code = HTTPCode.OK
         self._url =\
             request.form.get(INPUT_URL, None) or request.args.get(INPUT_URL)
     def __call__(self):
@@ -54,7 +55,7 @@ class Action(object):
         usage['options'] = self._options
         usage['requestTime'] = self._request_time
         usage['responseTime'] = logger.iso8601_timestamp()
-        usage['status'] = error.http_code if error else HTTPCode.OK
+        usage['status'] = error.http_code if error else self._status_code
         usage['serverVersion'] = Configuration.versions.server_tag
         logger.info(JSON.dumps(usage))
     def _request_options(self):
@@ -75,7 +76,8 @@ class Action(object):
         else:
             code, message = api_response.error_code, api_response.error_message
             json = flask.jsonify(errorCode=code, errorMessage=message)
-            return json, api_response.status_code
+            self._status_code = api_response.status_code
+            return json, self._status_code
     def _smaller_response(self, response1, response2):
         output1, output2 = response1.output, response2.output
         return response2 if len(output2) < len(output1) else response1
