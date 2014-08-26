@@ -120,7 +120,7 @@ def action():
         return response
     except Error as error:
         return error_response(action, error)
-    except requests.urllib3.MaxRetryError:
+    except requests.packages.urllib3.exceptions.MaxRetryError:
         return error_response(action, MAX_RETRY_ERROR)
     except Exception as exception:
         return error_response(action, UNKNOWN.copy(str(exception)))
