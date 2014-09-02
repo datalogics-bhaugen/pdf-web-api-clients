@@ -27,6 +27,7 @@ def get_thumbnail():
     except requests.packages.urllib3.exceptions.MaxRetryError:
         return error_response(request_handler, MAX_RETRY_ERROR)
     except Exception as exception:
+        logger.debug('Unexpected exception: {}'.format(type(exception)))
         return error_response(request_handler, UNKNOWN.copy(str(exception)))
     finally:
         del request_handler
