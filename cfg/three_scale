@@ -1,3 +1,7 @@
+[authrep]
+max_retries = 2
+retry_delay = 3
+
 [three_scale]
 provider_key = f362180da04b6ca1790784bde6ed70d6
 
