@@ -1,4 +1,5 @@
 #!/bin/sh
 
 make --directory `git rev-parse --show-toplevel` qa
+git diff --check
 
