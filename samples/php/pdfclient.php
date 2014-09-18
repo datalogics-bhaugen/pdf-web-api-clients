@@ -314,11 +314,11 @@ class FillForm extends Request
     function __construct($application, $base_url)
     {
         parent::__construct($application, $base_url, "fill/form");
-        $this->_output_format = 'pdf';
     }
 
     static $InputTypes = array(
-        'FDF' => 'formsData', 'XFDF' => 'formsData', 'XML' => 'formsData');
+        'FDF' => 'formsData', 'XFDF' => 'formsData', 'XML' => 'formsData', 
+        'JSON' => 'formsData', 'CSV' => 'formsData', 'TSV' => 'formsData');
 
     /**
      * %FillForm request options:
