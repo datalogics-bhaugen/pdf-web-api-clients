@@ -116,27 +116,26 @@ class Response(object):
             output.write(self.output)
 
     def output_format(self):
-		
         if self.output.startswith('%FDF'): return 'fdf'
+
         xml_tag = '<?xml version="1.0" encoding="UTF-8"?>'
-		
         if self.output.startswith(xml_tag + '<xfdf xmlns'): return 'xfdf'
         if self.output.startswith(xml_tag + '<xfa:datasets'): return 'xml'
-	
+
         ##First four bytes of a zip file represented by one of these strings
         byte_string1 = '504b0304'
         byte_string2 = '504b0506'
-		
+
         ##Convert output data to hex array and grab the first element
         hex_output_data = self.output.encode('hex')
-        
+
         ##Grab first four bytes from output file to determine if zip
         if (hex_output_data[:8] == byte_string1 or
             hex_output_data[:8] == byte_string2):
-               return 'zip'
+                return 'zip'
 
         if self.output.startswith('%PDF'): return 'pdf'
-		
+	
     @property
     ## True only if request succeeded
     def ok(self):
