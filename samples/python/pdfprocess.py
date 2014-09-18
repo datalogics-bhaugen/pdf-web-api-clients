@@ -131,11 +131,11 @@ class Response(object):
 
         ##Grab first four bytes from output file to determine if zip
         if (hex_output_data[:8] == byte_string1 or
-            hex_output_data[:8] == byte_string2):
+        hex_output_data[:8] == byte_string2):
                 return 'zip'
 
         if self.output.startswith('%PDF'): return 'pdf'
-	
+
     @property
     ## True only if request succeeded
     def ok(self):
