@@ -177,30 +177,7 @@ class Response
         $xml_tag = '<?xml version="1.0" encoding="UTF-8"?>';
         if (strpos($output, $xml_tag . '<xfdf xmlns') === 0) return 'xfdf';
         if (strpos($output, $xml_tag . '<xfa:datasets') === 0) return 'xml';
-
-        /*
-        First four bytes of a zip file represented by one of these strings
-        */
-        $byte_string1 = "504b0304";
-        $byte_string2 = "504b0506";
-
-        /*
-        Convert output data to hex array and grab the first element
-        */
-        $first_element = reset(unpack("H*", $output));
-        
-        /*
-        Grab first four bytes from output file to determine if zip
-        */
-        if (substr($first_element, 0, 8) == $byte_string1|| 
-                substr($first_element, 0, 8) == $byte_string2)  {
-            return 'zip';
-        }
-        
-        if(strpos($output, '%PDF') === 0) return 'pdf';
-        
         return '';
-            
     }
 
     private $_api_response;
