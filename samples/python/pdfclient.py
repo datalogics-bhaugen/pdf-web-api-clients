@@ -209,9 +209,10 @@ class ExportFormData(Request):
         Request.__init__(self, application, base_url, 'export/form-data')
 
 
-## Service request (fill form fields with supplied FDF/XFDF data)
+## Service request (fill form fields with supplied data)
 class FillForm(Request):
     INPUT_TYPES = {('FDF', 'XFDF', 'XML'): 'formsData'}
+    INPUT_TYPES = {('CSV', 'FDF', 'JSON', 'TSV', 'XFDF', 'XML'): 'formsData'}
     ## %FillForm request options:
     #  * [disableCalculation]
     #     (https://api.datalogics-cloud.com/docs#disableCalculation)
@@ -227,7 +228,6 @@ class FillForm(Request):
         pass
     def __init__(self, application, base_url):
         Request.__init__(self, application, base_url, 'fill/form')
-        self._output_format = 'pdf'
 
 
 ## Service request (flatten form fields)

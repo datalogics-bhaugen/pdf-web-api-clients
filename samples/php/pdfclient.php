@@ -307,18 +307,18 @@ class ExportFormData extends Request
 
 
 /**
- * @brief Service request (fill form fields with supplied FDF/XFDF data)
+ * @brief Service request (fill form fields with supplied data)
  */
 class FillForm extends Request
 {
     function __construct($application, $base_url)
     {
         parent::__construct($application, $base_url, "fill/form");
-        $this->_output_format = 'pdf';
     }
 
     static $InputTypes = array(
-        'FDF' => 'formsData', 'XFDF' => 'formsData', 'XML' => 'formsData');
+        'CSV' => 'formsData', 'FDF' => 'formsData', 'JSON' => 'formsData',
+        'TSV' => 'formsData', 'XFDF' => 'formsData', 'XML' => 'formsData');
 
     /**
      * %FillForm request options:

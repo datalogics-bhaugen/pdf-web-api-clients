@@ -173,10 +173,13 @@ class Response
     {
         $output = $this->api_response()->output();
         if (strpos($output, '%FDF') === 0) return 'fdf';
+        if (strpos($output, '%PDF-') === 0) return 'pdf';
 
         $xml_tag = '<?xml version="1.0" encoding="UTF-8"?>';
         if (strpos($output, $xml_tag . '<xfdf xmlns') === 0) return 'xfdf';
         if (strpos($output, $xml_tag . '<xfa:datasets') === 0) return 'xml';
+
+        if (strpos($output, "PK\003\004") === 0) return 'zip';
         return '';
     }
 

@@ -117,9 +117,11 @@ class Response(object):
 
     def output_format(self):
         if self.output.startswith('%FDF'): return 'fdf'
+        if self.output.startswith('%PDF-'): return 'pdf'
         xml_tag = '<?xml version="1.0" encoding="UTF-8"?>'
         if self.output.startswith(xml_tag + '<xfdf xmlns'): return 'xfdf'
         if self.output.startswith(xml_tag + '<xfa:datasets'): return 'xml'
+        if self.output.startswith('PK\003\004'): return 'zip'
     @property
     ## True only if request succeeded
     def ok(self):
