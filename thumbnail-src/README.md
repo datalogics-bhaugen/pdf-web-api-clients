@@ -13,7 +13,6 @@ This thumbnail server translates GET requests to POST requests as follows:
 ## Run
 
 * `scripts/gunicorn` runs this server
-* `scripts/monitor.py` is used by Scout to monitor this server
 
 ## Test
 

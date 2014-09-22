@@ -33,6 +33,7 @@ These packages are required:
 * for lxml on Ubuntu
     * libxml2-dev
     * libxslt-dev
+    * zlib1g-dev
 
 #### Cloud
 
@@ -72,11 +73,6 @@ The Makefile's _build_ target (default) downloads packages, updates the files th
 * `thumbnail/scripts/gunicorn` runs the thumbnail server
 
     NB: To run multiple servers on one host, edit the port specifications in the generated server configuration (cfg/server).
-
-## Monitor
-
-* `scripts/monitor.py` is used by Scout to monitor this server
-* `thumbnail-src/scripts/monitor.py` is used to monitor the thumbnail server
 
 ## Test
 
