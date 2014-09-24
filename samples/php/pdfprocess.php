@@ -96,13 +96,7 @@ class Client extends \pdfclient\Application
         $request_fields = array_merge($default_fields, $request_fields);
 
         $api_request = $this->_request;
-        $api_response = $api_request($input_files, $request_fields);
-        return new Response($api_response, $this->output_format());
-    }
-
-    function output_format()
-    {
-        return $this->_request->output_format();
+        return new Response($api_request($input_files, $request_fields));
     }
 
     private function _parse($args, $base_url)
@@ -132,10 +126,9 @@ class Client extends \pdfclient\Application
  */
 class Response
 {
-    function __construct($api_response, $output_format)
+    function __construct($api_response)
     {
         $this->_api_response = $api_response;
-        $this->_output_format = $output_format;
     }
 
     function __toString() { return (string) $this->api_response(); }
@@ -150,13 +143,12 @@ class Response
      */
     function ok() { return $this->api_response()->ok(); }
 
+    /**
+     * File extension/type is inferred by examining output
+     */
     function output_filename()
     {
-        if ($this->ok() && !$this->_output_format)
-            $this->_output_format = $this->output_format();
-        if ($this->_output_format)
-            return 'pdfprocess.' . $this->_output_format;
-        return 'pdfprocess.out';
+        return 'pdfprocess.' . $this->output_format();
     }
 
     /**
@@ -171,20 +163,31 @@ class Response
 
     private function output_format()
     {
-        $output = $this->api_response()->output();
-        if (strpos($output, '%FDF') === 0) return 'fdf';
-        if (strpos($output, '%PDF-') === 0) return 'pdf';
-
         $xml_tag = '<?xml version="1.0" encoding="UTF-8"?>';
-        if (strpos($output, $xml_tag . '<xfdf xmlns') === 0) return 'xfdf';
-        if (strpos($output, $xml_tag . '<xfa:datasets') === 0) return 'xml';
+        $output_formats = array(
+            'BM' => 'bmp',
+            '%!PS-Adobe-' => 'eps',
+            '%FDF-' => 'fdf',
+            'GIF87a' => 'gif', 'GIF89a' => 'gif',
+            "\377\330\377\340\000\020JFIF" => 'jpg',
+            '%PDF-' => 'pdf',
+            "\211PNG\r\n\032\n" => 'png',
+            "II*\000" => 'tif', "MM\000*" => 'tif',
+            $xml_tag . '<xfdf xmlns' => 'xfdf',
+            $xml_tag . '<xfa:datasets' => 'xml',
+            "PK\003\004" => 'zip');
 
-        if (strpos($output, "PK\003\004") === 0) return 'zip';
-        return '';
+        foreach ($output_formats as $format_prefix => $output_format)
+        {
+            if (strpos($this->api_response()->output(), $format_prefix) === 0)
+            {
+                return $output_format;
+            }
+        }
+        return 'out';
     }
 
     private $_api_response;
-    private $_output_format;
 }
 
 

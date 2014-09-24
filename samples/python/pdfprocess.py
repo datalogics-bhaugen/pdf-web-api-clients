@@ -86,8 +86,7 @@ class Client(pdfclient.Application):
     #  @param base_url
     def __call__(self, args, base_url=pdfclient.Application.BASE_URL):
         parser = self._parse(args, base_url)
-        api_response = self._request(parser.files, **parser.data)
-        return Response(api_response, self.output_format)
+        return Response(self._request(parser.files, **parser.data))
 
     def _parse(self, args, base_url):
         if len(args) > 2:
@@ -97,15 +96,12 @@ class Client(pdfclient.Application):
             except Exception as exception:
                 print(exception)
         sys.exit(USAGE.format(args[0]))
-    @property
-    def output_format(self):
-        return self._request.output_format
 
 
 ## #pdfclient.Response wrapper saves output to a file
 class Response(object):
-    def __init__(self, response, output_format):
-        self._response, self._output_format = response, output_format
+    def __init__(self, response):
+        self._response = response
     def __str__(self):
         return str(self._response)
     def __getattr__(self, key):
@@ -115,24 +111,32 @@ class Response(object):
         with open(self.output_filename, 'wb') as output:
             output.write(self.output)
 
-    def output_format(self):
-        if self.output.startswith('%FDF'): return 'fdf'
-        if self.output.startswith('%PDF-'): return 'pdf'
-        xml_tag = '<?xml version="1.0" encoding="UTF-8"?>'
-        if self.output.startswith(xml_tag + '<xfdf xmlns'): return 'xfdf'
-        if self.output.startswith(xml_tag + '<xfa:datasets'): return 'xml'
-        if self.output.startswith('PK\003\004'): return 'zip'
+    def _output_format(self):
+        xml_tag = b'<?xml version="1.0" encoding="UTF-8"?>'
+        output_formats = {
+            b'BM': 'bmp',
+            b'%!PS-Adobe-': 'eps',
+            b'%FDF-': 'fdf',
+            (b'GIF87a', b'GIF89a'): 'gif',
+            b'\377\330\377\340\000\020JFIF': 'jpg',
+            b'%PDF-': 'pdf',
+            b'\211PNG\r\n\032\n': 'png',
+            (b'II*\000', b'MM\000*'): 'tif',
+            xml_tag + b'<xfdf xmlns': 'xfdf',
+            xml_tag + b'<xfa:datasets': 'xml',
+            b'PK\003\004': 'zip'}
+        for format_prefix in output_formats:
+            if self.output.startswith(format_prefix):
+                return output_formats[format_prefix]
+        return 'out'
     @property
     ## True only if request succeeded
     def ok(self):
         return self._response.ok
     @property
+    ## File extension/type is inferred by examining output
     def output_filename(self):
-        if self.ok and not self._output_format:
-            self._output_format = self.output_format()
-        if self._output_format:
-            return 'pdfprocess.{}'.format(self._output_format)
-        return 'pdfprocess.out'
+        return 'pdfprocess.{}'.format(self._output_format())
 
 
 ## Translate command line arguments and open input files for

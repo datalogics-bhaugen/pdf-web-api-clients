@@ -84,7 +84,6 @@ class Application(object):
 class Request(object):
     INPUT_TYPES = {}
     def __init__(self, application_json, base_url, url_suffix):
-        self._output_format = ''
         self._application = application_json
         self._url = '{}/api/actions/{}'.format(base_url, url_suffix)
 
@@ -105,17 +104,13 @@ class Request(object):
                 if option not in self.OPTIONS:
                     raise Exception('invalid option: {}'.format(option))
             data['options'] = json.dumps(data['options'])
-        return Response(
-            requests.post(self._url, verify=False, files=files, data=data))
+        return Response(requests.post(self._url, files=files, data=data))
 
     def part_name(self, filename):
         data_format = os.path.splitext(filename)[1][1:].upper()
         for key in self.INPUT_TYPES.keys():
             if data_format == key or data_format in key:
                 return self.INPUT_TYPES[key]
-    @property
-    ## Output filename extension property (string)
-    def output_format(self): return self._output_format
 
 
 ## Service response
@@ -192,7 +187,6 @@ class DecorateDocument(Request):
         pass
     def __init__(self, application, base_url):
         Request.__init__(self, application, base_url, 'decorate/document')
-        self._output_format = 'pdf'
 
 
 ## Service request (export FDF, XFDF, or XML form data)
@@ -239,7 +233,6 @@ class FlattenForm(Request):
         NoAnnotations = 21
     def __init__(self, application, base_url):
         Request.__init__(self, application, base_url, 'flatten/form')
-        self._output_format = 'pdf'
 
 
 ## Service request (create raster image representation)
@@ -293,12 +286,3 @@ class RenderPages(Request):
         InvalidResolution = 34
     def __init__(self, application, base_url):
         Request.__init__(self, application, base_url, 'render/pages')
-    ## Send request
-    #  @return a Response object
-    #  @param input input document URL or file object
-    #  @param data dict with keys in
-    #   ('inputURL', 'inputName', 'password', 'options')
-    def __call__(self, files, **data):
-        request_options = data.get('options', {})
-        self._output_format = request_options.get('outputFormat', 'png')
-        return Request.__call__(self, files, **data)
