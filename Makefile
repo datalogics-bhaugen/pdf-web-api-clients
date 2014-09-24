@@ -16,7 +16,7 @@ APP_LOG = $(VAR_LOG)/$(LOG_NAME)
 SERVER_LOG = $(VAR_LOG)/server
 AUX_LOG = $(SERVER_LOG)/$(LOG_NAME)
 
-all: $(AUX_LOG) $(BOOTSTRAP) resource-test
+all: $(AUX_LOG) $(BOOTSTRAP)
 	$(BOOTSTRAP)
 	$(BUILDOUT) | scripts/make_versions_cfg > versions.cfg
 	@$(MAKE_THUMBNAIL) $@
@@ -44,18 +44,13 @@ html:
 qa:
 	$(QA) cfg samples scripts src test
 
-resource-test:
-ifeq ($(PLATFORM), Linux)
-	ls -d /opt/pdfprocess/$@/CMap
-endif
-
 test-scripts: $(TEST_PDFPROCESS)
 	$(REPLACE_KEY) samples/php/pdfprocess.php > $^/php
 	$(REPLACE_KEY) samples/python/pdfprocess.py > $^/python
 	chmod +x $^/*
 	cp samples/*/pdfclient.* $^
 
-.PHONY: all app clean files html qa resource-test test-scripts
+.PHONY: all app clean files html qa test-scripts
 
 $(APP_LOG): $(VAR_LOG)
 	touch $@
