@@ -57,9 +57,11 @@ To install PDF2IMG:
 
 ## Build
 
-The Makefile's _build_ target (default) downloads packages, updates the files that record these dependencies, creates many files, and runs code quality tests.
+The Makefile's _all_ target (default) downloads packages, updates the files that record these dependencies, creates many files, and runs code quality tests.
 
-    NB: Don't panic if it seems to stall. (It does this while building lxml.)
+To avoid unsolved build issues on Mac 10.9 (Mavericks), use the _app_ target instead.
+
+    NB: Don't panic if the build seems to stall. (It does this while building lxml.)
 
 1. Bootstrap -- the repository is initialized by a script that must be compatible with the version of Buildout we use (currently 2.2).
 
