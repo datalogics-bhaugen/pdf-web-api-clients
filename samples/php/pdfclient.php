@@ -145,18 +145,11 @@ class Request
         return new Response($http_code, $request_response);
     }
 
-    /**
-     * Output filename extension (string)
-     */
-    function output_format() { return $this->_output_format; }
-
     function part_name($filename)
     {
         $file_format = strtoupper(pathinfo($filename, PATHINFO_EXTENSION));
         return $this::$InputTypes[$file_format];
     }
-
-    protected $_output_format;
 
     private $_application;
     private $_url;
@@ -268,7 +261,6 @@ class DecorateDocument extends Request
     function __construct($application, $base_url)
     {
         parent::__construct($application, $base_url, "decorate/document");
-        $this->_output_format = 'pdf';
     }
 
     static $InputTypes = array(
@@ -344,7 +336,6 @@ class FlattenForm extends Request
     function __construct($application, $base_url)
     {
         parent::__construct($application, $base_url, "flatten/form");
-        $this->_output_format = 'pdf';
     }
 
     /**
@@ -362,18 +353,6 @@ class RenderPages extends Request
     function __construct($application, $base_url)
     {
         parent::__construct($application, $base_url, "render/pages");
-    }
-
-    function __invoke($input, $request_fields)
-    {
-        $output_format = '';
-        if (isset($request_fields['options']) &&
-            isset($request_fields['options']['outputFormat']))
-        {
-            $output_format = $request_fields['options']['outputFormat'];
-        }
-        $this->_output_format = $output_format ? $output_format : 'png';
-        return parent::__invoke($input, $request_fields);
     }
 
     /**

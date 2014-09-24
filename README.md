@@ -30,6 +30,10 @@ These packages are required:
 * bison
 * g++
 * python-dev
+* for Scout on Ubuntu
+    * libmagic-dev
+* for fonts on Ubuntu
+    * msttcorefonts
 * for lxml on Ubuntu
     * libxml2-dev
     * libxslt-dev

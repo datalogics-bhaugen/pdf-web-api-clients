@@ -2,6 +2,7 @@
 
 import os
 import glob
+import json
 import platform
 import subprocess
 from server.tmpdir import Stdout
@@ -32,11 +33,12 @@ def test_pdfprocess_sample_python(python3=False):
 
 def test_pdfprocess_sample_python_patched(python3=False):
     args = ['pdfprocess/python', 'RenderPages', GOOD_PDF]
-    validate_sample_python(args, 'created: data/four_pages.png', python3)
+    for output_format in ('bmp', 'gif', 'jpg', 'png', 'tif'):
+        validate_sample_python_patched(args, output_format, python3)
 
 def test_pdfprocess_sample_python_patched_url(python3=False):
     args = ['pdfprocess/python', 'RenderPages', INPUT_URL]
-    validate_sample_python(args, 'created: pdf2img.png', python3)
+    validate_sample_python(args, 'created: pdfprocess.png', python3)
 
 def validate_sample_python(args, output, python3):
     set_python_path()
@@ -44,6 +46,12 @@ def validate_sample_python(args, output, python3):
     with Stdout() as stdout:
         assert_equal(subprocess.call(args, stdout=stdout), 0)
         assert_in(output, str(stdout))
+
+def validate_sample_python_patched(args, output_format, python3):
+    request_options = {'outputFormat': output_format}
+    args = args + ['options={}'.format(json.dumps(request_options))]
+    output = 'created: pdfprocess.{}'.format(output_format)
+    validate_sample_python(args, output, python3)
 
 if platform.system() == 'Darwin':
     def test_pdfprocess_sample_php():
@@ -56,8 +64,8 @@ if platform.system() == 'Darwin':
 
     def test_pdfprocess_sample_php_patched():
         args = ['php', 'pdfprocess/php', 'RenderPages', GOOD_PDF]
-        with Stdout() as stdout:
-            assert_equal(subprocess.call(args, stdout=stdout), 0)
+        for output_format in ('bmp', 'gif', 'jpg', 'png', 'tif'):
+            validate_sample_php_patched(args, output_format)
 
     def test_pdfprocess_sample_php_patched_url():
         args = ['php', 'pdfprocess/php', 'RenderPages', INPUT_URL]
@@ -72,3 +80,9 @@ if platform.system() == 'Darwin':
 
     def test_pdfprocess_sample_python3_patched_url():
         test_pdfprocess_sample_python_patched_url(python3=True)
+
+    def validate_sample_php_patched(args, output_format):
+        request_options = {'outputFormat': output_format}
+        args = args + ['options={}'.format(json.dumps(request_options))]
+        with Stdout() as stdout:
+            assert_equal(subprocess.call(args, stdout=stdout), 0)
