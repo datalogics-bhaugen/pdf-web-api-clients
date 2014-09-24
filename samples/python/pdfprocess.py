@@ -119,6 +119,7 @@ class Response(object):
             b'%FDF-': 'fdf',
             (b'GIF87a', b'GIF89a'): 'gif',
             b'\377\330\377\340\000\020JFIF': 'jpg',
+            b'\377\330\377\356\000\016Adobe': 'jpg',
             b'%PDF-': 'pdf',
             b'\211PNG\r\n\032\n': 'png',
             (b'II*\000', b'MM\000*'): 'tif',

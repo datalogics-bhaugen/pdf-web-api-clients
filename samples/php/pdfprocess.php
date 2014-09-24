@@ -170,6 +170,7 @@ class Response
             '%FDF-' => 'fdf',
             'GIF87a' => 'gif', 'GIF89a' => 'gif',
             "\377\330\377\340\000\020JFIF" => 'jpg',
+            "\377\330\377\356\000\016Adobe" => 'jpg',
             '%PDF-' => 'pdf',
             "\211PNG\r\n\032\n" => 'png',
             "II*\000" => 'tif', "MM\000*" => 'tif',
