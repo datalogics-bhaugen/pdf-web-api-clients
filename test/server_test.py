@@ -17,7 +17,7 @@ def max_retry_error(url):
     return 'Max retries exceeded with url: {}'.format(url)
 
 def test_good_url():
-    Test(['http://www.datalogics.com/pdf/doc/pdf2img.pdf'], Result())()
+    Test(['http://www.irs.gov/pub/irs-pdf/f1040.pdf'], Result())()
 
 def test_bad_pdf():
     result = Result(ErrorCode.InvalidInput, HTTPCode.UnsupportedMediaType)
