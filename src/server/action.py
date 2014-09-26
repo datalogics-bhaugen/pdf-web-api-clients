@@ -6,7 +6,7 @@ import cfg
 import input
 import logger
 from client import Client
-from errors import APDFL_ERRORS, Error, ErrorCode, HTTPCode, UNKNOWN
+from errors import APDFL_ERRORS, Error, ErrorCode, HTTPCode, UNKNOWN, URL_ERROR
 from request import JSON
 
 
@@ -44,6 +44,10 @@ class Action(object):
         logger.info(JSON.dumps(usage))
     def raise_error(self, error):
         "Raise an exception for this request."
+        url_error = (error.code == URL_ERROR.code and
+                     error.message == URL_ERROR.message)
+        if url_error and isinstance(self.input, input.FromInputURL):
+            raise URL_ERROR
         if error.code == ErrorCode.InvalidPassword and not self.password:
             error.code = ErrorCode.MissingPassword
         raise error
