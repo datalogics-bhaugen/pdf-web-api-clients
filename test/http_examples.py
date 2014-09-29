@@ -26,10 +26,9 @@ INPUT_URL = 'http://www.irs.gov/pub/irs-pdf/f1040.pdf'
 RENDER_PAGES_OPTIONS = {'outputFormat': 'jpg', 'printPreview': True}
 OPTIONS = 'options={}'.format(json.dumps(RENDER_PAGES_OPTIONS))
 
-BASE_URL = 'http://pdfprocess.datalogics-cloud.com'
 FAKE_ID = '12345678'
 FAKE_KEY = '1234567890abcdef1234567890abcdef'
 
 client = test_client.client(FAKE_ID, FAKE_KEY)
-client(['test', 'FlattenForm', INPUT_FILE, INPUT_NAME], BASE_URL)
-client(['test', 'RenderPages', INPUT_URL, OPTIONS], BASE_URL)
+client(['test', 'FlattenForm', INPUT_FILE, INPUT_NAME])
+client(['test', 'RenderPages', INPUT_URL, OPTIONS])
