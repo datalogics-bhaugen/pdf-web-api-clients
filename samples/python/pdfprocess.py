@@ -66,7 +66,7 @@ else:
     JSON = "'{{\"printPreview\": true, \"outputFormat\": \"jpg\"}}'"
 
 OPTIONS = ('inputName', 'password', 'options')
-PDF2IMG_GUIDE = 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'
+IRS_1040 = 'http://www.irs.gov/pub/irs-pdf/f1040.pdf'
 USAGE_OPTIONS = '[{}=name] [{}=pwd] [{}=json]'.format(*OPTIONS)
 USAGE = 'usage: {0} request_type <input document> [input file(s)] ' +\
         USAGE_OPTIONS + '\n' +\
@@ -74,7 +74,7 @@ USAGE = 'usage: {0} request_type <input document> [input file(s)] ' +\
         'example: {0} DecorateDocument any.pdf watermarks.json\n' +\
         'example: {0} FillForm form.pdf form.fdf\n' +\
         'example: {0} FlattenForm hello_world.pdf\n' +\
-        'example: {0} RenderPages ' + PDF2IMG_GUIDE + ' options=' + JSON
+        'example: {0} RenderPages ' + IRS_1040 + ' options=' + JSON
 
 
 ## Sample pdfclient driver:

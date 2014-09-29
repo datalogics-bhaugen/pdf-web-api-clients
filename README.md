@@ -32,8 +32,6 @@ These packages are required:
 * python-dev
 * for Scout on Ubuntu
     * libmagic-dev
-* for fonts on Ubuntu
-    * msttcorefonts
 * for lxml on Ubuntu
     * libxml2-dev
     * libxslt-dev

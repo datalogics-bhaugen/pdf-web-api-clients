@@ -66,8 +66,10 @@ class Error(Exception):
         return self._http_code
 
 
+INVALID_INPUT = "File does not begin with '%PDF-'."
+
 APDFL_ERRORS = [
-    Error(ErrorCode.InvalidInput, "File does not begin with '%PDF-'",
+    Error(ErrorCode.InvalidInput, INVALID_INPUT,
           HTTPCode.UnsupportedMediaType),
     Error(ErrorCode.InvalidInput,
           'The file is damaged and could not be repaired',
@@ -83,3 +85,5 @@ APDFL_ERRORS = [
 
 UNKNOWN = Error(ErrorCode.UnknownError, 'Internal server error',
                 HTTPCode.InternalServerError)
+
+URL_ERROR = Error(ErrorCode.InvalidInput, INVALID_INPUT, HTTPCode.Forbidden)
