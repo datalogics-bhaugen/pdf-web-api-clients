@@ -42,17 +42,11 @@ class Action(server.Action):
             with OutputFile(input_file.name, self.output_format) as output:
                 return self._get_image(input_file.name, output)
     def _pdf2img_args(self, input_name):
-        result = ['pdf2img'] + Action._options() + self._parser.pdf2img_options
+        result = ['pdf2img'] + self._parser.pdf2img_options
         if self.password: result += [u'-password={}'.format(self.password)]
         result += [input_name, self.output_format]
         logger.debug(' '.join(result))
         return result
-    @classmethod
-    def _options(cls):
-        if not server.RESOURCE: return []
-        resources = ('CMap', 'Font', 'Unicode')
-        resources = [os.path.join(server.RESOURCE, r) for r in resources]
-        return [u'-fontlist="{}"'.format(';'.join(resources))]
     @property
     def request_type(self):
         "The request's type, i.e. RenderPages."

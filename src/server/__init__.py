@@ -6,7 +6,7 @@ import logger
 from action import Action
 from cfg import Configuration
 from errors import EnumValue, Error, ErrorCode, HTTPCode, UNKNOWN
-from tmpdir import RESOURCE, Stdout, TemporaryFile
+from tmpdir import Stdout, TemporaryFile
 
 import pdf2img
 
