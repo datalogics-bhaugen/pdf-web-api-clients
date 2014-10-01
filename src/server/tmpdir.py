@@ -20,6 +20,12 @@ VAR_DIR = _find_dir('var')
 
 os.environ['TMPDIR'] = TMP_DIR  # for APDFL
 
+if platform.system() == 'Linux':
+    resource_dir = _find_dir('Resource')
+    # pdf2img looks for the APDFL Resource directory in its
+    # current directory unless PDF2IMG_INSTALL_LOCATION is defined
+    os.environ['PDF2IMG_INSTALL_LOCATION'] = os.path.dirname(resource_dir)
+
 
 class TemporaryFile(object):
     "Facilitates temporary file usage, ensures that file is deleted."
