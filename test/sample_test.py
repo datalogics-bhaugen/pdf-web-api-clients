@@ -11,7 +11,7 @@ from nose.tools import assert_equal, assert_in
 
 
 GOOD_PDF = 'data/four_pages.pdf'
-INPUT_URL = 'http://www.irs.gov/pub/irs-pdf/f1040.pdf'
+INPUT_URL = 'http://www.datalogics.com/pdf/PDF2IMG.pdf'
 
 
 def set_python_path():

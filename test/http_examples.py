@@ -21,7 +21,7 @@ import test_client
 
 INPUT_FILE = 'hello_world.pdf'  # copy or link data/hello_world.pdf
 INPUT_NAME = 'inputName={}'.format(INPUT_FILE)
-INPUT_URL = 'http://www.irs.gov/pub/irs-pdf/f1040.pdf'
+INPUT_URL = 'http://www.datalogics.com/pdf/PDF2IMG.pdf'
 
 RENDER_PAGES_OPTIONS = {'outputFormat': 'jpg', 'printPreview': True}
 OPTIONS = 'options={}'.format(json.dumps(RENDER_PAGES_OPTIONS))

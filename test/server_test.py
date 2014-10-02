@@ -7,7 +7,8 @@ from nose.tools import assert_in
 
 
 def test_bad_url():
-    result = Result(ErrorCode.InvalidInput, (HTTPCode.Forbidden,))
+    errors = (HTTPCode.BadRequest, HTTPCode.UnsupportedMediaType)
+    result = Result(ErrorCode.InvalidInput, errors)
     try: Test(['http://127.0.0.1/spam.pdf'], result)()
     except Exception as exception:
         assert_in(max_retry_error('/spam.pdf'), str(exception))
@@ -16,7 +17,7 @@ def max_retry_error(url):
     return 'Max retries exceeded with url: {}'.format(url)
 
 def test_good_url():
-    Test(['http://www.irs.gov/pub/irs-pdf/f1040.pdf'], Result())()
+    Test(['http://www.datalogics.com/pdf/PDF2IMG.pdf'], Result())()
 
 def test_bad_pdf():
     result = Result(ErrorCode.InvalidInput, HTTPCode.UnsupportedMediaType)

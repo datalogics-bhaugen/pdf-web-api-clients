@@ -55,7 +55,7 @@ const APPLICATION_ID = 'your app id';  # TODO: paste!
 const APPLICATION_KEY = 'your app key';  # TODO: paste!
 
 const CMD = 'php pdfprocess.php ';
-const IRS_1040 = 'http://www.irs.gov/pub/irs-pdf/f1040.pdf';
+const TEST_URL = 'http://www.datalogics.com/pdf/PDF2IMG.pdf';
 const USAGE_OPTIONS = '[inputName=name] [password=pwd] [options=json]';
 
 $json = substr(php_uname('s'), 0, 3) == 'Win' ?
@@ -69,7 +69,7 @@ $usage =
     "example: " . CMD . "DecorateDocument any.pdf watermark.json\n" .
     "example: " . CMD . "FillForm form.pdf form.fdf\n" .
     "example: " . CMD . "FlattenForm hello_world.pdf\n" .
-    "example: " . CMD . "RenderPages " . IRS_1040 . " options=" . $json;
+    "example: " . CMD . "RenderPages " . TEST_URL . " options=" . $json;
 
 
 /**
