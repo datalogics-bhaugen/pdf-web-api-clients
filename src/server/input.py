@@ -10,7 +10,8 @@ class ChunkedTransfer(object):
     def __init__(self, from_url, to_file):
         self._input, self._to_file = None, None
         try:
-            self._input = requests.get(from_url, stream=True)
+            headers = {'User-agent': 'Mozilla/5.0'}
+            self._input = requests.get(from_url, headers=headers, stream=True)
         except Exception as exception:
             raise Error(ErrorCode.InvalidInput, unicode(exception))
         self._validate_input_size(self._content_length())

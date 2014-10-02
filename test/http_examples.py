@@ -21,15 +21,14 @@ import test_client
 
 INPUT_FILE = 'hello_world.pdf'  # copy or link data/hello_world.pdf
 INPUT_NAME = 'inputName={}'.format(INPUT_FILE)
-INPUT_URL = 'http://www.irs.gov/pub/irs-pdf/f1040.pdf'
+INPUT_URL = 'http://www.datalogics.com/pdf/PDF2IMG.pdf'
 
 RENDER_PAGES_OPTIONS = {'outputFormat': 'jpg', 'printPreview': True}
 OPTIONS = 'options={}'.format(json.dumps(RENDER_PAGES_OPTIONS))
 
-BASE_URL = 'http://pdfprocess.datalogics-cloud.com'
 FAKE_ID = '12345678'
 FAKE_KEY = '1234567890abcdef1234567890abcdef'
 
 client = test_client.client(FAKE_ID, FAKE_KEY)
-client(['test', 'FlattenForm', INPUT_FILE, INPUT_NAME], BASE_URL)
-client(['test', 'RenderPages', INPUT_URL, OPTIONS], BASE_URL)
+client(['test', 'FlattenForm', INPUT_FILE, INPUT_NAME])
+client(['test', 'RenderPages', INPUT_URL, OPTIONS])

@@ -14,12 +14,17 @@ def _find_dir(dir_name, path=None):
     path = os.path.join(parent_dir, dir_name)
     return path if os.path.isdir(path) else _find_dir(dir_name, parent_dir)
 
-RESOURCE = _find_dir('Resource') if platform.system() == 'Linux' else None
 ROOT_DIR = _find_dir('web-api')
 TMP_DIR = _find_dir('tmp')
 VAR_DIR = _find_dir('var')
 
 os.environ['TMPDIR'] = TMP_DIR  # for APDFL
+
+if platform.system() == 'Linux':
+    resource_dir = _find_dir('Resource')
+    # pdf2img looks for the APDFL Resource directory in its
+    # current directory unless PDF2IMG_INSTALL_LOCATION is defined
+    os.environ['PDF2IMG_INSTALL_LOCATION'] = os.path.dirname(resource_dir)
 
 
 class TemporaryFile(object):
