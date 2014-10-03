@@ -10,7 +10,7 @@ class ChunkedTransfer(object):
     def __init__(self, from_url, to_file):
         self._input, self._to_file = None, None
         try:
-            headers = {'User-agent': 'Mozilla/5.0'}
+            headers = {'User-agent': 'Datalogics-PDF-WebAPI'}
             self._input = requests.get(from_url, headers=headers, stream=True)
         except Exception as exception:
             raise Error(ErrorCode.InvalidInput, unicode(exception))
