@@ -86,4 +86,4 @@ APDFL_ERRORS = [
 UNKNOWN = Error(ErrorCode.UnknownError, 'Internal server error',
                 HTTPCode.InternalServerError)
 
-URL_ERROR = Error(ErrorCode.InvalidInput, INVALID_INPUT, HTTPCode.Forbidden)
+URL_ERROR = Error(ErrorCode.InvalidInput, INVALID_INPUT, HTTPCode.NotFound)
