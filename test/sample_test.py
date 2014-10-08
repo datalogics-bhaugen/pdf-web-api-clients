@@ -1,4 +1,4 @@
-"WebAPI regression tests"
+"sample client regression tests"
 
 import os
 import glob
@@ -20,12 +20,6 @@ def set_python_path():
     requests_dir = glob.glob(os.path.join(eggs_dir, 'requests-*.egg'))[-1]
     os.environ['PYTHONPATH'] = requests_dir
 
-def test_pdf2img_application():
-    args = ['pdf2img', 'data/hello_world.pdf', 'tif']
-    with Stdout() as stdout:
-        assert_equal(subprocess.call(args, stdout=stdout), 0)
-        assert_in('PDF2IMG', str(stdout))
-
 def test_pdfprocess_sample_python(python3=False):
     python_sample = os.path.join('..', 'samples', 'python', 'pdfprocess.py')
     args = [python_sample, 'RenderPages', 'data/bad.pdf']
@@ -43,15 +37,18 @@ def test_pdfprocess_sample_python_patched_url(python3=False):
 def validate_sample_python(args, output, python3):
     set_python_path()
     if python3: args[0:0] = ['python3']
-    with Stdout() as stdout:
-        assert_equal(subprocess.call(args, stdout=stdout), 0)
-        assert_in(output, str(stdout))
+    assert_in(output, call(args))
 
 def validate_sample_python_patched(args, output_format, python3):
     request_options = {'outputFormat': output_format}
     args = args + ['options={}'.format(json.dumps(request_options))]
     output = 'created: pdfprocess.{}'.format(output_format)
     validate_sample_python(args, output, python3)
+
+def call(args):
+    with Stdout() as stdout:
+        assert_equal(subprocess.call(args, stdout=stdout), 0)
+        return str(stdout)
 
 if platform.system() == 'Darwin':
     def test_pdfprocess_sample_php():
@@ -68,9 +65,7 @@ if platform.system() == 'Darwin':
             validate_sample_php_patched(args, output_format)
 
     def test_pdfprocess_sample_php_patched_url():
-        args = ['php', 'pdfprocess/php', 'RenderPages', INPUT_URL]
-        with Stdout() as stdout:
-            assert_equal(subprocess.call(args, stdout=stdout), 0)
+        call(['php', 'pdfprocess/php', 'RenderPages', INPUT_URL])
 
     def test_pdfprocess_sample_python3():
         test_pdfprocess_sample_python(python3=True)
@@ -83,6 +78,4 @@ if platform.system() == 'Darwin':
 
     def validate_sample_php_patched(args, output_format):
         request_options = {'outputFormat': output_format}
-        args = args + ['options={}'.format(json.dumps(request_options))]
-        with Stdout() as stdout:
-            assert_equal(subprocess.call(args, stdout=stdout), 0)
+        call(args + ['options={}'.format(json.dumps(request_options))])
