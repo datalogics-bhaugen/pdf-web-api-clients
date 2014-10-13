@@ -1,3 +1,5 @@
+"JSON utilities. (The built-in JSON module complicates naming this module.)"
+
 import simplejson
 
 from errors import Error, ErrorCode

@@ -1,3 +1,5 @@
+"Log entries are written to conventional log files and exported via syslog."
+
 import os
 import sys
 import time

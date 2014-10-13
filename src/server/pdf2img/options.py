@@ -1,3 +1,5 @@
+"This module defines the classes used by :py:class:`argparse.ArgumentParser`."
+
 class Option(object):
     "RenderPages option, e.g. password."
     FORMAT = u'-{}={}'

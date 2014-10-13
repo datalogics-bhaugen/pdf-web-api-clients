@@ -1,3 +1,5 @@
+"This module defines the enumerations specific to RenderPages errors."
+
 import server
 from server import EnumValue, Error, HTTPCode
 

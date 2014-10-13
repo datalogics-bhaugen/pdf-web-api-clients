@@ -3,11 +3,12 @@ import glob
 import ConfigParser
 
 class Config(dict):
-    DLENV = 'dlenv'  # PROD or TEST
+    "A Config value is a string or a Config."
+    DLENV = 'dlenv'
     DLENV_FILENAME = '/etc/dl_environment'
     def __getattr__(self, name): return self[name]
     def initialize(self, filenames, default_dlenv='test'):
-        "Parse configuration files and set *dlenv* attribute."
+        "Parse configuration files and set *dlenv* attribute (PROD or TEST)."
         parser = ConfigParser.ConfigParser()
         parser.read(filenames)
         for section_name in parser.sections():

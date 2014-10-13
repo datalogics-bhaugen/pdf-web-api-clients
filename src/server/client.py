@@ -1,3 +1,5 @@
+"This module encapsulates our 3scale dependency."
+
 import ThreeScalePY
 import cfg
 import logger

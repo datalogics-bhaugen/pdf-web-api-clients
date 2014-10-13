@@ -1,6 +1,8 @@
 server.pdf2img package
 ======================
 
+This package uses PDF2IMG to implement PDF WebAPI's RenderPages requests.
+
 Submodules
 ----------
 

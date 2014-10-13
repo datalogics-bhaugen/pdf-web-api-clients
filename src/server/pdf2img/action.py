@@ -1,3 +1,5 @@
+"The server creates a pdf2img action to process a RenderPages request."
+
 import os
 import subprocess
 

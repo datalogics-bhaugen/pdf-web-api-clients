@@ -1,3 +1,5 @@
+"These classes implement a common interface for presenting input to APDFL."
+
 import abc
 import requests
 

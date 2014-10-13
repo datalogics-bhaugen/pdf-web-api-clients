@@ -1,3 +1,5 @@
+"This module defines the classes and enumerations used to report errors."
+
 import requests
 
 
