@@ -11,7 +11,11 @@ SERVER_SRC = $(SERVER)/*.py $(SERVER)/*/*.py
 SPHINX_BUILD = bin/sphinx-build
 VAR_LOG = ../var/log
 
-html: $(PHP) $(PYTHON) sphinx/html/index.html
+html: client-doc server-doc
+
+client-doc: $(PHP) $(PYTHON)
+
+server-doc: sphinx/html/index.html
 
 clean: php-clean python-clean sphinx-clean
 
@@ -25,7 +29,7 @@ sphinx-clean:
 	rm -rf .installed.cfg bin develop-eggs parts venv
 	@$(MAKE_SPHINX) clean
 
-.PHONY: html clean php-clean python-clean sphinx-clean
+.PHONY: html client-doc server-doc clean php-clean python-clean sphinx-clean
 
 $(DOXYGEN): doxygen
 
