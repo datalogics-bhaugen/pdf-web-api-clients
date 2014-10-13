@@ -6,6 +6,8 @@
 PDF WebAPI server documentation
 ===============================
 
+This package implements the PDF WebAPI's Python server, which uses APDFL to process WebAPI requests, e.g. RenderPages.
+
 Subpackages
 -----------
 

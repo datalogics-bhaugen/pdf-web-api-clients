@@ -1,3 +1,8 @@
+'''
+We use the built-in parser to validate RenderPages options and create
+pdf2img commands.
+'''
+
 import argparse
 import translator
 from options import Option, Flag, OPTIONS

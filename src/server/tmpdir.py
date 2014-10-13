@@ -1,3 +1,5 @@
+"Temporary file utilities."
+
 import os
 import platform
 import tempfile

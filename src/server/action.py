@@ -1,3 +1,8 @@
+'''
+The server creates an action to process a request.
+(The term *action* is taken from the 'api/actions' part of the service URL.)
+'''
+
 import abc
 import sys
 import traceback
