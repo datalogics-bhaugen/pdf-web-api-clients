@@ -1,4 +1,7 @@
-"This module defines the classes used by :py:class:`argparse.ArgumentParser`."
+'''
+This module defines the classes used by
+:py:class:`server.pdf2img.argument_parser.ArgumentParser`.
+'''
 
 class Option(object):
     "RenderPages option, e.g. password."
