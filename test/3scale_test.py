@@ -6,8 +6,8 @@ import test
 
 from test import THREE_SCALE
 from test_client import HTTPCode
-from server.client import Client, USAGE_LIMIT
-from server.errors import Error, ErrorCode
+from server.client import Client
+from server.errors import Error, ErrorCode, USAGE_LIMIT_ERROR
 from nose.tools import assert_equal, assert_is_none
 
 
@@ -38,7 +38,7 @@ def test_bad_application_key():
     authenticate_error(client(THREE_SCALE.test_id), error)
 
 def test_usage_limit_exceeded():
-    message = 'UsageLimitExceeded: ' + USAGE_LIMIT
+    message = 'UsageLimitExceeded: ' + USAGE_LIMIT_ERROR.message
     for j in range(100):
         try:
             client().authenticate()

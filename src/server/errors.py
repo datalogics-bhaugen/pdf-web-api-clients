@@ -70,6 +70,9 @@ class Error(Exception):
 
 INVALID_INPUT = "File does not begin with '%PDF-'."
 
+USAGE_LIMIT = 'Your usage limit has been exceeded.' \
+    ' Please contact us to increase your limit.'
+
 APDFL_ERRORS = [
     Error(ErrorCode.InvalidInput, INVALID_INPUT,
           HTTPCode.UnsupportedMediaType),
@@ -89,3 +92,6 @@ UNKNOWN = Error(ErrorCode.UnknownError, 'Internal server error',
                 HTTPCode.InternalServerError)
 
 URL_ERROR = Error(ErrorCode.InvalidInput, INVALID_INPUT, HTTPCode.NotFound)
+
+USAGE_LIMIT_ERROR =\
+    Error(ErrorCode.UsageLimitExceeded, USAGE_LIMIT, HTTPCode.TooManyRequests)
