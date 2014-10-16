@@ -6,6 +6,7 @@ import traceback
 
 import input
 import logger
+import usage_limit
 
 from StringIO import StringIO
 from pdfclient import Application
@@ -35,6 +36,7 @@ class RequestHandler(object):
         self._url =\
             request.form.get(INPUT_URL, None) or request.args.get(INPUT_URL)
     def __call__(self):
+        usage_limit.validate(self._request)
         url, options = self._url, self._options
         request = api_client.make_request('RenderPages', BASE_URL)
         if IMAGE_WIDTH in self._options or IMAGE_HEIGHT in self._options:
