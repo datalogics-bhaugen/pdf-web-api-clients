@@ -1,6 +1,11 @@
 "This module defines the classes and enumerations used to report errors."
 
+import sys
 import requests
+import traceback
+
+import cfg
+import logger
 
 
 class EnumValue(object):
@@ -56,6 +61,14 @@ class Error(Exception):
         "Return a copy of this error using the specified message."
         message = self._preferred_message or message or self.message
         return Error(self.code, message, self.http_code)
+    def log(self):
+        "Create a log entry for this error."
+        logger.error(self)
+        if self.code == ErrorCode.UnknownError:
+            dlenv = cfg.Configuration.environment.dlenv
+            for entry in traceback.format_tb(sys.exc_info()[2]):
+                logger.error(entry.rstrip())
+                if dlenv == 'prod' and '/eggs/' in entry: return
     @property
     def code(self):
         "The :py:class:`ErrorCode` for this error."
