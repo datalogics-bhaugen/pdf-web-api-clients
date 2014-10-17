@@ -36,6 +36,8 @@ These packages are required:
     * libxml2-dev
     * libxslt-dev
     * zlib1g-dev
+* for thumbnail server usage limit enforcement on Ubuntu
+    * sqlite
 
 #### Cloud
 
