@@ -77,4 +77,6 @@ def validate(request):
         for private_network in ([127, 0, 0, 1], [10], [192, 168]):
             if private_network == remote_addr[:len(private_network)]:
                 return  # monitor requests, etc.
+        if remote_addr[0] == 172 and remote_addr[1] in range(16, 32):
+            return  # AWS uses this range
     Usage(remote_addr).validate()
