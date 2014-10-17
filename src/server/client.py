@@ -6,12 +6,9 @@ import logger
 import time
 
 from ThreeScalePY import ThreeScaleAuthRep
-from errors import Error, ErrorCode, HTTPCode
+from errors import Error, ErrorCode, HTTPCode, USAGE_LIMIT_ERROR
 from request import JSON
 
-
-USAGE_LIMIT = 'Your usage limit has been exceeded. ' \
-    'Please contact us to increase your limit.'
 
 class Client(ThreeScaleAuthRep):
     "Extract application ID/key from request and authenticate it."
@@ -38,8 +35,7 @@ class Client(ThreeScaleAuthRep):
             error = self.build_response().get_reason()
             if 'usage limit' in error.lower():
                 # TODO: do something to address repeated violations?
-                error_code = ErrorCode.UsageLimitExceeded
-                raise Error(error_code, USAGE_LIMIT, HTTPCode.TooManyRequests)
+                raise USAGE_LIMIT_ERROR
             raise Error(error_code, error, HTTPCode.Forbidden)
         except ThreeScalePY.ThreeScaleException as exception:
             error = str(exception)

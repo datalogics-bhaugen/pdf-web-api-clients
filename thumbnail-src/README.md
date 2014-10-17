@@ -2,7 +2,8 @@
 
 This thumbnail server translates GET requests to POST requests as follows:
 
-* adds application ID and key (Joel's credentials)
+* enforces usage limits
+* adds application ID and key
 * adds default image size (max=250), if necessary
 * returns web-api response, unchanged
 

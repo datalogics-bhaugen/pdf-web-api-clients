@@ -1,16 +1,15 @@
 "thumbnail request handler"
 
 import flask
-import sys
-import traceback
 
 import input
 import logger
+import usage_limit
 
 from StringIO import StringIO
 from pdfclient import Application
 from cfg import Configuration
-from errors import ErrorCode, HTTPCode
+from errors import Error, HTTPCode
 from request import JSON
 
 
@@ -35,6 +34,7 @@ class RequestHandler(object):
         self._url =\
             request.form.get(INPUT_URL, None) or request.args.get(INPUT_URL)
     def __call__(self):
+        usage_limit.validate(self._request)
         url, options = self._url, self._options
         request = api_client.make_request('RenderPages', BASE_URL)
         if IMAGE_WIDTH in self._options or IMAGE_HEIGHT in self._options:
@@ -44,7 +44,7 @@ class RequestHandler(object):
     def log_usage(self, error=None):
         usage = {'action': 'Thumbnail', 'address': self._request.remote_addr}
         if error:
-            RequestHandler.log_error(error)
+            error.log()
             error_code = int(error.code)
             usage['error'] = {'code': error_code, 'message': error.message}
         usage['inputURL'] = self._url
@@ -88,14 +88,6 @@ class RequestHandler(object):
         if not portrait_response.ok: return self._response(landscape_response)
         return self._response(
             self._smaller_response(portrait_response, landscape_response))
-    @classmethod
-    def log_error(cls, error):
-        logger.error(error)
-        if error.code == ErrorCode.UnknownError:
-            dlenv = Configuration.environment.dlenv
-            for entry in traceback.format_tb(sys.exc_info()[2]):
-                logger.error(entry.rstrip())
-                if dlenv == 'prod' and '/eggs/' in entry: return
 
 class InputFile(StringIO):
     "file-like class downloads files without using the file system"

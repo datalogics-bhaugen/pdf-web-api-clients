@@ -4,8 +4,6 @@ The server creates an action to process a request.
 '''
 
 import abc
-import sys
-import traceback
 
 import cfg
 import input
@@ -35,7 +33,7 @@ class Action(object):
                  'address': self.client.address,
                  'client': self.client.application}
         if error:
-            Action.log_error(error)
+            error.log()
             error_code = int(error.code)
             usage['error'] = {'code': error_code, 'message': error.message}
         if self.input_name: usage['inputName'] = self.input_name
@@ -65,15 +63,6 @@ class Action(object):
             error = next((e for e in error_list if e.message in message), None)
             if error: return error.copy(message)
         return UNKNOWN.copy(message)
-    @classmethod
-    def log_error(cls, error):
-        "Create a log entry for an :py:class:`~.Error`."
-        logger.error(error)
-        if error.code == ErrorCode.UnknownError:
-            dlenv = cfg.Configuration.environment.dlenv
-            for entry in traceback.format_tb(sys.exc_info()[2]):
-                logger.error(entry.rstrip())
-                if dlenv == 'prod' and '/eggs/' in entry: return
     @abc.abstractproperty
     def request_type(self):
         "*(abstract)* The request's type, e.g. RenderPages."
