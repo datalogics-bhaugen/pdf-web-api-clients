@@ -1,51 +1,67 @@
-"enforce thumbnail usage limits"
+"enforce usage limits"
 
-import os
 import platform
+import requests
 import time
 
+import cfg
 import errors
+import logger
 import tmpdir
 
-from sqlite3 import Connection
+from lxml import etree
+from usage_database import Database
 
+
+ADMIN_URL = 'https://datalogics-cloud-admin.3scale.net'
+GET_LIMITS = '/admin/api/application_plans/{}/limits.xml'
+
+# TODO: support 'eternity'
+SECONDS = {'minute': 60,
+           'hour': 60 * 60,
+           'day': 60 * 60 * 24,
+           'week': 60 * 60 * 24 * 7,
+           'month': 60 * 60 * 24 * 30,
+           'year': 60 * 60 * 24 * 365}
 
 LINUX = (platform.system() == 'Linux')
-DATABASE = os.path.join(tmpdir.ROOT_DIR, 'ThumbnailUsage.db')
-DATABASE_TIMEOUT = 10  # seconds
 THUMBNAIL_SERVERS = 2  # TODO: get this number dynamically
 
 class UsageLimit(object):
-    def __init__(self, max_requests, period_seconds):
-        self._requests, self._seconds = max_requests, period_seconds
+    def __init__(self, max_requests, period):
+        self._requests, self._period = max_requests, period
         self._servers = THUMBNAIL_SERVERS if LINUX else 1
+    def __str__(self):
+        return "UsageLimit({}, '{}')".format(self._requests, self._period)
+    def validate(self, timestamp, timestamps):
+        min_timestamp = timestamp - self.seconds
+        usage_timestamps = [t for t in timestamps if t >= min_timestamp]
+        if len(usage_timestamps) >= self.max_requests_per_server:
+            raise errors.USAGE_LIMIT_ERROR
+    @classmethod
+    def get(cls, plan_id=cfg.Configuration.three_scale.public_plan_id):
+        result = []
+        url = ADMIN_URL + GET_LIMITS.format(plan_id)
+        params = {'provider_key': cfg.Configuration.three_scale.provider_key}
+        response = requests.get(url, params=params)
+        if response.status_code == requests.codes.ok:
+            for limit in etree.fromstring(response.text.encode('utf-8')):
+                value = limit.xpath('value')[0].text
+                period = limit.xpath('period')[0].text
+                usage_limit = UsageLimit(int(value), period)
+                logger.debug('retrieved {}'.format(usage_limit))
+                result.append(usage_limit)
+        else:
+            logger.error('cannot get usage limits for plan {}'.format(plan_id))
+        return result
     @property
     def max_requests_per_server(self): return self._requests / self._servers
     @property
-    def seconds(self): return self._seconds
+    def seconds(self): return SECONDS[self._period]
 
-MINUTE = 60  # seconds
-MONTH = 30 * 24 * 60 * MINUTE
-USAGE_LIMITS = (UsageLimit(10, MINUTE), UsageLimit(1000, MONTH))
-
-class ThumbnailUsage(Connection):
-    def __init__(self, database=DATABASE, timeout=DATABASE_TIMEOUT):
-        Connection.__init__(self, database, isolation_level='immediate',
-                            timeout=timeout)
-        self.execute('create table if not exists'
-                     ' requests(network integer, timestamp integer)')
-        self.execute('create index if not exists'
-                     ' requests_network on requests(network)')
-    def timestamps(self, network):
-        sql = 'select timestamp from requests where network = ?'
-        return [row[0] for row in self.execute(sql, (network,)).fetchall()]
-    def update(self, network, timestamp):
-        sql = 'delete from requests where network = ? and timestamp < ?'
-        self.execute(sql, (network, timestamp - MONTH))
-        sql = 'insert into requests values(?, ?)'
-        self.execute(sql, (network, timestamp))
-
-THUMBNAIL_USAGE = ThumbnailUsage()
+DEFAULT_USAGE_LIMITS = (UsageLimit(10, 'minute'), UsageLimit(1000, 'month'))
+USAGE_LIMITS = UsageLimit.get() or DEFAULT_USAGE_LIMITS
+THUMBNAIL_USAGE = Database(max([limit.seconds for limit in USAGE_LIMITS]))
 
 class Usage(object):
     def __init__(self, remote_addr):
@@ -55,13 +71,8 @@ class Usage(object):
         with THUMBNAIL_USAGE:
             timestamps = THUMBNAIL_USAGE.timestamps(self.network)
             for usage_limit in USAGE_LIMITS:
-                self._validate(timestamps, usage_limit)
+                usage_limit.validate(self.timestamp, timestamps)
             THUMBNAIL_USAGE.update(self.network, self.timestamp)
-    def _validate(self, timestamps, usage_limit):
-        min_timestamp = self.timestamp - usage_limit.seconds
-        usage_timestamps = [t for t in timestamps if t >= min_timestamp]
-        if len(usage_timestamps) >= usage_limit.max_requests_per_server:
-            raise errors.USAGE_LIMIT_ERROR
     @property
     def network(self):
         "first two octets of the client's IP address (int)"
