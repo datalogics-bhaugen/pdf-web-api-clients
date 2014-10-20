@@ -4,6 +4,7 @@ retry_delay = 3
 
 [three_scale]
 provider_key = f362180da04b6ca1790784bde6ed70d6
+public_plan_id = 2357355807655
 
 public_id = c953bc0d	; rate-limited
 public_key = c7a7c21fb25c384127879ded5ed3b0a4
