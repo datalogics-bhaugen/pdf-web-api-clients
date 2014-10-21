@@ -7,13 +7,16 @@ import logger
 import usage_limit
 
 from StringIO import StringIO
-from pdfclient import Application
+from pdfclient import Application, ErrorCode
 from cfg import Configuration
 from errors import Error, HTTPCode
 from request import JSON
 
 
 BASE_URL = 'http://127.0.0.1:{}'.format(Configuration.service.port)
+
+INVALID_INPUT = [ErrorCode.InvalidInput, ErrorCode.MissingPassword,
+                 ErrorCode.UnsupportedSecurityProtocol, ErrorCode.InvalidPage]
 
 IMAGE_HEIGHT = 'imageHeight'
 IMAGE_WIDTH = 'imageWidth'
@@ -81,6 +84,8 @@ class RequestHandler(object):
         files = {'input': InputFile(url)}
         options[IMAGE_HEIGHT] = Configuration.limits['max_thumbnail_dimension']
         portrait_response = api_request(files, options=options)
+        if portrait_response.error_code in INVALID_INPUT:
+            return self._response(portrait_response)
         options[IMAGE_WIDTH] = options[IMAGE_HEIGHT]
         del options[IMAGE_HEIGHT]
         landscape_response = api_request(files, options=options)

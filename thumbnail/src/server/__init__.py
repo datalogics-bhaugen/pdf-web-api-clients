@@ -8,7 +8,7 @@ from werkzeug.contrib.fixers import ProxyFix
 
 app = flask.Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
-logger.start(app.logger, app.name)
+logger.start(app.logger, 'thumbnail')
 
 from errors import Error, ErrorCode, HTTPCode, UNKNOWN
 from request_handler import RequestHandler

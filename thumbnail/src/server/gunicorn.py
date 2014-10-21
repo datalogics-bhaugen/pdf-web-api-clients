@@ -5,8 +5,8 @@ import os
 import sys  # for configuring gunicorn after moving build directory
 sys.path[0:0] = [os.path.dirname(os.path.abspath(__file__))]
 
-from thumbnail import cfg
-from thumbnail.tmpdir import ROOT_DIR, VAR_DIR
+from server import cfg
+from server.tmpdir import ROOT_DIR, VAR_DIR
 
 PORT = cfg.Configuration.service.thumbnail_port
 PROC_NAME = 'thumbnail'
