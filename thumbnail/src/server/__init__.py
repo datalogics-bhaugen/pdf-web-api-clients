@@ -6,9 +6,9 @@ import requests
 import logger
 from werkzeug.contrib.fixers import ProxyFix
 
-app = flask.Flask(__name__)
+app = flask.Flask('thumbnail')
 app.wsgi_app = ProxyFix(app.wsgi_app)
-logger.start(app.logger, 'thumbnail')
+logger.start(app)
 
 from errors import Error, ErrorCode, HTTPCode, UNKNOWN
 from request_handler import RequestHandler
