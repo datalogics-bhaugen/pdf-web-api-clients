@@ -1,4 +1,4 @@
-"WebAPI application"
+"WebAPI application."
 
 import flask
 import logger

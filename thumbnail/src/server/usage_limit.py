@@ -1,4 +1,4 @@
-"enforce usage limits"
+"This module enforces our public plan's rate limits."
 
 import platform
 import requests
@@ -24,27 +24,35 @@ SECONDS = {'minute': 60,
            'year': 60 * 60 * 24 * 365,
            'eternity': None}
 
-class UsageLimit(object):
+class RateLimit(object):
+    "We limit usage on a per-period basis."
     def __init__(self, max_requests, period):
         self._requests, self._period = max_requests, period
         self._servers = SERVERS if LINUX else 1
     def __str__(self):
-        return "UsageLimit({}, '{}')".format(self._requests, self._period)
+        return "RateLimit({}, '{}')".format(self._requests, self._period)
     def validate(self, timestamp, timestamps):
+        "Raise a usage limit error if appropriate."
         min_timestamp = timestamp - self.seconds if self.seconds else 0
         usage_timestamps = [t for t in timestamps if t >= min_timestamp]
         if len(usage_timestamps) >= self.max_requests_per_server:
             raise errors.USAGE_LIMIT_ERROR
     @classmethod
-    def max_period(cls, usage_limits):
-        periods = [limit.seconds for limit in usage_limits]
+    def max_period(cls, rate_limits):
+        "The longest period in *rate_limits* (None if it is 'eternity')."
+        periods = [rate_limit.seconds for rate_limit in rate_limits]
         return None if None in periods else max(periods)
     @property
-    def max_requests_per_server(self): return self._requests / self._servers
+    def max_requests_per_server(self):
+        "The usage limit for one server (assumes #servers = 2)."
+        return self._requests / self._servers
     @property
-    def seconds(self): return SECONDS[self._period]
+    def seconds(self):
+        "This rate limit's period (None if it is 'eternity')."
+        return SECONDS[self._period]
 
 class PlanLimit(object):
+    "A 3scale plan's rate limits retrieved via 3scale's API."
     ADMIN_URL = 'https://datalogics-cloud-admin.3scale.net'
     GET_LIMITS = '/admin/api/application_plans/{}/limits.xml'
     def __init__(self, plan_id=cfg.Configuration.three_scale.public_plan_id):
@@ -52,44 +60,49 @@ class PlanLimit(object):
         params = {'provider_key': cfg.Configuration.three_scale.provider_key}
         response = requests.get(url, params=params)
         if response.status_code == requests.codes.ok:
-            self._usage_limits = self._parse_response(response)
+            self._rate_limits = self._parse_response(response)
         else:
-            self._usage_limits = None
-            logger.error('cannot get usage limits for plan {}'.format(plan_id))
+            self._rate_limits = None
+            logger.error('cannot get rate limits for plan {}'.format(plan_id))
     def _parse_response(self, response):
         result = []
         for limit in etree.fromstring(response.text.encode('utf-8')):
             value = limit.xpath('value')[0].text
             period = limit.xpath('period')[0].text
-            result.append(UsageLimit(int(value), period))
+            result.append(RateLimit(int(value), period))
         return result
     @property
-    def usage_limits(self): return self._usage_limits
+    def rate_limits(self):
+        "This plan's rate limits."
+        return self._rate_limits
 
-DEFAULT_USAGE_LIMITS = [UsageLimit(10, 'minute'), UsageLimit(1000, 'month')]
-USAGE_LIMITS = PlanLimit().usage_limits or DEFAULT_USAGE_LIMITS
-USAGE_DATABASE = Database(UsageLimit.max_period(USAGE_LIMITS))
+DEFAULT_RATE_LIMITS = [RateLimit(10, 'minute'), RateLimit(1000, 'month')]
+RATE_LIMITS = PlanLimit().rate_limits or DEFAULT_RATE_LIMITS
+USAGE_DATABASE = Database(RateLimit.max_period(RATE_LIMITS))
 
 class Usage(object):
+    "This class validates thumbnail server usage."
     def __init__(self, remote_addr):
         self._network = remote_addr[1] + 256 * remote_addr[0]
         self._timestamp = int(time.time())
     def validate(self):
+        "Update the usage database or raise a usage limit error."
         with USAGE_DATABASE:
             timestamps = USAGE_DATABASE.timestamps(self.network)
-            for usage_limit in USAGE_LIMITS:
-                usage_limit.validate(self.timestamp, timestamps)
+            for rate_limit in RATE_LIMITS:
+                rate_limit.validate(self.timestamp, timestamps)
             USAGE_DATABASE.update(self.network, self.timestamp)
     @property
     def network(self):
-        "first two octets of the client's IP address (int)"
+        "A 'network' is the first two octets of the client's IP address (int)."
         return self._network
     @property
     def timestamp(self):
-        "Unix time, i.e. #seconds since 1-jan-1970"
+        "Unix time, i.e. #seconds since 1-jan-1970."
         return self._timestamp
 
 def validate(request):
+    "Raise a usage limit error for this *request* if appropriate."
     remote_addr = [int(octet) for octet in request.remote_addr.split('.')]
     if LINUX:
         for private_network in ([127, 0, 0, 1], [10], [192, 168]):

@@ -1,4 +1,4 @@
-"thumbnail application"
+"Thumbnail server application."
 
 import flask
 import requests
@@ -19,6 +19,7 @@ MAX_RETRY_ERROR = Error(ErrorCode.UnknownError, 'Max retries exceeded',
 
 @app.route('/', methods=['GET'])
 def get_thumbnail():
+    "Thumbnail request handler."
     request_handler = RequestHandler(flask.request)
     try:
         response = request_handler()
