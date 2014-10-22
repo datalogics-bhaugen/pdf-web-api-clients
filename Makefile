@@ -3,7 +3,7 @@ BUILDOUT = bin/buildout
 ERASE = printf '' >
 GIT_HOOK = .git/hooks/pre-commit
 MAKE_HTML = make --directory doc
-MAKE_THUMBNAIL = make --directory thumbnail-src
+MAKE_THUMBNAIL = make --directory thumbnail
 PLATFORM = $(shell uname -s)
 QA = bin/flake8 --max-complexity 10
 REPLACE_KEY = test/scripts/replace_key
@@ -20,12 +20,12 @@ all: $(AUX_LOG) $(BOOTSTRAP) resource-test
 	$(BOOTSTRAP)
 	$(BUILDOUT) | scripts/make_versions_cfg > versions.cfg
 	@$(MAKE_THUMBNAIL) $@
-	@make files
+	@make files qa
 
 app: $(BOOTSTRAP)
 	$(BOOTSTRAP) -c base.cfg
 	$(BUILDOUT) -c base.cfg
-	@make files
+	@make files qa
 
 clean:
 	rm -rf .installed.cfg $(GIT_HOOK) bin develop-eggs parts venv
@@ -36,7 +36,7 @@ clean:
 
 files: $(GIT_HOOK) $(APP_LOG) cfg/server eggs tmp
 	@cp $(VENV) .
-	@make qa test-scripts bin/segfault
+	@make test-scripts bin/segfault
 
 html:
 	@$(MAKE_HTML)

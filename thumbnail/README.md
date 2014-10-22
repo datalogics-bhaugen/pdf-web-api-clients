@@ -20,8 +20,8 @@ The thumbnail server translates GET requests to POST requests as follows:
 These scripts facilitate testing:
 
 * `bin/nose` runs the regression tests that validate this Flask application
-* `bin/thumbnail` runs this Flask application with its development server (Werkzeug)
-* `test/thumbnail_test.py` tests this server
+* `bin/server` runs this Flask application with its development server (Werkzeug)
+* `test/server_test.py` tests this server
 
 ## Usage Limits
 

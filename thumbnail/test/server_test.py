@@ -1,4 +1,4 @@
-"thumbnail regression tests"
+"server regression tests"
 
 import test
 from nose.tools import assert_equal, assert_true

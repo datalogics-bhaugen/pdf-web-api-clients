@@ -12,7 +12,7 @@ sys.path[0:0] = [root_dir, requests_dir, samples_dir]
 
 import requests
 
-from thumbnail import cfg
+from server import cfg
 from pdfclient import Response
 
 THUMBNAIL_PORT = cfg.Configuration.service.thumbnail_port

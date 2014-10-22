@@ -6,7 +6,7 @@ import tmpdir
 from sqlite3 import Connection
 
 
-DATABASE = os.path.join(tmpdir.ROOT_DIR, 'ThumbnailUsage.db')
+DATABASE = os.path.join(tmpdir.ROOT_DIR, 'thumbnail', 'usage.db')
 DATABASE_TIMEOUT = 10  # seconds
 
 

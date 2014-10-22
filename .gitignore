@@ -22,7 +22,7 @@
 
 AdobeFnt*
 Resource
-ThumbnailUsage.db
+thumbnail/usage.db
 
 bin
 develop-eggs
