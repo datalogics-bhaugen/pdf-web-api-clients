@@ -67,7 +67,7 @@ my $application_key = 'your app key';  # TODO: paste!
 my $application = {'id' => $application_id, 'key' => $application_key};
 
 my $content = request_content($input, $application);
-my $base_url = 'https://pdfprocess.datalogics-cloud.com';
+my $base_url = 'https://pdfprocess.datalogics.com';
 my $request = post_request($base_url, $request_type, $content);
 
 my $user_agent = LWP::UserAgent->new(ssl_opts => {verify_hostname => 0});

@@ -2,7 +2,7 @@
 
 Internet-accessible PDF API, formally known as "PDF WebAPI".
 
-Remember to look at our [Confluence](https://dlogics.atlassian.net/wiki/display/EN/PDF+Web+API) page!
+Remember to look at our [Confluence](https://wiki.datalogics.com/display/EN/PDF+Web+API) page!
 
 ## Major Dependencies
 
@@ -41,7 +41,7 @@ These packages are required:
 
 #### Cloud
 
-Our [Confluence](https://dlogics.atlassian.net/wiki/display/EN/PDF+Web+API) page describes how to build this repository on our cloud build server. This server is also the host for our test environment. For more information about our services, please read that page!
+Our [Confluence](https://wiki.datalogics.com/display/EN/PDF+Web+API) page describes how to build this repository on our cloud build server. This server is also the host for our test environment. For more information about our services, please read that page!
 
 ### Mac
 

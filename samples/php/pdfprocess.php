@@ -83,7 +83,7 @@ class Client extends \pdfclient\Application
      * @return a Response object
      * @param args e.g.
      *  ['php', '%pdfprocess.php', 'FlattenForm', 'hello_world.pdf']
-     * @param base_url default = %https://pdfprocess.datalogics-cloud.com
+     * @param base_url default = %https://pdfprocess.datalogics.com
      */
     function __invoke($args, $base_url = NULL)
     {

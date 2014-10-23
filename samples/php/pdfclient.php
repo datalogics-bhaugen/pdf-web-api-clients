@@ -49,7 +49,7 @@
 # NEITHER DATALOGICS WARRANT AGAINST ANY BUG, ERROR, OMISSION, DEFECT,
 # DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
 
-const BASE_URL = 'https://pdfprocess.datalogics-cloud.com';
+const BASE_URL = 'https://pdfprocess.datalogics.com';
 
 
 /**
@@ -70,7 +70,7 @@ class Application
      * Create a request for the specified request type
      * @return a Request object
      * @param request_type e.g. '%FlattenForm'
-     * @param base_url default = %https://pdfprocess.datalogics-cloud.com
+     * @param base_url default = %https://pdfprocess.datalogics.com
      */
     function make_request($request_type, $base_url = NULL)
     {
