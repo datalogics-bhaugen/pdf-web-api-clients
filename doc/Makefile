@@ -7,15 +7,18 @@ PYTHON = html/python/index.html
 SAMPLES = ../samples
 SERVER = src/server
 SERVER_CFG = scripts/cfg/server
-SERVER_SRC = $(SERVER)/*.py $(SERVER)/*/*.py
+SERVER_SRC = $(SERVER)/*.rst $(SERVER)/*.py $(SERVER)/*/*.py
 SPHINX_BUILD = bin/sphinx-build
+THUMBNAIL = ../thumbnail/src/server
+THUMBNAIL_SRC = $(THUMBNAIL)/*.rst $(THUMBNAIL)/*.py
+THUMBNAIL_OPTS = ALLSPHINXOPTS="-d thumbnail/doctrees ../$(THUMBNAIL)"
 VAR_LOG = ../var/log
 
-html: client-doc server-doc
+html: client-doc sphinx-doc
 
 client-doc: $(PHP) $(PYTHON)
 
-server-doc: sphinx/html/index.html
+sphinx-doc: sphinx/html/index.html sphinx/thumbnail/html/index.html
 
 clean: php-clean python-clean sphinx-clean
 
@@ -29,7 +32,7 @@ sphinx-clean:
 	rm -rf .installed.cfg bin develop-eggs parts venv
 	@$(MAKE_SPHINX) clean
 
-.PHONY: html client-doc server-doc clean php-clean python-clean sphinx-clean
+.PHONY: html client-doc sphinx-doc clean php-clean python-clean sphinx-clean
 
 $(DOXYGEN): doxygen
 
@@ -58,8 +61,11 @@ doxygen:
 
 sphinx: $(SPHINX_BUILD) eggs
 
-sphinx/html/index.html: $(SERVER)/*.rst $(SERVER_SRC) $(VAR_LOG) sphinx
+sphinx/html/index.html: $(SERVER_SRC) $(VAR_LOG) sphinx
 	@$(MAKE_SPHINX) html
+
+sphinx/thumbnail/html/index.html: $(THUMBNAIL_SRC) $(VAR_LOG) sphinx
+	@$(MAKE_SPHINX) BUILDDIR=thumbnail $(THUMBNAIL_OPTS) html
 
 venv:
 	python virtualenv.py --no-setuptools $@

@@ -69,17 +69,17 @@ def _log_level():
     dlenv = cfg.Configuration.environment.dlenv
     return logging.DEBUG if dlenv == 'test' else logging.INFO
 
-def start(app_logger, app_name, version=None):
-    "Configure *app_logger* for *app_name*."
+def start(app, version=None):
+    "Configure *app* logger."
     global LOGGER
-    LOGGER = app_logger
+    LOGGER = app.logger
     LOGGER.setLevel(_log_level())
     LOGGER.addHandler(SysLogHandler())
-    LOGGER.addHandler(FileHandler(app_name))
+    LOGGER.addHandler(FileHandler(app.name))
     if version:
-        info('{} ({}) started'.format(app_name, version))
+        info('{} ({}) started'.format(app.name, version))
     else:
-        info('{} started'.format(app_name))
+        info('{} started'.format(app.name))
 
 def iso8601_timestamp():
     "Return current UTC time in ISO 8601 format."

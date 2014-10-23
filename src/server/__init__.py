@@ -1,4 +1,4 @@
-"WebAPI application"
+"WebAPI application."
 
 import flask
 import logger
@@ -15,7 +15,7 @@ import pdf2img
 
 app = flask.Flask('pdfprocess')
 app.wsgi_app = ProxyFix(app.wsgi_app)
-logger.start(app.logger, app.name, Configuration.versions.server)
+logger.start(app, Configuration.versions.server)
 
 @app.route('/api/actions/render/pages', methods=['POST'])
 def render_pages():

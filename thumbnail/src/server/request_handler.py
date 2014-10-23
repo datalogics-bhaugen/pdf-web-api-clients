@@ -1,4 +1,4 @@
-"thumbnail request handler"
+"The thumbnail server downloads request input and passes this to PDF WebAPI."
 
 import flask
 
@@ -28,7 +28,7 @@ three_scale = Configuration.three_scale
 api_client = Application(three_scale.thumbnail_id, three_scale.thumbnail_key)
 
 class RequestHandler(object):
-    "thumbnail request handler"
+    "The server creates a request handler to process a thumbnail request."
     def __init__(self, request):
         self._request_time = logger.iso8601_timestamp()
         self._request = request
@@ -45,6 +45,7 @@ class RequestHandler(object):
             return self._response(api_response)
         return self._smaller_thumbnail(request, url, options)
     def log_usage(self, error=None):
+        "Create a log entry for this request."
         usage = {'action': 'Thumbnail', 'address': self._request.remote_addr}
         if error:
             error.log()
@@ -95,10 +96,12 @@ class RequestHandler(object):
             self._smaller_response(portrait_response, landscape_response))
 
 class InputFile(StringIO):
-    "file-like class downloads files without using the file system"
+    "This file-like class downloads files without using the file system."
     def __init__(self, url):
         StringIO.__init__(self)
         self._url = url
         input.ChunkedTransfer(url, self)
     @property
-    def name(self): return self._url
+    def name(self):
+        "The input URL."
+        return self._url

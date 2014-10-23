@@ -1,12 +1,10 @@
-"usage limits initialization test"
+"usage limit initialization test"
 
 import test
-from server.usage_limit import DEFAULT_USAGE_LIMITS, PlanLimit
-from nose.tools import assert_equal, assert_in
+from server.usage_limit import DEFAULT_RATE_LIMITS, PlanLimit
+from nose.tools import assert_equal
 
 def test_initialization():
-    usage_limits = PlanLimit().usage_limits
-    default_usage_limits = [str(limit) for limit in DEFAULT_USAGE_LIMITS]
-    assert_equal(len(usage_limits), len(default_usage_limits))
-    for usage_limit in usage_limits:
-        assert_in(str(usage_limit), default_usage_limits)
+    rate_limits = [str(rate_limit) for rate_limit in PlanLimit().rate_limits]
+    default_limits = [str(rate_limit) for rate_limit in DEFAULT_RATE_LIMITS]
+    assert_equal(sorted(rate_limits), sorted(default_limits))

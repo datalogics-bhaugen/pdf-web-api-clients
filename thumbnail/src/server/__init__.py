@@ -1,4 +1,4 @@
-"thumbnail application"
+"Thumbnail server application."
 
 import flask
 import requests
@@ -6,9 +6,9 @@ import requests
 import logger
 from werkzeug.contrib.fixers import ProxyFix
 
-app = flask.Flask(__name__)
+app = flask.Flask('thumbnail')
 app.wsgi_app = ProxyFix(app.wsgi_app)
-logger.start(app.logger, 'thumbnail')
+logger.start(app)
 
 from errors import Error, ErrorCode, HTTPCode, UNKNOWN
 from request_handler import RequestHandler
@@ -19,6 +19,7 @@ MAX_RETRY_ERROR = Error(ErrorCode.UnknownError, 'Max retries exceeded',
 
 @app.route('/', methods=['GET'])
 def get_thumbnail():
+    "Thumbnail request handler."
     request_handler = RequestHandler(flask.request)
     try:
         response = request_handler()
