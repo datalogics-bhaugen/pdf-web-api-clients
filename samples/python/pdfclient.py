@@ -58,7 +58,7 @@ import requests
 ## Service request factory:
 #  construct this to create service requests
 class Application(object):
-    BASE_URL = 'https://pdfprocess.datalogics-cloud.com'
+    BASE_URL = 'https://pdfprocess.datalogics.com'
     ## @param id from our [developer portal](http://api.datalogics-cloud.com/)
     #  @param key from our [developer portal](http://api.datalogics-cloud.com/)
     def __init__(self, id, key):

@@ -1,5 +1,5 @@
 POST /api/actions/flatten/form HTTP/1.1
-Host: pdfprocess.datalogics-cloud.com
+Host: pdfprocess.datalogics.com
 Content-Length: 1149
 Content-Type: multipart/form-data; boundary=92055293d09e4b459cc17519a156cf5c
 Accept-Encoding: gzip, deflate, compress

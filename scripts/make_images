@@ -197,7 +197,7 @@ class JSON(object):
         return '{}={}'.format(self._name, value)
 
 class Request(object):
-    URL = 'https://pdfprocess.datalogics-cloud.com/api/actions/render/pages'
+    URL = 'https://pdfprocess.datalogics.com/api/actions/render/pages'
     def __init__(self, dpi, width, input):
         self._dpi, self._width, self._input = dpi, width, input
     def __call__(self, output, print_args=True):
