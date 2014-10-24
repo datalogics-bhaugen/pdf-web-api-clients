@@ -59,7 +59,7 @@ doxygen:
 	git clone https://github.com/doxygen/$@.git
 	cd $@; ./configure; make
 
-sphinx: $(SPHINX_BUILD) eggs
+sphinx: $(SERVER_CFG) $(SPHINX_BUILD) eggs
 
 sphinx/html/index.html: $(SERVER_SRC) $(VAR_LOG) sphinx
 	@$(MAKE_SPHINX) html
