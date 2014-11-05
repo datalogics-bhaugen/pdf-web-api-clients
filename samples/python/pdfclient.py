@@ -293,6 +293,5 @@ class RetrieveDocumentProperties(Request):
     class ErrorCode(ErrorCode):
         pass
     def __init__(self, application, base_url):
-        outputFormat = 'json'
         Request.__init__(self, application, base_url,
                          'retrieve/document/properties')
