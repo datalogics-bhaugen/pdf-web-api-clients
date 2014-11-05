@@ -401,6 +401,22 @@ class RenderPages extends Request
         'suppressAnnotations');
 }
 
+/**
+ * @brief Service request (retrieve PDF document properties)
+ */
+class RetrieveDocumentProperties extends Request
+{
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, "retrieve/document/properties");
+    }
+
+    /**
+     * %RetrieveDocumentProperties has no request options
+     */
+    static $Options = array();
+}
+
 
 namespace pdfclient\DecorateDocument;
 
@@ -448,4 +464,11 @@ abstract class ErrorCode extends \pdfclient\ErrorCode
     const InvalidRegion = 33;
     const InvalidResolution = 34;
 }
+
+namespace pdfclient\RetrieveDocumentProperties;
+
+/**
+ * @brief Error codes for %RetrieveDocumentProperties requests
+ */
+abstract class ErrorCode extends \pdfclient\ErrorCode { }
 ?>

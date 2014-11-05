@@ -188,7 +188,6 @@ class DecorateDocument(Request):
     def __init__(self, application, base_url):
         Request.__init__(self, application, base_url, 'decorate/document')
 
-
 ## Service request (export FDF, XFDF, or XML form data)
 class ExportFormData(Request):
     ## %ExportFormData options:
@@ -205,7 +204,6 @@ class ExportFormData(Request):
 
 ## Service request (fill form fields with supplied data)
 class FillForm(Request):
-    INPUT_TYPES = {('FDF', 'XFDF', 'XML'): 'formsData'}
     INPUT_TYPES = {('CSV', 'FDF', 'JSON', 'TSV', 'XFDF', 'XML'): 'formsData'}
     ## %FillForm request options:
     #  * [disableCalculation]
@@ -286,3 +284,15 @@ class RenderPages(Request):
         InvalidResolution = 34
     def __init__(self, application, base_url):
         Request.__init__(self, application, base_url, 'render/pages')
+
+## Service request (retrieve PDF document properties)
+class RetrieveDocumentProperties(Request):
+    ## %RetrieveDocumentProperties has no request options
+    OPTIONS = []
+    ## Error codes for %RetrieveDocumentProperties requests
+    class ErrorCode(ErrorCode):
+        pass
+    def __init__(self, application, base_url):
+        outputFormat = 'json'
+        Request.__init__(self, application, base_url,
+                         'retrieve/document/properties')
