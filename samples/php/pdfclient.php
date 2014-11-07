@@ -260,7 +260,7 @@ class DecorateDocument extends Request
 {
     function __construct($application, $base_url)
     {
-        parent::__construct($application, $base_url, "decorate/document");
+        parent::__construct($application, $base_url, 'decorate/document');
     }
 
     static $InputTypes = array(
@@ -285,7 +285,7 @@ class ExportFormData extends Request
 {
     function __construct($application, $base_url)
     {
-        parent::__construct($application, $base_url, "export/form-data");
+        parent::__construct($application, $base_url, 'export/form-data');
     }
 
     /**
@@ -305,7 +305,7 @@ class FillForm extends Request
 {
     function __construct($application, $base_url)
     {
-        parent::__construct($application, $base_url, "fill/form");
+        parent::__construct($application, $base_url, 'fill/form');
     }
 
     static $InputTypes = array(
@@ -335,7 +335,7 @@ class FlattenForm extends Request
 {
     function __construct($application, $base_url)
     {
-        parent::__construct($application, $base_url, "flatten/form");
+        parent::__construct($application, $base_url, 'flatten/form');
     }
 
     /**
@@ -352,7 +352,7 @@ class RenderPages extends Request
 {
     function __construct($application, $base_url)
     {
-        parent::__construct($application, $base_url, "render/pages");
+        parent::__construct($application, $base_url, 'render/pages');
     }
 
     /**
@@ -408,7 +408,8 @@ class RetrieveDocumentProperties extends Request
 {
     function __construct($application, $base_url)
     {
-        parent::__construct($application, $base_url, "retrieve/document/properties");
+        $url_suffix = 'retrieve/document/properties';
+        parent::__construct($application, $base_url, $url_suffix);
     }
 
     /**
