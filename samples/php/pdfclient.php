@@ -253,6 +253,28 @@ abstract class ErrorCode
 
 
 /**
+ * @brief Service request (add image to PDF)
+ */
+class AddImage extends Request
+{
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, 'add/image');
+    }
+
+    static $InputTypes = array(
+        'JSON' => 'imageSettings',
+        'BMP' => 'resource[%d]',
+        'GIF' => 'resource[%d]',
+        'JPG' => 'resource[%d]');
+    
+    /**
+     * %AddImage has no request options
+     */
+    static $Options = array();
+}
+
+/**
  * @brief Service request (decorate with supplied header/footer, watermark,
  * and background data)
  */
@@ -269,6 +291,7 @@ class DecorateDocument extends Request
         'MF' => 'manifest',
         'BMP' => 'resource[%d]',
         'JPG' => 'resource[%d]',
+        'GIF' => 'resource[%d]',
         'PDF' => 'resource[%d]');
 
     /**
@@ -418,16 +441,21 @@ class RetrieveDocumentProperties extends Request
     static $Options = array();
 }
 
+namespace pdfclient\AddImage;
+/**
+ * @brief Error codes for %AddImage requests
+ */
+abstract class ErrorCode extends \pdfclient\ErrorCode { }
+
 
 namespace pdfclient\DecorateDocument;
-
 /**
  * @brief Error codes for %DecorateDocument requests
  */
 abstract class ErrorCode extends \pdfclient\ErrorCode { }
 
-namespace pdfclient\ExportFormData;
 
+namespace pdfclient\ExportFormData;
 /**
  * @brief Error codes for %ExportFormData requests
  */
@@ -436,15 +464,15 @@ abstract class ErrorCode extends \pdfclient\ErrorCode
     const ExportXFDFFromXFA = 41;
 }
 
-namespace pdfclient\FillForm;
 
+namespace pdfclient\FillForm;
 /**
  * @brief Error codes for %FillForm requests
  */
 abstract class ErrorCode extends \pdfclient\ErrorCode { }
 
-namespace pdfclient\FlattenForm;
 
+namespace pdfclient\FlattenForm;
 /**
  * @brief Error codes for %FlattenForm requests
  */
@@ -453,8 +481,8 @@ abstract class ErrorCode extends \pdfclient\ErrorCode
     const NoAnnotations = 21;
 }
 
-namespace pdfclient\RenderPages;
 
+namespace pdfclient\RenderPages;
 /**
  * @brief Error codes for %RenderPages requests
  */
@@ -466,8 +494,8 @@ abstract class ErrorCode extends \pdfclient\ErrorCode
     const InvalidResolution = 34;
 }
 
-namespace pdfclient\RetrieveDocumentProperties;
 
+namespace pdfclient\RetrieveDocumentProperties;
 /**
  * @brief Error codes for %RetrieveDocumentProperties requests
  */
