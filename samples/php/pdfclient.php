@@ -253,7 +253,7 @@ abstract class ErrorCode
 
 
 /**
- * @brief Service request (Add image to PDF)
+ * @brief Service request (add image to PDF)
  */
 class AddImage extends Request
 {
@@ -265,8 +265,8 @@ class AddImage extends Request
     static $InputTypes = array(
         'JSON' => 'imageSettings',
         'BMP' => 'resource[%d]',
-        'JPG' => 'resource[%d]',
-        'GIF' => 'resource[%d]');
+        'GIF' => 'resource[%d]',
+        'JPG' => 'resource[%d]');
     
     /**
      * %AddImage has no request options
