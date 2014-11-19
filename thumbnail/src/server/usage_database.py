@@ -17,19 +17,20 @@ class Database(Connection):
         Connection.__init__(self, database, isolation_level='immediate',
                             timeout=timeout)
         self.execute('create table if not exists'
-                     ' requests(network integer, timestamp integer)')
+                     ' requests(remote_addr integer, timestamp integer)')
         self.execute('create index if not exists'
-                     ' requests_network on requests(network)')
+                     ' requests_remote_addr on requests(remote_addr)')
         self._max_period = max_period
-    def timestamps(self, client_network):
-        "Returns the usage timestamps for *client_network*."
-        sql = 'select timestamp from requests where network = ?'
-        rows = self.execute(sql, (client_network,)).fetchall()
+    def timestamps(self, remote_addr):
+        "Returns the usage timestamps for *remote_addr*."
+        sql = 'select timestamp from requests where remote_addr = ?'
+        rows = self.execute(sql, (remote_addr,)).fetchall()
         return [row[0] for row in rows]
-    def update(self, client_network, timestamp):
-        "Inserts a usage timestamp for *client_network*."
+    def update(self, remote_addr, timestamp):
+        "Inserts a usage timestamp for *remote_addr*."
         if self._max_period:
-            sql = 'delete from requests where network = ? and timestamp < ?'
-            self.execute(sql, (client_network, timestamp - self._max_period))
+            sql =\
+                'delete from requests where remote_addr = ? and timestamp < ?'
+            self.execute(sql, (remote_addr, timestamp - self._max_period))
         sql = 'insert into requests values(?, ?)'
-        self.execute(sql, (client_network, timestamp))
+        self.execute(sql, (remote_addr, timestamp))

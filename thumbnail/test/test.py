@@ -18,8 +18,11 @@ from pdfclient import Response
 THUMBNAIL_PORT = cfg.Configuration.service.thumbnail_port
 BASE_URL = 'http://127.0.0.1:{}'.format(THUMBNAIL_PORT)
 
-INPUT = {'inputURL': 'http://www.datalogics.com/pdf/doc/pdf2img.pdf'}
-BAD_INPUT = {'inputURL': 'http://www.datalogics.com/pdf/doc/spam.pdf'}
+INPUT_URL = cfg.Configuration.test.input_url
+BAD_URL = os.path.join(os.path.dirname(INPUT_URL), 'spam.pdf')
+
+INPUT = {'inputURL': INPUT_URL}
+BAD_INPUT = {'inputURL': BAD_URL}
 
 def run(base_url=BASE_URL, data=None, params=None):
     data = data or {'options': '{"imageHeight": 160}'}

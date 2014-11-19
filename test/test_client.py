@@ -18,6 +18,7 @@ from pdfprocess import Client
 
 
 BASE_URL = 'https://pdfprocess-test.datalogics-cloud.com'
+INPUT_URL = cfg.Configuration.test.input_url
 THREE_SCALE = cfg.Configuration.three_scale
 
 class HTTPCode:

@@ -31,11 +31,11 @@ class RateLimit(object):
         self._servers = SERVERS if LINUX else 1
     def __str__(self):
         return "RateLimit({}, '{}')".format(self._requests, self._period)
-    def validate(self, timestamp, timestamps):
+    def validate(self, request_timestamp, usage_timestamps):
         "Raise a usage limit error if appropriate."
-        min_timestamp = timestamp - self.seconds if self.seconds else 0
-        usage_timestamps = [t for t in timestamps if t >= min_timestamp]
-        if len(usage_timestamps) >= self.max_requests_per_server:
+        min_timestamp = request_timestamp - self.seconds if self.seconds else 0
+        timestamps = [t for t in usage_timestamps if t >= min_timestamp]
+        if len(timestamps) >= self.max_requests_per_server:
             raise errors.USAGE_LIMIT_ERROR
     @classmethod
     def max_period(cls, rate_limits):
@@ -83,19 +83,23 @@ USAGE_DATABASE = Database(RateLimit.max_period(RATE_LIMITS))
 class Usage(object):
     "This class validates thumbnail server usage."
     def __init__(self, remote_addr):
-        self._network = remote_addr[1] + 256 * remote_addr[0]
         self._timestamp = int(time.time())
+        self._initialize_remote_addr(remote_addr)
     def validate(self):
         "Update the usage database or raise a usage limit error."
         with USAGE_DATABASE:
-            timestamps = USAGE_DATABASE.timestamps(self.network)
+            timestamps = USAGE_DATABASE.timestamps(self.remote_addr)
             for rate_limit in RATE_LIMITS:
                 rate_limit.validate(self.timestamp, timestamps)
-            USAGE_DATABASE.update(self.network, self.timestamp)
+            USAGE_DATABASE.update(self.remote_addr, self.timestamp)
+    def _initialize_remote_addr(self, remote_addr):
+        self._remote_addr = 0
+        for octet in remote_addr.split('.'):
+            self._remote_addr = (self._remote_addr << 8) + int(octet)
     @property
-    def network(self):
-        "A 'network' is the first two octets of the client's IP address (int)."
-        return self._network
+    def remote_addr(self):
+        "The client's IP address (int)."
+        return self._remote_addr
     @property
     def timestamp(self):
         "Unix time, i.e. #seconds since 1-jan-1970."
@@ -103,11 +107,4 @@ class Usage(object):
 
 def validate(request):
     "Raise a usage limit error for this *request* if appropriate."
-    remote_addr = [int(octet) for octet in request.remote_addr.split('.')]
-    if LINUX:
-        for private_network in ([127, 0, 0, 1], [10], [192, 168]):
-            if private_network == remote_addr[:len(private_network)]:
-                return  # monitor requests, etc.
-        if remote_addr[0] == 172 and remote_addr[1] in range(16, 32):
-            return  # AWS uses this range
-    Usage(remote_addr).validate()
+    Usage(request.remote_addr).validate()

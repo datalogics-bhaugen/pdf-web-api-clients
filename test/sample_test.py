@@ -6,12 +6,11 @@ import json
 import platform
 import subprocess
 from server.tmpdir import Stdout
-from test_client import ErrorCode
+from test_client import ErrorCode, INPUT_URL
 from nose.tools import assert_equal, assert_in
 
 
 GOOD_PDF = 'data/four_pages.pdf'
-INPUT_URL = 'http://www.datalogics.com/pdf/PDF2IMG.pdf'
 
 
 def set_python_path():
