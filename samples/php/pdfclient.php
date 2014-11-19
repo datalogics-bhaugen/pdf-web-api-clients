@@ -253,7 +253,7 @@ abstract class ErrorCode
 
 
 /**
- * @brief Service request (add image to PDF)
+ * @brief Service request (add images to a PDF)
  */
 class AddImage extends Request
 {
@@ -267,7 +267,7 @@ class AddImage extends Request
         'BMP' => 'resource[%d]',
         'GIF' => 'resource[%d]',
         'JPG' => 'resource[%d]');
-    
+
     /**
      * %AddImage has no request options
      */
@@ -290,8 +290,8 @@ class DecorateDocument extends Request
         'XML' => 'decorationData[%d]',
         'MF' => 'manifest',
         'BMP' => 'resource[%d]',
-        'JPG' => 'resource[%d]',
         'GIF' => 'resource[%d]',
+        'JPG' => 'resource[%d]',
         'PDF' => 'resource[%d]');
 
     /**
