@@ -172,10 +172,10 @@ class ErrorCode:
     UsageLimitExceeded = 10
     UnknownError = 20
 
-## Service request (add an image to a PDF)
+## Service request (add images to a PDF)
 class AddImage(Request):
     INPUT_TYPES = {'JSON': 'imageSettings',
-                    ('BMP', 'JPG', 'GIF'): 'resource[{}]'}
+                   ('BMP', 'GIF', 'JPG'): 'resource[{}]'}
     ## %AddImage has no request options
     OPTIONS = []
     ## Error codes for %AddImage requests
@@ -190,7 +190,7 @@ class DecorateDocument(Request):
     INPUT_TYPES = {'JSON': 'decorationData',
                    'XML': 'decorationData[{}]',
                    'MF': 'manifest',
-                   ('BMP', 'JPG', 'GIF', 'PDF'): 'resource[{}]'}
+                   ('BMP', 'GIF', 'JPG', 'PDF'): 'resource[{}]'}
     ## %DecorateDocument has no request options
     OPTIONS = []
     ## Error codes for %DecorateDocument requests
