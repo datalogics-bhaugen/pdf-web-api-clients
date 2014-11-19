@@ -1,17 +1,16 @@
 "server regression tests"
 
+import os
 import mock
 from test import Result, Test
-from test_client import ErrorCode, HTTPCode
+from test_client import ErrorCode, HTTPCode, INPUT_URL
 from nose.tools import assert_in
-
-
-INPUT_URL = 'http://www.datalogics.com/pdf/PDF2IMG.pdf'
 
 
 def test_bad_url():
     result = Result(ErrorCode.InvalidInput, (HTTPCode.NotFound,))
-    try: Test([INPUT_URL.replace('PDF2IMG.pdf', 'spam.pdf')], result)()
+    bad_url = os.path.join(os.path.dirname(INPUT_URL), 'spam.pdf')
+    try: Test([bad_url], result)()
     except Exception as exception:
         assert_in(max_retry_error('/spam.pdf'), str(exception))
 

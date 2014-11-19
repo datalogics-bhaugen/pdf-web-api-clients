@@ -20,3 +20,7 @@ echo
 echo [service]
 echo port = 5000
 echo thumbnail_port = 5050
+echo
+echo [test]
+echo "# thumbnail requests for this URL are exempt from rate limiting"
+echo input_url = http://www.datalogics.com/pdf/PDF2IMG.pdf

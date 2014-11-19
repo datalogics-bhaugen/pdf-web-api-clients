@@ -21,7 +21,6 @@ import test_client
 
 INPUT_FILE = 'hello_world.pdf'  # copy or link data/hello_world.pdf
 INPUT_NAME = 'inputName={}'.format(INPUT_FILE)
-INPUT_URL = 'http://www.datalogics.com/pdf/PDF2IMG.pdf'
 
 RENDER_PAGES_OPTIONS = {'outputFormat': 'jpg', 'printPreview': True}
 OPTIONS = 'options={}'.format(json.dumps(RENDER_PAGES_OPTIONS))
@@ -31,4 +30,4 @@ FAKE_KEY = '1234567890abcdef1234567890abcdef'
 
 client = test_client.client(FAKE_ID, FAKE_KEY)
 client(['test', 'FlattenForm', INPUT_FILE, INPUT_NAME])
-client(['test', 'RenderPages', INPUT_URL, OPTIONS])
+client(['test', 'RenderPages', test_client.INPUT_URL, OPTIONS])
