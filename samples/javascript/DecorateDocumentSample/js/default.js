@@ -142,13 +142,23 @@
 
         // Post the request content to the specified url
         var httpPromise = httpClient.postAsync(uriString, requestContent).then(function (response) {
-            var outputStatus = response.statusCode + " " + response.reasonPhrase;
-            Debug.writeln(outputStatus);
+            if (response.statusCode == 200) {
+                // Save the returned PDF
+                response.content.readAsBufferAsync().then(function (responseBodyAsBuffer) {
+                    savePDF(responseBodyAsBuffer)
+                    return response;
+                });
+            } else {
+                // Log the error message
+                var outputStatus = response.statusCode + " " + response.reasonPhrase;
+                Debug.writeln(outputStatus);
 
-            response.content.readAsBufferAsync().then(function (responseBodyAsBuffer) {
-                savePDF(responseBodyAsBuffer)
-                return response;
-            });
+                // Save the JSON output
+                response.content.readAsBufferAsync().then(function (responseBodyAsBuffer) {
+                    saveError(responseBodyAsBuffer)
+                    return response;
+                });
+            }
         });
     }
 
@@ -168,7 +178,30 @@
         savePicker.pickSaveFileAsync().then(function (file) {
             if (file) {
                 Windows.Storage.FileIO.writeBufferAsync(file, responseBody).then(function (response) {
-                    document.getElementById("displayResult").innerText = "File written"
+                    document.getElementById("displayResult").innerText = "PDF file written!";
+                });
+            } else {
+                document.getElementById("displayResult").innerText = "User did not pick an output file";
+            }
+        });
+    }
+
+    /*
+     * This method saves the error content if the request failed.
+     */
+    function saveError(errorBody) {
+        // Create the picker object and set options
+        var savePicker = new Windows.Storage.Pickers.FileSavePicker();
+        // Dropdown of file types the user can save the error output as
+        savePicker.fileTypeChoices.insert("JSON", [".json"]);
+        // Default file name if the user does not type one in or select a file to replace
+        savePicker.suggestedFileName = "errorText";
+
+        // Open the picker for the user to pick a file
+        savePicker.pickSaveFileAsync().then(function (file) {
+            if (file) {
+                Windows.Storage.FileIO.writeBufferAsync(file, errorBody).then(function (response) {
+                    document.getElementById("displayResult").innerText = "Error file written!";
                 });
             } else {
                 document.getElementById("displayResult").innerText = "User did not pick an output file";
