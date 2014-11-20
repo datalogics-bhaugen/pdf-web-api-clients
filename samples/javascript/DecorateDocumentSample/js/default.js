@@ -104,25 +104,33 @@
 
             // Grab the pdf
             filePicker.pickSingleFileAsync().then(function (pdfFile) {
-                // Open the pdf for reading
-                pdfFile.openReadAsync().then(function (pdfData) {
+                if (pdfFile) {
+                    // Open the pdf for reading
+                    pdfFile.openReadAsync().then(function (pdfData) {
 
-                    // Add an "input" part to our request, where the data is from a PDF. 
-                    requestContent.add(new Windows.Web.Http.HttpStreamContent(pdfData), "input", pdfFile.name);
+                        // Add an "input" part to our request, where the data is from a PDF. 
+                        requestContent.add(new Windows.Web.Http.HttpStreamContent(pdfData), "input", pdfFile.name);
 
-                    // Grab the decoration data file
-                    filePicker.fileTypeFilter.replaceAll([".xml"]);
-                    filePicker.pickSingleFileAsync().then(function (decoFile) {
-                        // Open the decoration file for reading
-                        decoFile.openReadAsync().then(function (decoData) {
-                            // Add a "decorationData" part to our request, where the data is an xml or json file
-                            requestContent.add(new Windows.Web.Http.HttpStreamContent(decoData), "decorationData", decoFile.name);
+                        // Grab the decoration data file
+                        filePicker.fileTypeFilter.replaceAll([".xml"]);
+                        filePicker.pickSingleFileAsync().then(function (decoFile) {
+                            if (decoFile) {
+                                // Open the decoration file for reading
+                                decoFile.openReadAsync().then(function (decoData) {
+                                    // Add a "decorationData" part to our request, where the data is an xml or json file
+                                    requestContent.add(new Windows.Web.Http.HttpStreamContent(decoData), "decorationData", decoFile.name);
 
-                            // Call doPost() with our completed requestContent multipart
-                            callback(requestContent);
+                                    // Call doPost() with our completed requestContent multipart
+                                    callback(requestContent);
+                                });
+                            } else {
+                                document.getElementById("displayResult").innerText = "User did not pick a decoration XML file";
+                            }
                         });
                     });
-                });
+                } else {
+                    document.getElementById("displayResult").innerText = "User did not pick an input PDF";
+                }
             });
     }
 
