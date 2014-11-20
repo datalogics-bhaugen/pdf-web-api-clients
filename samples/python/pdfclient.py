@@ -173,16 +173,16 @@ class ErrorCode:
     UnknownError = 20
 
 ## Service request (add images to a PDF)
-class AddImage(Request):
+class AddImages(Request):
     INPUT_TYPES = {'JSON': 'imageSettings',
                    ('BMP', 'GIF', 'JPG'): 'resource[{}]'}
-    ## %AddImage has no request options
+    ## %AddImages has no request options
     OPTIONS = []
-    ## Error codes for %AddImage requests
+    ## Error codes for %AddImages requests
     class ErrorCode(ErrorCode):
         pass
     def __init__(self, application, base_url):
-        Request.__init__(self, application, base_url, 'add/image')
+        Request.__init__(self, application, base_url, 'add/images')
 
 ## Service request (decorate with supplied header/footer, watermark,
 #  and background data)
