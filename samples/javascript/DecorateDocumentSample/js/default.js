@@ -77,6 +77,7 @@
     };
 
     function buttonClickHandler(eventInfo) {
+        // Get the app ID and Key and add content to the PDF
         var appID = document.getElementById("applicationID").value;
         var appKey = document.getElementById("applicationKey").value;
         addContent(appID, appKey, doPost);
@@ -85,43 +86,39 @@
 
     /*
     * This method builds a multipart form-data request. It will contain
-    * an application part, a PDF part, and a decorationData part (as
-    * I am demo-ing using the DecorateDocument request). Once the 
+    * an application part, a PDF part, and a decorationData part. Once the 
     * request is built, it will get sent off in a POST, which is signaled
     * via callback.
     */
     function addContent(appID, appKey, callback) {
-        //creating multipart form-data request part that all parts get added to
+        // Creating multipart form-data request part that all parts get added to
         var requestContent = new Windows.Web.Http.HttpMultipartFormDataContent();
 
-        //add app id and key
+        // Insert app id and key
         requestContent.add(new Windows.Web.Http.HttpStringContent(
         "{\"id\":\"" + appID + "\", \"key\":\"" + appKey + "\"}"), "application");
 
-
-        //You need permission to access the files in certain folders, hence the use
-        //of FolderPicker. There are probably other classes that will achieve this
-        //as well. 
+        // Select a PDF to decorate
         var filePicker = new Windows.Storage.Pickers.FileOpenPicker();
         filePicker.fileTypeFilter.replaceAll([".pdf"]);
 
-            //grab the pdf
+            // Grab the pdf
             filePicker.pickSingleFileAsync().then(function (pdfFile) {
-                //open the pdf for reading
+                // Open the pdf for reading
                 pdfFile.openReadAsync().then(function (pdfData) {
 
-                    //add an "input" part to our request, where the data is from a PDF. 
+                    // Add an "input" part to our request, where the data is from a PDF. 
                     requestContent.add(new Windows.Web.Http.HttpStreamContent(pdfData), "input", pdfFile.name);
 
-                    //grab the decoration data file
+                    // Grab the decoration data file
                     filePicker.fileTypeFilter.replaceAll([".xml"]);
                     filePicker.pickSingleFileAsync().then(function (decoFile) {
-                        //open the decoration file for reading
+                        // Open the decoration file for reading
                         decoFile.openReadAsync().then(function (decoData) {
-                            //add a "decorationData" part to our request, where the data is an xml or json file
+                            // Add a "decorationData" part to our request, where the data is an xml or json file
                             requestContent.add(new Windows.Web.Http.HttpStreamContent(decoData), "decorationData", decoFile.name);
 
-                            //call doPost() with our completed requestContent multipart
+                            // Call doPost() with our completed requestContent multipart
                             callback(requestContent);
                         });
                     });
@@ -130,20 +127,20 @@
     }
 
     /*
-    * This method sends a post request to the url listed at the top of this JS file
-    * containing the requestContent multipart, which holds all the input file data. 
-    * It then prints out the response status and the response data. 
-    */
+     * This method sends a post request to the url listed here containing
+     * the requestContent multipart, which holds all the input file data. 
+     * It then prints out the response status and the response data. 
+     */
     function doPost(requestContent) {
         var uriString = new Windows.Foundation.Uri("https://pdfprocess.datalogics.com/api/actions/decorate/document");
         var httpClient = new Windows.Web.Http.HttpClient();
 
-        //Adding headers
+        // Adding headers
         httpClient.defaultRequestHeaders.append("user-agent", "python-requests/2.0.1 CPython/2.7.5 Darwin/13.0.0");
         httpClient.defaultRequestHeaders.append("Accept", "*/*");
         httpClient.defaultRequestHeaders.append("Accept-Encoding", "gzip, deflate, compress");
 
-        //Post the request content to the specified url
+        // Post the request content to the specified url
         var httpPromise = httpClient.postAsync(uriString, requestContent).then(function (response) {
             var outputStatus = response.statusCode + " " + response.reasonPhrase;
             Debug.writeln(outputStatus);
@@ -155,6 +152,10 @@
         });
     }
 
+    /*
+     * This method obtains the content of the HTTP response and saves it
+     * to a file selected by the user.
+     */
     function savePDF(responseBody) {
         // Create the picker object and set options
         var savePicker = new Windows.Storage.Pickers.FileSavePicker();
