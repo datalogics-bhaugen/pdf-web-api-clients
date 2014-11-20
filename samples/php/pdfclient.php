@@ -255,11 +255,11 @@ abstract class ErrorCode
 /**
  * @brief Service request (add images to a PDF)
  */
-class AddImage extends Request
+class AddImages extends Request
 {
     function __construct($application, $base_url)
     {
-        parent::__construct($application, $base_url, 'add/image');
+        parent::__construct($application, $base_url, 'add/images');
     }
 
     static $InputTypes = array(
@@ -269,7 +269,7 @@ class AddImage extends Request
         'JPG' => 'resource[%d]');
 
     /**
-     * %AddImage has no request options
+     * %AddImages has no request options
      */
     static $Options = array();
 }
@@ -441,9 +441,9 @@ class RetrieveDocumentProperties extends Request
     static $Options = array();
 }
 
-namespace pdfclient\AddImage;
+namespace pdfclient\AddImages;
 /**
- * @brief Error codes for %AddImage requests
+ * @brief Error codes for %AddImages requests
  */
 abstract class ErrorCode extends \pdfclient\ErrorCode { }
 
