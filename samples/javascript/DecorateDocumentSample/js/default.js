@@ -112,7 +112,7 @@
                         requestContent.add(new Windows.Web.Http.HttpStreamContent(pdfData), "input", pdfFile.name);
 
                         // Grab the decoration data file
-                        filePicker.fileTypeFilter.replaceAll([".xml"]);
+                        filePicker.fileTypeFilter.replaceAll([".json"]);
                         filePicker.pickSingleFileAsync().then(function (decoFile) {
                             if (decoFile) {
                                 // Open the decoration file for reading
@@ -124,7 +124,7 @@
                                     callback(requestContent);
                                 });
                             } else {
-                                document.getElementById("displayResult").innerText = "User did not pick a decoration XML file";
+                                document.getElementById("displayResult").innerText = "User did not pick a decoration JSON file";
                             }
                         });
                     });
