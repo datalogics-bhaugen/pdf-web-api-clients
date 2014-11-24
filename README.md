@@ -57,9 +57,9 @@ To install PDF2IMG:
 
 ## Build
 
-The Makefile's _all_ target (default) downloads packages, updates the files that record these dependencies, creates many files, and runs code quality tests.
+The Makefile's _all_ target (default) downloads packages, updates the file that records these dependencies, creates many files, and runs code quality tests.
 
-To avoid unsolved build issues on Mac 10.9 (Mavericks), use the _app_ target instead.
+To avoid unsolved build issues on Mac 10.9 (Mavericks), use the _app_ target instead. For more information, see issue #158.
 
     NB: Don't panic if the build seems to stall. (It does this while building lxml.)
 
