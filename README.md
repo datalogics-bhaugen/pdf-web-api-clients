@@ -1,6 +1,6 @@
 # web-api
 
-Internet-accessible PDF API, formally known as "PDF WebAPI".
+Internet-accessible PDF API, formally known as "PDF WebAPI". This repository resembles [stopr](https://github.com/datalogics/stopr) in many ways.
 
 Remember to look at our [Confluence](https://wiki.datalogics.com/display/EN/PDF+Web+API) page!
 
@@ -69,9 +69,13 @@ To avoid unsolved build issues on Mac 10.9 (Mavericks), use the _app_ target ins
 
     NB: On some older Linux hosts, buildout fails unless you add `check_certificate=off` to your wget configuration (~/.wgetrc).
 
-3. Dependencies -- the build updates the files that record third-party dependencies.
+3. Code Quality -- the build uses flake8 to check Python code quality.
 
-4. Code Quality -- the build uses flake8 to check Python code quality.
+### Dependency Management
+
+web-api and [stopr](https://github.com/datalogics/stopr) use different approaches to handling third-party dependencies. For the most part, web-api does not specify third-party package versions. Instead, the build updates a file that tracks these dependencies so we can discover when they change. The daily build automatically tests these upgrades, so we can accept them as they are released.
+
+To use specific versions of third-party packages, edit the _pinned-versions_ section in `base.cfg`.
 
 ## Run
 
