@@ -144,7 +144,7 @@
         var httpClient = new Windows.Web.Http.HttpClient();
 
         // Adding headers
-        httpClient.defaultRequestHeaders.append("user-agent", "python-requests/2.0.1 CPython/2.7.5 Darwin/13.0.0");
+        httpClient.defaultRequestHeaders.append("user-agent", "PDF Web-API Javascript Sample Client v1.0 (Windows NT)");
         httpClient.defaultRequestHeaders.append("Accept", "*/*");
         httpClient.defaultRequestHeaders.append("Accept-Encoding", "gzip, deflate, compress");
 
