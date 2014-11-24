@@ -150,7 +150,7 @@
 
         // Post the request content to the specified url
         var httpPromise = httpClient.postAsync(uriString, requestContent).then(function (response) {
-            if (response.statusCode == 200) {
+            if (response.statusCode == Windows.Web.Http.HttpStatusCode.ok) {
                 // Save the returned PDF
                 response.content.readAsBufferAsync().then(function (responseBodyAsBuffer) {
                     savePDF(responseBodyAsBuffer)
