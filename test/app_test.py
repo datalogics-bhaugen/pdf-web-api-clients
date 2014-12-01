@@ -1,10 +1,9 @@
 "WebAPI application regression tests"
 
-import os
 import flask
 import server
 from flask.testing import FlaskClient
-from nose.tools import assert_equal, assert_in
+from nose.tools import assert_equal
 
 NOT_FOUND = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <title>404 Not Found</title>

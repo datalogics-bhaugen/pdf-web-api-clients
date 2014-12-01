@@ -1,7 +1,5 @@
 "RenderPages-to-PDF2IMG option translator."
 
-import sys
-
 from errors import Error, ErrorCode
 from options import Option
 

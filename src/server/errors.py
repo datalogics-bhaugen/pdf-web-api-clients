@@ -86,7 +86,7 @@ INVALID_INPUT = "File does not begin with '%PDF-'."
 USAGE_LIMIT = 'Your usage limit has been exceeded.' \
     ' Please contact us to increase your limit.'
 
-APDFL_ERRORS = [
+ERRORS = [
     Error(ErrorCode.InvalidInput, INVALID_INPUT,
           HTTPCode.UnsupportedMediaType),
     Error(ErrorCode.InvalidInput,

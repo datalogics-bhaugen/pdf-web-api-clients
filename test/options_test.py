@@ -4,7 +4,6 @@ import json
 
 import mock
 import test
-from test_client import ErrorCode, HTTPCode
 from nose.tools import assert_in, assert_not_in
 
 
