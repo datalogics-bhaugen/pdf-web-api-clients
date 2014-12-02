@@ -3,7 +3,6 @@
 "Latin-1 regression tests"
 
 from test import Result, Test
-from test_client import ErrorCode, HTTPCode
 
 
 def test_password_ok():

@@ -50,7 +50,6 @@
 # DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
 
 import json
-import os
 import platform
 import sys
 

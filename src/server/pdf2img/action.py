@@ -1,13 +1,10 @@
 "The server creates a pdf2img action to process a RenderPages request."
 
-import os
 import subprocess
 
 import flask
 
 import server
-import options
-import translator
 import argument_parser
 from server import Error, ErrorCode, logger
 from output_file import OutputFile

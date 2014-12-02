@@ -1,6 +1,5 @@
 "server regression tests, input file(s)"
 
-import os
 import json
 import subprocess
 from server.cfg import Configuration

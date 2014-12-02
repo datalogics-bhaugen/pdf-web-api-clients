@@ -2,7 +2,6 @@
 
 import json
 import uuid
-import test
 
 from test import THREE_SCALE
 from test_client import HTTPCode

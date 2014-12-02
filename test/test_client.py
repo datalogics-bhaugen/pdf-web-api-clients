@@ -13,7 +13,7 @@ sys.path[0:0] = [root_dir, requests_dir, samples_dir]
 
 import cfg
 import requests
-from pdfclient import Application, ErrorCode, RenderPages
+from pdfclient import ErrorCode, RenderPages
 from pdfprocess import Client
 
 

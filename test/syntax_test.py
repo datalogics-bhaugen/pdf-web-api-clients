@@ -2,7 +2,7 @@
 
 import json
 from test import Result, Test
-from test_client import HTTPCode, RenderPages
+from test_client import RenderPages
 from nose.tools import assert_equal
 
 

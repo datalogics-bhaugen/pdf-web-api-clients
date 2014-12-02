@@ -9,7 +9,7 @@ import cfg
 import input
 import logger
 from client import Client
-from errors import APDFL_ERRORS, Error, ErrorCode, HTTPCode, UNKNOWN, URL_ERROR
+from errors import ERRORS, ErrorCode, HTTPCode, UNKNOWN, URL_ERROR
 from request import JSON
 
 
@@ -59,7 +59,7 @@ class Action(object):
         "Parse *stdout* to create appropriate :py:class:`~.Error`."
         import pdf2img
         message = stdout.errors()
-        for error_list in (APDFL_ERRORS, pdf2img.ERRORS):
+        for error_list in (ERRORS, pdf2img.ERRORS):
             error = next((e for e in error_list if e.message in message), None)
             if error: return error.copy(message)
         return UNKNOWN.copy(message)

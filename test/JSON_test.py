@@ -5,7 +5,7 @@ from server.action import Action
 from server.cfg import Configuration
 from server.client import Client
 from server.errors import Error
-from nose.tools import assert_equal, assert_in, assert_is_none
+from nose.tools import assert_equal, assert_is_none
 
 
 def test_bad_application():
