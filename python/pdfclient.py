@@ -49,14 +49,16 @@
 
 import inspect
 import json
+import os
 import sys
 
 import requests
 
 
-## %Request factory
+## Service request factory:
+#  construct this to create service requests
 class Application(object):
-    BASE_URL = 'https://pdfprocess.datalogics-cloud.com'
+    BASE_URL = 'https://pdfprocess.datalogics.com'
     ## @param id from our [developer portal](http://api.datalogics-cloud.com/)
     #  @param key from our [developer portal](http://api.datalogics-cloud.com/)
     def __init__(self, id, key):
@@ -76,10 +78,12 @@ class Application(object):
         return members[0][1]
 
 
-## Service request
+## Service request (base class):
+#  uses <a href="http://docs.python-requests.org/en/latest/">Requests</a>
+#  to post request
 class Request(object):
+    INPUT_TYPES = {}
     def __init__(self, application_json, base_url, url_suffix):
-        self._output_format = ''
         self._application = application_json
         self._url = '{}/api/actions/{}'.format(base_url, url_suffix)
 
@@ -92,19 +96,21 @@ class Request(object):
         data = data.copy()
         data['application'] = self._application
         for file in files.values(): file.seek(0)
-        if 'inputName' not in data and 'input' in files:
-            data['inputName'] = files['input'].name
+        if 'inputName' not in data:
+            if 'input' in files and 'name' in dir(files['input']):
+                data['inputName'] = files['input'].name
         if 'options' in data:
             for option in data['options']:
                 if option not in self.OPTIONS:
                     raise Exception('invalid option: {}'.format(option))
             data['options'] = json.dumps(data['options'])
-        return Response(
-            requests.post(self._url, verify=False, files=files, data=data))
+        return Response(requests.post(self._url, files=files, data=data))
 
-    @property
-    ## Output filename extension property (string)
-    def output_format(self): return self._output_format
+    def part_name(self, filename):
+        data_format = os.path.splitext(filename)[1][1:].upper()
+        for key in self.INPUT_TYPES.keys():
+            if data_format == key or data_format in key:
+                return self.INPUT_TYPES[key]
 
 
 ## Service response
@@ -135,7 +141,8 @@ class Response(object):
     ## HTTP status code (int)
     def http_code(self): return self._response.status_code
     @property
-    ## Document or image data (bytes) if request was successful, otherwise None
+    ## Document, form, or image data (bytes) if request was successful,
+    #  otherwise None
     def output(self): return self._response.content if self.ok else None
     @property
     ## None if successful, otherwise API
@@ -165,8 +172,34 @@ class ErrorCode:
     UsageLimitExceeded = 10
     UnknownError = 20
 
+## Service request (add images to a PDF)
+class AddImages(Request):
+    INPUT_TYPES = {'JSON': 'imageSettings',
+                   ('BMP', 'GIF', 'JPG'): 'resource[{}]'}
+    ## %AddImages has no request options
+    OPTIONS = []
+    ## Error codes for %AddImages requests
+    class ErrorCode(ErrorCode):
+        pass
+    def __init__(self, application, base_url):
+        Request.__init__(self, application, base_url, 'add/images')
 
-## Export FDF, XFDF, or XML form data
+## Service request (decorate with supplied header/footer, watermark,
+#  and background data)
+class DecorateDocument(Request):
+    INPUT_TYPES = {'JSON': 'decorationData',
+                   'XML': 'decorationData[{}]',
+                   'MF': 'manifest',
+                   ('BMP', 'GIF', 'JPG', 'PDF'): 'resource[{}]'}
+    ## %DecorateDocument has no request options
+    OPTIONS = []
+    ## Error codes for %DecorateDocument requests
+    class ErrorCode(ErrorCode):
+        pass
+    def __init__(self, application, base_url):
+        Request.__init__(self, application, base_url, 'decorate/document')
+
+## Service request (export FDF, XFDF, or XML form data)
 class ExportFormData(Request):
     ## %ExportFormData options:
     #  * [exportXFDF]
@@ -180,8 +213,9 @@ class ExportFormData(Request):
         Request.__init__(self, application, base_url, 'export/form-data')
 
 
-## Fill form fields with supplied FDF/XFDF data
+## Service request (fill form fields with supplied data)
 class FillForm(Request):
+    INPUT_TYPES = {('CSV', 'FDF', 'JSON', 'TSV', 'XFDF', 'XML'): 'formsData'}
     ## %FillForm request options:
     #  * [disableCalculation]
     #     (https://api.datalogics-cloud.com/docs#disableCalculation)
@@ -197,10 +231,9 @@ class FillForm(Request):
         pass
     def __init__(self, application, base_url):
         Request.__init__(self, application, base_url, 'fill/form')
-        self._output_format = 'pdf'
 
 
-## Flatten form fields
+## Service request (flatten form fields)
 class FlattenForm(Request):
     ## %FlattenForm has no request options
     OPTIONS = []
@@ -209,14 +242,13 @@ class FlattenForm(Request):
         NoAnnotations = 21
     def __init__(self, application, base_url):
         Request.__init__(self, application, base_url, 'flatten/form')
-        self._output_format = 'pdf'
 
 
-## Create raster image representation
+## Service request (create raster image representation)
 class RenderPages(Request):
     ## %RenderPages request options:
     #  * [colorModel](https://api.datalogics-cloud.com/docs#colorModel):
-    #     rgb (default), gray, rgba, or cmyk
+    #     rgb (default), gray, rgba, cmyk, or lab
     #  * [compression](https://api.datalogics-cloud.com/docs#compression):
     #     lzw (default), g3, g4, or jpg
     #  * [disableColorManagement]
@@ -263,12 +295,14 @@ class RenderPages(Request):
         InvalidResolution = 34
     def __init__(self, application, base_url):
         Request.__init__(self, application, base_url, 'render/pages')
-    ## Send request
-    #  @return a Response object
-    #  @param input input document URL or file object
-    #  @param data dict with keys in
-    #   ('inputURL', 'inputName', 'password', 'options')
-    def __call__(self, files, **data):
-        request_options = data.get('options', {})
-        self._output_format = request_options.get('outputFormat', 'png')
-        return Request.__call__(self, files, **data)
+
+## Service request (retrieve PDF document properties)
+class RetrieveDocumentProperties(Request):
+    ## %RetrieveDocumentProperties has no request options
+    OPTIONS = []
+    ## Error codes for %RetrieveDocumentProperties requests
+    class ErrorCode(ErrorCode):
+        pass
+    def __init__(self, application, base_url):
+        Request.__init__(self, application, base_url,
+                         'retrieve/document/properties')

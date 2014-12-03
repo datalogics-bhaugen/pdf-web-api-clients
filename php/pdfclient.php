@@ -49,11 +49,11 @@
 # NEITHER DATALOGICS WARRANT AGAINST ANY BUG, ERROR, OMISSION, DEFECT,
 # DEFICIENCY, OR NONCONFORMITY IN ANY EXAMPLE CODE.
 
-const BASE_URL = 'https://pdfprocess.datalogics-cloud.com';
+const BASE_URL = 'https://pdfprocess.datalogics.com';
 
 
 /**
- * @brief %Request factory
+ * @brief Service request factory: construct this to create service requests
  */
 class Application
 {
@@ -70,7 +70,7 @@ class Application
      * Create a request for the specified request type
      * @return a Request object
      * @param request_type e.g. '%FlattenForm'
-     * @param base_url default = %https://pdfprocess.datalogics-cloud.com
+     * @param base_url default = %https://pdfprocess.datalogics.com
      */
     function make_request($request_type, $base_url = NULL)
     {
@@ -85,7 +85,9 @@ class Application
 
 
 /**
- * @brief Service request
+ * @brief Service request (base class): uses
+ * <a href="http://www.php.net/manual/en/book.curl.php">curl</a>
+ * to post request
  */
 class Request
 {
@@ -143,15 +145,16 @@ class Request
         return new Response($http_code, $request_response);
     }
 
-    /**
-     * Output filename extension (string)
-     */
-    function output_format() { return $this->_output_format; }
-
-    protected $_output_format;
+    function part_name($filename)
+    {
+        $file_format = strtoupper(pathinfo($filename, PATHINFO_EXTENSION));
+        return $this::$InputTypes[$file_format];
+    }
 
     private $_application;
     private $_url;
+
+    static $InputTypes = array();
 }
 
 
@@ -189,8 +192,8 @@ class Response
     function http_code() { return (int) $this->_http_code; }
 
     /**
-     * @return Document or image data (string) if request was successful,
-     *  otherwise NULL
+     * @return Document, form, or image data (string) if request was
+     *  successful, otherwise NULL
      */
     function output() { if ($this->ok()) return $this->_response; }
 
@@ -233,7 +236,7 @@ class Response
 /**
  * @brief API error codes
  */
-class ErrorCode
+abstract class ErrorCode
 {
     const AuthorizationError = 1;
     const InvalidSyntax = 2;
@@ -250,10 +253,64 @@ class ErrorCode
 
 
 /**
- * @brief Export FDF, XFDF, or XML form data
+ * @brief Service request (add images to a PDF)
+ */
+class AddImages extends Request
+{
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, 'add/images');
+    }
+
+    static $InputTypes = array(
+        'JSON' => 'imageSettings',
+        'BMP' => 'resource[%d]',
+        'GIF' => 'resource[%d]',
+        'JPG' => 'resource[%d]');
+
+    /**
+     * %AddImages has no request options
+     */
+    static $Options = array();
+}
+
+/**
+ * @brief Service request (decorate with supplied header/footer, watermark,
+ * and background data)
+ */
+class DecorateDocument extends Request
+{
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, 'decorate/document');
+    }
+
+    static $InputTypes = array(
+        'JSON' => 'decorationData',
+        'XML' => 'decorationData[%d]',
+        'MF' => 'manifest',
+        'BMP' => 'resource[%d]',
+        'GIF' => 'resource[%d]',
+        'JPG' => 'resource[%d]',
+        'PDF' => 'resource[%d]');
+
+    /**
+     * %DecorateDocument has no request options
+     */
+    static $Options = array();
+}
+
+
+/**
+ * @brief Service request (export FDF, XFDF, or XML form data)
  */
 class ExportFormData extends Request
 {
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, 'export/form-data');
+    }
+
     /**
      * %ExportFormData options:
      * * [exportXFDF]
@@ -261,19 +318,23 @@ class ExportFormData extends Request
      *    export XFDF instead of FDF for AcroForm input
      */
     static $Options = array('exportXFDF');
-
-    function __construct($application, $base_url)
-    {
-        parent::__construct($application, $base_url, "export/form-data");
-    }
 }
 
 
 /**
- * @brief Fill form fields with supplied FDF/XFDF data
+ * @brief Service request (fill form fields with supplied data)
  */
 class FillForm extends Request
 {
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, 'fill/form');
+    }
+
+    static $InputTypes = array(
+        'CSV' => 'formsData', 'FDF' => 'formsData', 'JSON' => 'formsData',
+        'TSV' => 'formsData', 'XFDF' => 'formsData', 'XML' => 'formsData');
+
     /**
      * %FillForm request options:
      * * [disableCalculation]
@@ -287,42 +348,40 @@ class FillForm extends Request
      */
     static $Options = array(
         'disableCalculation', 'disableGeneration', 'flatten');
-
-    function __construct($application, $base_url)
-    {
-        parent::__construct($application, $base_url, "fill/form");
-        $this->_output_format = 'pdf';
-    }
 }
 
 
 /**
- * @brief Flatten form fields
+ * @brief Service request (flatten form fields)
  */
 class FlattenForm extends Request
 {
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, 'flatten/form');
+    }
+
     /**
      * %FlattenForm has no request options
      */
     static $Options = array();
-
-    function __construct($application, $base_url)
-    {
-        parent::__construct($application, $base_url, "flatten/form");
-        $this->_output_format = 'pdf';
-    }
 }
 
 
 /**
- * @brief Create raster image representation
+ * @brief Service request (create raster image representation)
  */
 class RenderPages extends Request
 {
+    function __construct($application, $base_url)
+    {
+        parent::__construct($application, $base_url, 'render/pages');
+    }
+
     /**
      * %RenderPages request options:
      * * [colorModel](https://api.datalogics-cloud.com/docs#colorModel):
-     *    rgb (default), gray, rgba, or cmyk
+     *    rgb (default), gray, rgba, cmyk, or lab
      * * [compression](https://api.datalogics-cloud.com/docs#compression):
      *    lzw (default), g3, g4, or jpg
      * * [disableColorManagement]
@@ -363,70 +422,82 @@ class RenderPages extends Request
         'printPreview', 'resampler',
         'resolution', 'smoothing',
         'suppressAnnotations');
+}
 
+/**
+ * @brief Service request (retrieve PDF document properties)
+ */
+class RetrieveDocumentProperties extends Request
+{
     function __construct($application, $base_url)
     {
-        parent::__construct($application, $base_url, "render/pages");
+        $url_suffix = 'retrieve/document/properties';
+        parent::__construct($application, $base_url, $url_suffix);
     }
 
     /**
-     * Send request
-     * @return a Response object
-     * @param input input document URL or file
-     * @param request_fields array with keys in
-     *  {'inputURL', 'inputName', 'password', 'options'}
+     * %RetrieveDocumentProperties has no request options
      */
-    function __invoke($input, $request_fields)
-    {
-        $output_format = '';
-        if (isset($request_fields['options']) &&
-            isset($request_fields['options']['outputFormat']))
-        {
-            $output_format = $request_fields['options']['outputFormat'];
-        }
-        $this->_output_format = $output_format ? $output_format : 'png';
-        return parent::__invoke($input, $request_fields);
-    }
+    static $Options = array();
 }
+
+namespace pdfclient\AddImages;
+/**
+ * @brief Error codes for %AddImages requests
+ */
+abstract class ErrorCode extends \pdfclient\ErrorCode { }
+
+
+namespace pdfclient\DecorateDocument;
+/**
+ * @brief Error codes for %DecorateDocument requests
+ */
+abstract class ErrorCode extends \pdfclient\ErrorCode { }
 
 
 namespace pdfclient\ExportFormData;
-
 /**
  * @brief Error codes for %ExportFormData requests
  */
-class ErrorCode extends \pdfclient\ErrorCode
+abstract class ErrorCode extends \pdfclient\ErrorCode
 {
     const ExportXFDFFromXFA = 41;
 }
 
-namespace pdfclient\FillForm;
 
+namespace pdfclient\FillForm;
 /**
  * @brief Error codes for %FillForm requests
  */
-class ErrorCode extends \pdfclient\ErrorCode { }
+abstract class ErrorCode extends \pdfclient\ErrorCode { }
+
 
 namespace pdfclient\FlattenForm;
-
 /**
  * @brief Error codes for %FlattenForm requests
  */
-class ErrorCode extends \pdfclient\ErrorCode
+abstract class ErrorCode extends \pdfclient\ErrorCode
 {
     const NoAnnotations = 21;
 }
 
-namespace pdfclient\RenderPages;
 
+namespace pdfclient\RenderPages;
 /**
  * @brief Error codes for %RenderPages requests
  */
-class ErrorCode extends \pdfclient\ErrorCode
+abstract class ErrorCode extends \pdfclient\ErrorCode
 {
     const InvalidColorModel = 31;
     const InvalidCompression = 32;
     const InvalidRegion = 33;
     const InvalidResolution = 34;
 }
+
+
+namespace pdfclient\RetrieveDocumentProperties;
+/**
+ * @brief Error codes for %RetrieveDocumentProperties requests
+ */
+abstract class ErrorCode extends \pdfclient\ErrorCode { }
 ?>

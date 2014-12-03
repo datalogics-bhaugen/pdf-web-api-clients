@@ -3,20 +3,20 @@
 
 * PHP 5.3 or higher
 
-### 1. Download Sample Files
-
-* [Client](download/pdfclient.php) module
-* Command line [script](download/pdfprocess.php)
-(demonstrates client module usage)
-
-### 2. Get Application Key
+### 1. Get Application ID and Key
 
 * Get an application ID and key from our
-[developer portal](http://api.datalogics-cloud.com/).
-* To use the command line script, copy these values into it.
+[developer portal](http://api.datalogics-cloud.com/)
+
+### 2. Download Sample Files
+
+* [pdfclient](download/pdfclient.php) client module
+* [pdfprocess](download/pdfprocess.php) command line script
+(demonstrates pdfclient usage)
+* To use this script, copy your application ID and key into it.
 (Search for TODO comments.)
 
-### 3. Send %Request
+### 3. Use pdfclient to Send Request
 
 * Make a request factory
 
@@ -32,13 +32,13 @@
 
 * Send request 
 
-        $input = 'hello_world.pdf';
+        $input_files = array('input' => 'hello_world.pdf');
         $request_fields = array('inputName' => $input, 'options' => $options);
-        $api_response = $api_request($input, $request_fields);
+        $api_response = $api_request($input_files, $request_fields);
 
-### 4. Interpret %Response
+### 4. Interpret Response
 
-* %Response properties are initialized according to the returned HTTP
+* Response properties are initialized according to the returned HTTP
 status code.
 
         if ($api_response->ok())
